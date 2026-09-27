@@ -24,6 +24,7 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.MaterialPriorityOrder;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.action.Action;
 import jsettlers.common.action.SetMaterialPrioritiesAction;
@@ -192,24 +193,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		 * @return The new ordered array.
 		 */
 		public synchronized EMaterialType[] reorder(EMaterialType type, int desiredNewPosition) {
-			int oldPos = indexOf(type);
-			EMaterialType[] newOrder = order.clone();
-			if (oldPos < 0) {
-				return newOrder;
-			}
-			int newPos = Math.max(Math.min(desiredNewPosition, order.length - 1), 0);
-
-			if (newPos > oldPos) {
-				for (int i = oldPos; i < newPos; i++) {
-					newOrder[i] = newOrder[i + 1];
-				}
-			} else {
-				for (int i = oldPos; i > newPos; i--) {
-					newOrder[i] = newOrder[i - 1];
-				}
-			}
-			newOrder[newPos] = type;
-			return newOrder;
+			return MaterialPriorityOrder.reorder(order, type, desiredNewPosition);
 		}
 
 		/**
@@ -220,12 +204,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		 * @return The position of that material.
 		 */
 		public int indexOf(EMaterialType type) {
-			for (int i = 0; i < order.length; i++) {
-				if (order[i] == type) {
-					return i;
-				}
-			}
-			return -1;
+			return MaterialPriorityOrder.indexOf(order, type);
 		}
 
 		/**
