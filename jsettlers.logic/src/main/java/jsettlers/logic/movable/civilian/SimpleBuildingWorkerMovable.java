@@ -45,6 +45,7 @@ public class SimpleBuildingWorkerMovable extends BuildingWorkerMovable {
 		MovableManager.registerBehaviour(EMovableType.BEEKEEPER, new Root<>(createBeekeeperBehaviour()));
 		MovableManager.registerBehaviour(EMovableType.DISTILLER, new Root<>(createDistillerBehaviour()));
 		MovableManager.registerBehaviour(EMovableType.MEAD_BREWER, new Root<>(createMeadBrewerBehaviour()));
+		MovableManager.registerBehaviour(EMovableType.POWDER_MAKER, new Root<>(createPowderMakerBehaviour()));
 	}
 
 	private static Node<SimpleBuildingWorkerMovable> createForesterBehaviour() {
@@ -706,6 +707,38 @@ public class SimpleBuildingWorkerMovable extends BuildingWorkerMovable {
 							goToOutputStack(EMaterialType.LIQUOR),
 							setDirectionNode(EDirection.NORTH_EAST),
 							dropProduced(mov -> EMaterialType.LIQUOR)
+						)
+					),
+					enterHome()
+				)
+		);
+	}
+
+	private static Node<SimpleBuildingWorkerMovable> createPowderMakerBehaviour() {
+		return defaultWorkCycle(
+				sequence(
+					sleep(3000),
+					waitFor(
+						sequence(
+							isAllowedToWork(),
+							inputStackNotEmpty(EMaterialType.COAL),
+							inputStackNotEmpty(EMaterialType.SULFUR),
+							outputStackNotFull(EMaterialType.GUN_POWDER)
+						)
+					),
+					show(),
+					ignoreFailure(
+						sequence(
+							setMaterialNode(EMaterialType.NO_MATERIAL),
+							dropIntoOven(EMaterialType.COAL, EDirection.NORTH_WEST),
+							dropIntoOven(EMaterialType.SULFUR, EDirection.NORTH_WEST),
+							enterHome(),
+							sleep(5000),
+							show(),
+							setMaterialNode(EMaterialType.GUN_POWDER),
+							goToOutputStack(EMaterialType.GUN_POWDER),
+							setDirectionNode(EDirection.NORTH_EAST),
+							dropProduced(mov -> EMaterialType.GUN_POWDER)
 						)
 					),
 					enterHome()

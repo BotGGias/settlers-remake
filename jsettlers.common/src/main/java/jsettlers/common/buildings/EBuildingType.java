@@ -87,6 +87,7 @@ public enum EBuildingType {
 	DISTILLERY,
 	LABORATORY,
 	MEAD_BREWERY,
+	POWDER_MAKER,
 	;
 
 	/**

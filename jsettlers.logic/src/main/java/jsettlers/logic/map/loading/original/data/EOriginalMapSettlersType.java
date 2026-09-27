@@ -51,7 +51,7 @@ public enum EOriginalMapSettlersType {
 	CHARCOAL_BURNER(EMovableType.CHARCOAL_BURNER),
 	DISTILLER(EMovableType.DISTILLER),
 	BREWER(EMovableType.BREWER),
-	Pulvermacher(null),
+	Pulvermacher(EMovableType.POWDER_MAKER),
 	PIG_FARMER(EMovableType.PIG_FARMER),
 	WINEGROWER(EMovableType.WINEGROWER),
 	BOWMAN_L2(EMovableType.BOWMAN_L2),

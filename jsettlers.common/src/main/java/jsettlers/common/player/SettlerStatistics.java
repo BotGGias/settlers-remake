@@ -42,7 +42,8 @@ public final class SettlerStatistics {
 			EMovableType.WINEGROWER, EMovableType.CHARCOAL_BURNER,
 			EMovableType.STONECUTTER, EMovableType.BREWER,
 			EMovableType.RICE_FARMER, EMovableType.DISTILLER,
-			EMovableType.ALCHEMIST, EMovableType.MEAD_BREWER
+			EMovableType.ALCHEMIST, EMovableType.MEAD_BREWER,
+			EMovableType.POWDER_MAKER
 	};
 
 	private final int beds;

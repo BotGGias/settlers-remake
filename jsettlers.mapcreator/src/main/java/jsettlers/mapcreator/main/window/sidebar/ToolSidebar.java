@@ -162,7 +162,8 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 									EMovableType.RICE_FARMER,
 									EMovableType.DISTILLER,
 									EMovableType.ALCHEMIST,
-									EMovableType.MEAD_BREWER
+									EMovableType.MEAD_BREWER,
+									EMovableType.POWDER_MAKER
 									)
 					),
 					new ToolBox(EditorLabels.getLabel("tools.category.specialist"),
