@@ -37,6 +37,7 @@ import jsettlers.common.action.ShowConstructionMarksAction;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.AskSetTradingWaypointAction;
@@ -170,9 +171,20 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
 			if (selection == null || selection.getSize() == 0) {
 				return null;
 			}
+
+			// there are no modifier keys on touch screens => ask the user how the units should move
+			if (!(action instanceof ChosenMoveToAction) && canChooseMoveToType(selection)) {
+				controlsAdapter.requestMoveToType(pointAction.getPosition());
+				return null;
+			}
 		}
 
 		return action;
+	}
+
+	private static boolean canChooseMoveToType(ISelectionSet selection) {
+		ESelectionType selectionType = selection.getSelectionType();
+		return selectionType == ESelectionType.SOLDIERS || selectionType == ESelectionType.SPECIALISTS;
 	}
 
 	@Override

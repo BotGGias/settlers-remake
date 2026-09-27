@@ -45,6 +45,7 @@ import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 import go.graphics.android.GOSurfaceView;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -52,6 +53,8 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.GameMenu;
 import jsettlers.main.android.core.controls.MinimapControls;
+import jsettlers.main.android.core.controls.MoveToControls;
+import jsettlers.main.android.core.controls.MoveToTypeListener;
 import jsettlers.main.android.core.controls.SelectionControls;
 import jsettlers.main.android.core.controls.SelectionListener;
 import jsettlers.main.android.core.controls.TaskControls;
@@ -68,12 +71,14 @@ import jsettlers.main.android.gameplay.controlsmenu.selection.SoldiersSelectionF
 import jsettlers.main.android.gameplay.controlsmenu.selection.SpecialistsSelectionFragment;
 import jsettlers.main.android.gameplay.controlsmenu.settlers.SettlersMenuFragment;
 import jsettlers.main.android.gameplay.gamemenu.GameMenuDialog;
+import jsettlers.main.android.gameplay.movement.MoveToTypeDialog;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 @EFragment(R.layout.fragment_map)
 @OptionsMenu(R.menu.game)
-public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, MenuNavigator {
+public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, MenuNavigator, MoveToTypeListener {
 	private static final String TAG_GAME_MENU_DIALOG = "com.jsettlers.gamemenufragment";
+	private static final String TAG_MOVE_TO_TYPE_DIALOG = "com.jsettlers.movetotypedialog";
 	private static final String TAG_FRAGMENT_SELECTION_MENU = "com.jsettlers.selectionmenufragment";
 	private static final String TAG_FRAGMENT_BUILDINGS_MENU = "com.jsettlers.buildingsmenufragment";
 	private static final String TAG_FRAGMENT_GOODS_MENU = "com.jsettlers.goodsmenufragment";
@@ -86,6 +91,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	private TaskControls taskControls;
 	private GameMenu gameMenu;
 	private MinimapControls minimapControls;
+	private MoveToControls moveToControls;
 	private ViewPagerBottomSheetBehavior bottomSheetBehavior;
 	private SelectionFragment currentSelectionManager = null;
 
@@ -118,6 +124,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		taskControls = controlsResolver.getTaskControls();
 		gameMenu = controlsResolver.getGameMenu();
 		minimapControls = controlsResolver.getMinimapControls();
+		moveToControls = controlsResolver.getMoveToControls();
 		addMapViews(controlsResolver.getMapContent());
 	}
 
@@ -171,12 +178,14 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	public void onStart() {
 		super.onStart();
 		selectionControls.addSelectionListener(this);
+		moveToControls.setMoveToTypeListener(this);
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
 		selectionControls.removeSelectionListener(this);
+		moveToControls.setMoveToTypeListener(null);
 	}
 
 	@Override
@@ -335,6 +344,19 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		if (getChildFragmentManager().findFragmentByTag(TAG_GAME_MENU_DIALOG) == null) {
 			GameMenuDialog.create().show(getChildFragmentManager(), TAG_GAME_MENU_DIALOG);
 		}
+	}
+
+	/**
+	 * MoveToTypeListener implementation
+	 */
+	@Override
+	public void moveToTypeRequested(ShortPoint2D position) {
+		frameLayout.post(() -> {
+			if (!isAdded() || isStateSaved() || getChildFragmentManager().findFragmentByTag(TAG_MOVE_TO_TYPE_DIALOG) != null) {
+				return;
+			}
+			MoveToTypeDialog.create(position).show(getChildFragmentManager(), TAG_MOVE_TO_TYPE_DIALOG);
+		});
 	}
 
 	private void showMenu() {
