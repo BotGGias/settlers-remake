@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2026
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,50 +12,47 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.network.client.interfaces;
+package jsettlers.input.tasks;
 
-import jsettlers.network.synchronic.timer.INetworkTimerable;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
- * Interface acting as an access point to the network functionality needed by a starting and then active match.
- * 
- * @author Andreas Eberle
- * 
+ * Pauses a multiplayer game for all players at the same game time.
  */
-public interface INetworkConnector {
-	/**
-	 * 
-	 * @return Returns the {@link ITaskScheduler} of used for this match.
-	 */
-	ITaskScheduler getTaskScheduler();
+public class PauseGameGuiTask extends SimpleGuiTask {
+
+	private int pauseCount;
+
+	public PauseGameGuiTask() {
+	}
 
 	/**
-	 * 
-	 * @return Returns the {@link IGameClock} that can be used to attach {@link INetworkTimerable}s for synchronous execution.
-	 */
-	IGameClock getGameClock();
-
-	/**
-	 * Shuts down the network connector.
-	 */
-	void shutdown();
-
-	void setStartFinished(boolean startFinished);
-
-	boolean haveAllPlayersStartFinished();
-
-	/**
-	 * Sends the request to resume the paused game to all players (including this one).
-	 *
 	 * @param playerId
-	 *            The id of the requesting player in the game.
+	 *            The player that wants to pause the game.
 	 * @param pauseCount
-	 *            The number of the pause that shall be ended.
+	 *            The number of pauses that were executed in the game when this request was created. This is used to drop requests that were made
+	 *            during an earlier pause.
 	 */
-	void requestGameResume(byte playerId, int pauseCount);
+	public PauseGameGuiTask(byte playerId, int pauseCount) {
+		super(EGuiAction.PAUSE_GAME, playerId);
+		this.pauseCount = pauseCount;
+	}
 
-	/**
-	 * Sets the listener that receives the resume requests of all players.
-	 */
-	void setGameResumeListener(IGameResumeListener listener);
+	public int getPauseCount() {
+		return pauseCount;
+	}
+
+	@Override
+	protected void serializeTask(DataOutputStream dos) throws IOException {
+		super.serializeTask(dos);
+		dos.writeInt(pauseCount);
+	}
+
+	@Override
+	protected void deserializeTask(DataInputStream dis) throws IOException {
+		super.deserializeTask(dis);
+		pauseCount = dis.readInt();
+	}
 }

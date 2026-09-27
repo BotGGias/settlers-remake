@@ -12,50 +12,34 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.network.client.interfaces;
+package jsettlers.network.server.listeners;
 
-import jsettlers.network.synchronic.timer.INetworkTimerable;
+import java.io.IOException;
+
+import jsettlers.network.NetworkConstants;
+import jsettlers.network.NetworkConstants.ENetworkKey;
+import jsettlers.network.common.packets.ByteTuplePacket;
+import jsettlers.network.infrastructure.channel.GenericDeserializer;
+import jsettlers.network.infrastructure.channel.listeners.PacketChannelListener;
+import jsettlers.network.server.IServerManager;
+import jsettlers.network.server.match.Player;
 
 /**
- * Interface acting as an access point to the network functionality needed by a starting and then active match.
- * 
- * @author Andreas Eberle
- * 
+ * Forwards the request of a player to resume a paused game to all players of the match.
  */
-public interface INetworkConnector {
-	/**
-	 * 
-	 * @return Returns the {@link ITaskScheduler} of used for this match.
-	 */
-	ITaskScheduler getTaskScheduler();
+public class ResumeGameForwardingListener extends PacketChannelListener<ByteTuplePacket> {
 
-	/**
-	 * 
-	 * @return Returns the {@link IGameClock} that can be used to attach {@link INetworkTimerable}s for synchronous execution.
-	 */
-	IGameClock getGameClock();
+	private final IServerManager serverManager;
+	private final Player player;
 
-	/**
-	 * Shuts down the network connector.
-	 */
-	void shutdown();
+	public ResumeGameForwardingListener(IServerManager serverManager, Player player) {
+		super(NetworkConstants.ENetworkKey.RESUME_GAME, new GenericDeserializer<>(ByteTuplePacket.class));
+		this.serverManager = serverManager;
+		this.player = player;
+	}
 
-	void setStartFinished(boolean startFinished);
-
-	boolean haveAllPlayersStartFinished();
-
-	/**
-	 * Sends the request to resume the paused game to all players (including this one).
-	 *
-	 * @param playerId
-	 *            The id of the requesting player in the game.
-	 * @param pauseCount
-	 *            The number of the pause that shall be ended.
-	 */
-	void requestGameResume(byte playerId, int pauseCount);
-
-	/**
-	 * Sets the listener that receives the resume requests of all players.
-	 */
-	void setGameResumeListener(IGameResumeListener listener);
+	@Override
+	protected void receivePacket(ENetworkKey key, ByteTuplePacket packet) throws IOException {
+		serverManager.forwardResumeGame(player, packet);
+	}
 }

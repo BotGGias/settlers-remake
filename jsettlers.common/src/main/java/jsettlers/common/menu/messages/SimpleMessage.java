@@ -163,4 +163,17 @@ public class SimpleMessage implements IMessage {
 	public static IMessage info(String messageLabel) {
 		return new SimpleMessage(EMessageType.INFO, messageLabel, (byte) -1, null);
 	}
+
+	/**
+	 * Creates a general information message about an action of a player that is not bound to a position on the map.
+	 *
+	 * @param messageLabel
+	 * 		The translation key of the text that will be shown after the name of the player
+	 * @param player
+	 * 		The player the message is about
+	 * @return The messageLabel object
+	 */
+	public static IMessage playerInfo(String messageLabel, byte player) {
+		return new SimpleMessage(EMessageType.INFO, messageLabel, player, null);
+	}
 }

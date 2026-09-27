@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2026
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,48 +14,17 @@
  *******************************************************************************/
 package jsettlers.network.client.interfaces;
 
-import jsettlers.network.synchronic.timer.INetworkTimerable;
-
 /**
- * Interface acting as an access point to the network functionality needed by a starting and then active match.
- * 
- * @author Andreas Eberle
- * 
+ * Receives the requests of the players to resume a paused game. These requests are not synchronized with the game clock, because a paused clock
+ * does not execute any tasks.
  */
-public interface INetworkConnector {
-	/**
-	 * 
-	 * @return Returns the {@link ITaskScheduler} of used for this match.
-	 */
-	ITaskScheduler getTaskScheduler();
+public interface IGameResumeListener {
 
 	/**
-	 * 
-	 * @return Returns the {@link IGameClock} that can be used to attach {@link INetworkTimerable}s for synchronous execution.
-	 */
-	IGameClock getGameClock();
-
-	/**
-	 * Shuts down the network connector.
-	 */
-	void shutdown();
-
-	void setStartFinished(boolean startFinished);
-
-	boolean haveAllPlayersStartFinished();
-
-	/**
-	 * Sends the request to resume the paused game to all players (including this one).
-	 *
 	 * @param playerId
-	 *            The id of the requesting player in the game.
+	 *            The player that wants to resume the game.
 	 * @param pauseCount
-	 *            The number of the pause that shall be ended.
+	 *            The number of the pause that shall be ended (number of pauses executed in the game when the request was sent).
 	 */
-	void requestGameResume(byte playerId, int pauseCount);
-
-	/**
-	 * Sets the listener that receives the resume requests of all players.
-	 */
-	void setGameResumeListener(IGameResumeListener listener);
+	void resumeRequested(byte playerId, int pauseCount);
 }

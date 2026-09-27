@@ -19,6 +19,7 @@ import java.util.Timer;
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.NetworkConstants.ENetworkKey;
 import jsettlers.network.NetworkConstants.ENetworkMessage;
+import jsettlers.network.common.packets.ByteTuplePacket;
 import jsettlers.network.common.packets.ChatMessagePacket;
 import jsettlers.network.common.packets.PlayerInfoPacket;
 import jsettlers.network.common.packets.TimeSyncPacket;
@@ -98,6 +99,11 @@ public class Player {
 	public void forwardChatMessage(ChatMessagePacket packet) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 		match.broadcastMessage(ENetworkKey.CHAT_MESSAGE, packet);
+	}
+
+	public void forwardResumeGame(ByteTuplePacket packet) throws IllegalStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_RUNNING_MATCH);
+		match.broadcastMessage(ENetworkKey.RESUME_GAME, packet);
 	}
 
 	public void distributeTimeSync(TimeSyncPacket packet) throws IllegalStateException {
