@@ -38,6 +38,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 import go.graphics.android.GOSurfaceView;
@@ -91,6 +92,10 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	FrameLayout frameLayout;
 	@ViewById(R.id.bottom_sheet)
 	View bottomSheet;
+	@ViewById(R.id.connection_banner)
+	TextView connectionBannerView;
+
+	private ConnectionBanner connectionBanner;
 
 	@AfterViews
 	void setupToolbar() {
@@ -112,6 +117,10 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		taskControls = controlsResolver.getTaskControls();
 		gameMenu = controlsResolver.getGameMenu();
 		addMapViews(controlsResolver.getMapContent());
+		connectionBanner = new ConnectionBanner(connectionBannerView, controlsResolver.getGame());
+		if (isResumed()) {
+			connectionBanner.start();
+		}
 	}
 
 	@AfterViews
@@ -150,12 +159,18 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		if (gameMenu.isPausedState().getValue() == Boolean.FALSE) {
 			gameMenu.unMute();
 		}
+		if (connectionBanner != null) {
+			connectionBanner.start();
+		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 		gameMenu.mute();
+		if (connectionBanner != null) {
+			connectionBanner.stop();
+		}
 	}
 
 	@Override

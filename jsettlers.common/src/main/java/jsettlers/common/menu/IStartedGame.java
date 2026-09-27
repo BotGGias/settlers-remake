@@ -72,4 +72,11 @@ public interface IStartedGame {
 	default String getPlayerName(byte playerId) {
 		return null;
 	}
+
+	/**
+	 * @return The network condition of the game for a prominent notice (interrupted and waiting for players, or lost).
+	 */
+	default ConnectionNotice getConnectionNotice() {
+		return ConnectionNotice.NONE;
+	}
 }

@@ -194,4 +194,8 @@
 	<string name="su_start_failed">The game could not be started (%1$s).</string>
 	<string name="su_start_timeout">The game did not start within %1$d seconds.</string>
 	<string name="su_map_missing">The map %1$s is missing on this device.</string>
+	<string name="connection_interrupted">Connection interrupted – reconnecting …</string>
+	<string name="connection_waiting_for">Waiting for %1$s – reconnecting …</string>
+	<string name="connection_restored">Connection restored</string>
+	<string name="connection_lost">Connection to the game lost</string>
 </resources>

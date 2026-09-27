@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jsettlers.common.ai.EPlayerType;
+import jsettlers.common.menu.ConnectionNotice;
 import jsettlers.common.menu.EPlayerConnectionState;
 import jsettlers.common.menu.InGamePlayerStatus;
 import jsettlers.common.menu.PlayerStatusColors;
@@ -299,6 +300,41 @@ public class PlayerStatusControllerTest {
 			}
 			return OTHER;
 		}
+	}
+
+	@Test
+	public void testConnectionNotice() {
+		receiveAllFine();
+		checkAfter(500);
+		assertEquals(ConnectionNotice.Type.NONE, controller.getConnectionNotice().getType());
+
+		// The game has been waiting for a lagging player for a while: interrupted, waiting for him.
+		millisSinceLastProgress = PlayerStatusController.GENERAL_STALL_MESSAGE_MS + 500;
+		receive(new PlayerStatusPacket(LOCAL, "host", true, 1, 20000, 50), new PlayerStatusPacket(OTHER, "other", true, 42, 20000, 50),
+				new PlayerStatusPacket(THIRD, "third", true, 80, 17000, 60));
+		checkAfter(500);
+		ConnectionNotice notice = controller.getConnectionNotice();
+		assertEquals(ConnectionNotice.Type.INTERRUPTED, notice.getType());
+		assertEquals(List.of("third"), notice.getWaitingFor());
+
+		// No status for longer than the timeout (own connection gone for the moment): interrupted, nobody named.
+		now += PlayerStatusController.STATUS_TIMEOUT_MS + 1;
+		notice = controller.getConnectionNotice();
+		assertEquals(ConnectionNotice.Type.INTERRUPTED, notice.getType());
+		assertTrue(notice.getWaitingFor().isEmpty());
+
+		// Statuses flow again and the game advances: nothing to report.
+		millisSinceLastProgress = 0;
+		receiveAllFine();
+		assertEquals(ConnectionNotice.Type.NONE, controller.getConnectionNotice().getType());
+
+		// Connection to the server closed: lost.
+		connected = false;
+		assertEquals(ConnectionNotice.Type.LOST, controller.getConnectionNotice().getType());
+
+		// Single player: never a notice.
+		controller = createController(false, new EPlayerType[] { EPlayerType.HUMAN, EPlayerType.AI_HARD, null, null, null });
+		assertEquals(ConnectionNotice.Type.NONE, controller.getConnectionNotice().getType());
 	}
 
 	private static class TestPlayer implements IPlayer {
