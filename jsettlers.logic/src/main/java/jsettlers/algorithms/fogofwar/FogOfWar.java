@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
@@ -69,6 +70,7 @@ public final class FogOfWar implements Serializable {
 	private transient IGraphicsBackgroundListener backgroundListener;
 	public transient boolean enabled;
 	public transient boolean canceled;
+	private transient ReentrantLock threadLock;
 
 	public FogOfWar(MainGrid root, byte teamId) {
 		this.width = root.getWidth();
@@ -102,6 +104,21 @@ public final class FogOfWar implements Serializable {
 		dimThread.start();
 	}
 
+	/**
+	 * Blocks until the fog of war threads finished their current update and keeps them from starting a new one until {@link #resumeThreads()} is called.
+	 * Between these calls the fog of war data does not change, so it can be serialized consistently.
+	 */
+	public void pauseThreads() {
+		threadLock.lock();
+	}
+
+	/**
+	 * Allows the fog of war threads to continue after {@link #pauseThreads()}.
+	 */
+	public void resumeThreads() {
+		threadLock.unlock();
+	}
+
 	public static void queueResizeCircle(ShortPoint2D at, short from, short to) {
 		BuildingFoWTask foWTask = new BuildingFoWTask();
 		foWTask.from = from;
@@ -128,6 +145,7 @@ public final class FogOfWar implements Serializable {
 				e.printStackTrace();
 			}
 		}
+		threadLock = new ReentrantLock();
 		refThread = new FoWRefThread();
 		dimThread = new FowDimThread();
 		circleDrawer = new CircleDrawer();
@@ -462,10 +480,13 @@ public final class FogOfWar implements Serializable {
 			init();
 
 			while (!canceled) {
+				threadLock.lock();
 				try {
 					taskProcessor();
 				} catch(Throwable ex) {
 					ex.printStackTrace();
+				} finally {
+					threadLock.unlock();
 				}
 				fc.nextFrame(framerate);
 			}
