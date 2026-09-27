@@ -991,14 +991,15 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	private static EMoveToType moveToForCommand(GOCommandEvent commandEvent) {
 		Set<EModifier> modifiers = commandEvent.getModifiers();
-		if (modifiers.contains(EModifier.CTRL)) {
+		if (modifiers.contains(EModifier.SHIFT)) {
+			return EMoveToType.WAYPOINT;
+		} else if (modifiers.contains(EModifier.CTRL)) {
 			return EMoveToType.FORCED;
 		} else if (modifiers.contains(EModifier.ALT)) {
 			return EMoveToType.PATROL;
 		} else {
 			return EMoveToType.DEFAULT;
 		}
-		// TODO: Add waypoint with SHIFT
 	}
 
 	private Action handleSelectCommand(ShortPoint2D onMap) {

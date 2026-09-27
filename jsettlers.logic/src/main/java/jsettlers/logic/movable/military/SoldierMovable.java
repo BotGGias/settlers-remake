@@ -112,6 +112,7 @@ public abstract class SoldierMovable extends AttackableHumanMovable implements I
 						action(mov -> {
 							mov.enterFerry();
 							mov.goToTarget = null;
+							mov.startNextWaypoint();
 						})
 					)
 				),
@@ -196,6 +197,7 @@ public abstract class SoldierMovable extends AttackableHumanMovable implements I
 						ignoreFailure(goToPos(mov -> mov.currentTarget)),
 						action(mov -> {
 							mov.currentTarget = null;
+							mov.startNextWaypoint();
 						})
 					)
 				),
@@ -257,6 +259,11 @@ public abstract class SoldierMovable extends AttackableHumanMovable implements I
 
 	protected void startAttack() {
 
+	}
+
+	@Override
+	protected boolean hasActiveMoveOrder() {
+		return super.hasActiveMoveOrder() || currentTarget != null || goToTarget != null;
 	}
 
 	private void abortGoTo() {

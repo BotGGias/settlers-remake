@@ -23,6 +23,7 @@ import android.content.Context;
 import go.graphics.android.sound.AndroidSoundPlayer;
 import jsettlers.common.action.Action;
 import jsettlers.common.action.EActionType;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.action.IAction;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
@@ -38,7 +39,7 @@ import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.gameplay.gamemenu.GameSpeedLiveData;
 import jsettlers.network.client.interfaces.IGameClock;
 
-public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls, PositionControls, MinimapControls {
+public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls, PositionControls, MinimapControls, MoveToControls {
 	private static final int SOUND_THREADS = 6;
 
 	private final IStartedGame game;
@@ -59,6 +60,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	private int fireDrawListenerCounter = -1;
 
 	private ISelectionSet selection;
+	private volatile MoveToTypeListener moveToTypeListener;
 	private ShortPoint2D displayCenter;
 	private static final AndroidSoundPlayer SOUND_PLAYER = new AndroidSoundPlayer(SOUND_THREADS);
 
@@ -150,6 +152,26 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 		synchronized (positionChangedListeners) {
 			positionChangedListeners.forEach(PositionChangedListener::positionChanged);
 		}
+	}
+
+	/**
+	 * Asks the user how to move the selection to the given position. Falls back to a normal move if nobody can ask.
+	 */
+	public void requestMoveToType(ShortPoint2D position) {
+		MoveToTypeListener listener = moveToTypeListener;
+		if (listener != null) {
+			listener.moveToTypeRequested(position);
+		} else {
+			fireAction(new ChosenMoveToAction(EMoveToType.DEFAULT, position));
+		}
+	}
+
+	/**
+	 * MoveToControls implementation
+	 */
+	@Override
+	public void setMoveToTypeListener(MoveToTypeListener listener) {
+		this.moveToTypeListener = listener;
 	}
 
 	/**
