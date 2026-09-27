@@ -138,4 +138,9 @@
 	<string name="ask_spell">Zauberstelle auswählen</string>
 	<string name="force_move">Zielpunkt erzwingen</string>
 	<string name="settings_play_all_music">Alle Musikdateien abspielen</string>
+	<string name="settings_audio">Audio</string>
+	<string name="settings_music_enabled">Musik abspielen</string>
+	<string name="settings_music_volume">Musiklautstärke</string>
+	<string name="settings_sound_volume">Soundeffekte-Lautstärke</string>
+	<string name="settings_volume_percent">%d %%</string>
 </resources>

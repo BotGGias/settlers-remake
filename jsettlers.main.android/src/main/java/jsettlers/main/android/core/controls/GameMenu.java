@@ -17,6 +17,9 @@ package jsettlers.main.android.core.controls;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -29,7 +32,9 @@ import jsettlers.common.action.Action;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.action.SetSpeedAction;
 import jsettlers.common.menu.IStartedGame;
+import jsettlers.graphics.sound.MusicManager;
 import jsettlers.main.android.R;
+import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.gameplay.gamemenu.GameSpeedLiveData;
 
 /**
@@ -49,6 +54,22 @@ public class GameMenu implements Consumer<IStartedGame> {
 	private final MutableLiveData<Boolean> pausedState = new MutableLiveData<>();
 	private final GameSpeedLiveData gameSpeedLiveData;
 	private final boolean isMultiplayer;
+	private final MusicManager musicManager;
+	private final AndroidPreferences preferences;
+	private final MutableLiveData<Boolean> musicEnabled = new MutableLiveData<>();
+	private final MutableLiveData<Integer> musicVolume = new MutableLiveData<>();
+	private final MutableLiveData<Integer> soundVolume = new MutableLiveData<>();
+
+	/**
+	 * Starting and stopping the music waits for the music thread, so it is not done on the UI thread. A single thread keeps the order of the
+	 * requests.
+	 */
+	private final ExecutorService musicExecutor = Executors.newSingleThreadExecutor(runnable -> {
+		Thread thread = new Thread(runnable, "MusicControl");
+		thread.setDaemon(true);
+		return thread;
+	});
+	private volatile boolean gameVisible = false;
 
 	private Timer quitConfirmTimer;
 
@@ -57,15 +78,20 @@ public class GameMenu implements Consumer<IStartedGame> {
 			AndroidSoundPlayer soundPlayer,
 			ActionControls actionFireable,
 			GameSpeedLiveData gameSpeedLiveData,
-			boolean isMultiplayer) {
+			boolean isMultiplayer,
+			MusicManager musicManager,
+			AndroidPreferences preferences) {
 		this.context = context;
 		this.soundPlayer = soundPlayer;
 		this.actionControls = actionFireable;
 		this.gameSpeedLiveData = gameSpeedLiveData;
 		this.isMultiplayer = isMultiplayer;
+		this.musicManager = musicManager;
+		this.preferences = preferences;
 
 		pausedState.postValue(false);
 		gameState.postValue(GameState.PLAYING);
+		postAudioSettings();
 	}
 
 	public LiveData<GameState> getGameState() {
@@ -144,11 +170,95 @@ public class GameMenu implements Consumer<IStartedGame> {
 		return isMultiplayer;
 	}
 
+	public LiveData<Boolean> isMusicEnabled() {
+		return musicEnabled;
+	}
+
+	/**
+	 * @return The volume of the music in percent.
+	 */
+	public LiveData<Integer> getMusicVolume() {
+		return musicVolume;
+	}
+
+	/**
+	 * @return The volume of the sound effects in percent.
+	 */
+	public LiveData<Integer> getSoundVolume() {
+		return soundVolume;
+	}
+
+	public void setMusicEnabled(boolean enabled) {
+		preferences.setMusicEnabled(enabled);
+		musicEnabled.setValue(enabled);
+		updateMusic();
+	}
+
+	public void setMusicVolume(int percent) {
+		float volume = percent / 100f;
+		preferences.setMusicVolume(volume);
+		musicVolume.setValue(percent);
+		musicManager.setMusicVolume(volume, false);
+	}
+
+	public void setSoundVolume(int percent) {
+		float volume = percent / 100f;
+		preferences.setSoundVolume(volume);
+		soundVolume.setValue(percent);
+		soundPlayer.setVolume(volume);
+	}
+
+	/**
+	 * Called when the game becomes visible. The audio settings are read again, because they can be changed in the settings screen meanwhile.
+	 */
+	public void onGameVisible() {
+		gameVisible = true;
+		musicManager.setMusicVolume(preferences.getMusicVolume(), false);
+		soundPlayer.setVolume(preferences.getSoundVolume());
+		postAudioSettings();
+		updateMusic();
+	}
+
+	/**
+	 * Called when the game is hidden, e.g. when the app goes to the background. The music is stopped then.
+	 */
+	public void onGameHidden() {
+		gameVisible = false;
+		updateMusic();
+	}
+
+	private void postAudioSettings() {
+		musicEnabled.postValue(preferences.isMusicEnabled());
+		musicVolume.postValue(toPercent(preferences.getMusicVolume()));
+		soundVolume.postValue(toPercent(preferences.getSoundVolume()));
+	}
+
+	private void updateMusic() {
+		try {
+			musicExecutor.execute(() -> {
+				if (gameVisible && preferences.isMusicEnabled()) {
+					musicManager.startMusic();
+				} else {
+					musicManager.stopMusic();
+				}
+			});
+		} catch (RejectedExecutionException e) {
+			// the game has been quit
+		}
+	}
+
+	private static int toPercent(float volume) {
+		return Math.round(volume * 100);
+	}
+
 	/**
 	 * IGameExitedListener implementation
 	 */
 	@Override
 	public void accept(IStartedGame game) {
 		gameState.postValue(GameState.QUITTED);
+		gameVisible = false;
+		updateMusic(); // a start request that is still queued must not restart the music of the quit game
+		musicExecutor.shutdown();
 	}
 }

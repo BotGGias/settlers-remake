@@ -28,6 +28,12 @@ public class AndroidPreferences {
 	private static final String PREF_PLAYER_NAME = "playername";
 	private static final String PREF_SERVER = "server";
 	private static final String PREF_PLAYALL_MUSIC = "playall";
+	private static final String PREF_MUSIC_ENABLED = "music_enabled";
+	private static final String PREF_MUSIC_VOLUME = "music_volume";
+	private static final String PREF_SOUND_VOLUME = "sound_volume";
+
+	private static final float DEFAULT_MUSIC_VOLUME = 0.5f;
+	private static final float DEFAULT_SOUND_VOLUME = 1f;
 
 	private final SharedPreferences preferences;
 
@@ -35,6 +41,8 @@ public class AndroidPreferences {
 		this.preferences = context.getSharedPreferences(PREFS, 0);
 
 		CommonConstants.PLAYALL_MUSIC = this::isPlayAllMusic;
+		CommonConstants.MUSIC_ENABLED = this::isMusicEnabled;
+		CommonConstants.MUSIC_VOLUME = this::getMusicVolume;
 	}
 
 	public String getPlayerId() {
@@ -72,5 +80,39 @@ public class AndroidPreferences {
 
 	public void setPlayAllMusic(boolean playAll) {
 		preferences.edit().putBoolean(PREF_PLAYALL_MUSIC, playAll).apply();
+	}
+
+	public boolean isMusicEnabled() {
+		return preferences.getBoolean(PREF_MUSIC_ENABLED, true);
+	}
+
+	public void setMusicEnabled(boolean musicEnabled) {
+		preferences.edit().putBoolean(PREF_MUSIC_ENABLED, musicEnabled).apply();
+	}
+
+	/**
+	 * @return The volume of the music (0..1).
+	 */
+	public float getMusicVolume() {
+		return clampVolume(preferences.getFloat(PREF_MUSIC_VOLUME, DEFAULT_MUSIC_VOLUME));
+	}
+
+	public void setMusicVolume(float volume) {
+		preferences.edit().putFloat(PREF_MUSIC_VOLUME, clampVolume(volume)).apply();
+	}
+
+	/**
+	 * @return The volume of the sound effects (0..1).
+	 */
+	public float getSoundVolume() {
+		return clampVolume(preferences.getFloat(PREF_SOUND_VOLUME, DEFAULT_SOUND_VOLUME));
+	}
+
+	public void setSoundVolume(float volume) {
+		preferences.edit().putFloat(PREF_SOUND_VOLUME, clampVolume(volume)).apply();
+	}
+
+	private static float clampVolume(float volume) {
+		return Math.max(0, Math.min(1, volume));
 	}
 }

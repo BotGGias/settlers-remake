@@ -25,6 +25,8 @@ import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.widget.SeekBar;
 
+import java.util.function.IntConsumer;
+
 import jsettlers.main.android.R;
 import jsettlers.main.android.databinding.DialogGameMenuBinding;
 import jsettlers.main.android.mainmenu.MainActivity_;
@@ -55,6 +57,9 @@ public class GameMenuDialog extends DialogFragment {
 		binding.setLifecycleOwner(this);
 		binding.setViewmodel(viewModel);
 		binding.seekBar.setOnSeekBarChangeListener(gameSpeedSeekBarListener);
+		binding.switchMusic.setOnCheckedChangeListener((button, checked) -> viewModel.musicEnabledChanged(checked));
+		binding.seekBarMusicVolume.setOnSeekBarChangeListener(new VolumeSeekBarListener(viewModel::musicVolumeMoved));
+		binding.seekBarSoundVolume.setOnSeekBarChangeListener(new VolumeSeekBarListener(viewModel::soundVolumeMoved));
 		binding.buttonPlayers.setOnClickListener(view -> showPlayers());
 
 		AlertDialog dialog = new AlertDialog.Builder(requireActivity(), R.style.GameMenuDialogTheme)
@@ -89,6 +94,29 @@ public class GameMenuDialog extends DialogFragment {
 		public void onStopTrackingTouch(SeekBar seekBar) {
 		}
 	};
+
+	private static class VolumeSeekBarListener implements SeekBar.OnSeekBarChangeListener {
+		private final IntConsumer volumeConsumer;
+
+		VolumeSeekBarListener(IntConsumer volumeConsumer) {
+			this.volumeConsumer = volumeConsumer;
+		}
+
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+			if (fromUser) {
+				volumeConsumer.accept(progress);
+			}
+		}
+
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {
+		}
+
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {
+		}
+	}
 
 	/**
 	 * Stops the system bars from showing when this dialog appears.
