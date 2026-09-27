@@ -118,6 +118,8 @@
 
 	<string name="service_description">Servicio de ejecución de JSettlers.</string>
 	<string name="global_stock_message">La configuración global de almacenamiento solo puede aplicarse al propio asentamiento.</string>
+	<string name="own_territory_message">Mueve la vista sobre uno de tus propios asentamientos para cambiar estos ajustes.</string>
+	<string name="settlers_statistics_total">Total</string>
 	<string name="goods_stock_title">Configuración Global de Almacenamiento</string>
 
 	<string name="game_menu_skip_minute">Avanzar un minuto</string>

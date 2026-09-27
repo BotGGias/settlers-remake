@@ -118,6 +118,8 @@
 
 	<string name="service_description">JSettlers server, som hoster dette spil</string>
 	<string name="global_stock_message">De globale indstillinger for varehuse kan kun ændres i de lokale varehuse.</string>
+	<string name="own_territory_message">Flyt visningen over en af dine egne bosættelser for at ændre disse indstillinger.</string>
+	<string name="settlers_statistics_total">I alt</string>
 	<string name="goods_stock_title">Global varehusindstillinger</string>
 
 	<string name="game_menu_skip_minute">Spring ét minut over</string>

@@ -128,6 +128,8 @@
 	<string name="dock">Steg</string>
 	<string name="destination">Ziel</string>
 	<string name="global_stock_message">Die globalen Lagereinstellungen können nur in einer eigenen Siedlung gesetzt werden.</string>
+	<string name="own_territory_message">Bewege die Ansicht über eine eigene Siedlung, um diese Einstellungen zu ändern.</string>
+	<string name="settlers_statistics_total">Gesamt</string>
 	<string name="goods_stock_title">Globale Lagereinstellungen</string>
 
 	<string name="game_menu_skip_minute">Eine Minute vorspulen</string>

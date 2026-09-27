@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  android:layout_width="match_parent"
+			  android:layout_height="wrap_content"
+			  android:orientation="vertical"
+			  android:paddingLeft="16dp"
+			  android:paddingRight="8dp"
+			  android:paddingTop="4dp"
+			  android:paddingBottom="4dp">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:orientation="horizontal">
+
+		<ImageView
+			android:id="@+id/imageView_settler"
+			android:layout_width="40dp"
+			android:layout_height="40dp"
+			android:scaleType="fitCenter"/>
+
+		<Space
+			android:layout_width="12dp"
+			android:layout_height="1dp"/>
+
+		<TextView
+			android:id="@+id/textView_name"
+			android:layout_weight="1"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:ellipsize="end"
+			android:maxLines="1"/>
+
+		<TextView
+			android:id="@+id/textView_decrement"
+			style="@style/TextAppearance.AppCompat.Title"
+			android:textColor="?android:textColorPrimary"
+			android:layout_width="40dp"
+			android:layout_height="40dp"
+			android:background="@drawable/bg_decrement"
+			android:gravity="center"
+			android:text="-"/>
+
+		<TextView
+			android:id="@+id/textView_target"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"
+			android:minWidth="64dp"/>
+
+		<TextView
+			android:id="@+id/textView_increment"
+			style="@style/TextAppearance.AppCompat.Title"
+			android:textColor="?android:textColorPrimary"
+			android:layout_width="40dp"
+			android:layout_height="40dp"
+			android:background="@drawable/bg_increment"
+			android:gravity="center"
+			android:text="+"/>
+
+		<CheckBox
+			android:id="@+id/checkBox_relative"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="8dp"/>
+	</LinearLayout>
+
+	<TextView
+		android:id="@+id/textView_current"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="52dp"/>
+</LinearLayout>
