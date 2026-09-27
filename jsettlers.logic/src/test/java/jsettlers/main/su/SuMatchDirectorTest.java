@@ -26,6 +26,7 @@ import java.util.List;
 import org.junit.Test;
 
 import jsettlers.common.ai.EPlayerType;
+import jsettlers.common.menu.EPeaceTime;
 import jsettlers.common.menu.IChatMessageListener;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMultiplayerListener;
@@ -298,6 +299,24 @@ public class SuMatchDirectorTest {
 
 		@Override
 		public void sendChatMessage(String chatMessage) {
+		}
+
+		@Override
+		public void setStartResources(int startResourcesValue) {
+		}
+
+		@Override
+		public int getStartResourcesValue() {
+			return 0;
+		}
+
+		@Override
+		public void setPeaceTime(EPeaceTime peaceTime) {
+		}
+
+		@Override
+		public EPeaceTime getPeaceTime() {
+			return EPeaceTime.WITHOUT;
 		}
 
 		@Override

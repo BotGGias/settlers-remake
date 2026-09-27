@@ -46,7 +46,7 @@ public class MultiplayerConnector implements IMultiplayerConnector, IClientConne
 
 	private final String userId;
 	private final String userName;
-	private EMapStartResources startResources = EMapStartResources.HIGH_GOODS;
+	private EMapStartResources startResources; // null = the value the host set in the match
 
 	public MultiplayerConnector(final String serverAddress, final String userId, final String userName, Logger log) {
 		this.userId = userId;
@@ -55,8 +55,8 @@ public class MultiplayerConnector implements IMultiplayerConnector, IClientConne
 	}
 
 	/**
-	 * Start resources of the games opened or joined from now on. Not part of the network protocol, so every player has to set the
-	 * same value (default {@link EMapStartResources#HIGH_GOODS}).
+	 * Start resources of the games opened or joined from now on, instead of the value the host sets in the match (Settlers United
+	 * launcher: every player gets the same value). Default {@code null}: the match value.
 	 */
 	public void setStartResources(EMapStartResources startResources) {
 		this.startResources = startResources;

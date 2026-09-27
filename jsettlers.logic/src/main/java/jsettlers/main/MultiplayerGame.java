@@ -77,12 +77,13 @@ public class MultiplayerGame {
 	private EPeaceTime peaceTime = EPeaceTime.WITHOUT;
 
 	public MultiplayerGame(AsyncNetworkClientConnector networkClientFactory) {
-		this(networkClientFactory, EMapStartResources.HIGH_GOODS);
+		this(networkClientFactory, null);
 	}
 
 	/**
 	 * @param startResources
-	 *            not part of the network protocol: all players must use the same value (Settlers United launcher passes it to everyone)
+	 *            overrides the start resources of the match (Settlers United launcher passes the same value to everyone); {@code null}
+	 *            = the value the host set in the match
 	 */
 	public MultiplayerGame(AsyncNetworkClientConnector networkClientFactory, EMapStartResources startResources) {
 		this.networkClientFactory = networkClientFactory;
@@ -150,9 +151,9 @@ public class MultiplayerGame {
 			long randomSeed = packet.getRandomSeed();
 			PlayerSetting[] playerSettings = determinePlayerSettings();
 			byte ownPlayerId = calculateOwnPlayerId();
-			InitialGameState initialGameState = new InitialGameState(ownPlayerId, playerSettings, randomSeed, startResources);
-			InitialGameState initialGameState = new InitialGameState(ownPlayerId, playerSettings, randomSeed,
-					EMapStartResources.fromMapValue(startResourcesValue), peaceTime);
+			// Settlers United launcher: its value (same on every device); otherwise the value the host set in the match.
+			EMapStartResources resources = startResources != null ? startResources : EMapStartResources.fromMapValue(startResourcesValue);
+			InitialGameState initialGameState = new InitialGameState(ownPlayerId, playerSettings, randomSeed, resources, peaceTime);
 
 			JSettlersGame game = new JSettlersGame(mapLoader, networkClient.getNetworkConnector(), initialGameState);
 
