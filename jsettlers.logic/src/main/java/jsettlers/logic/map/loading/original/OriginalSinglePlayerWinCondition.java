@@ -21,7 +21,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.EWinState;
+import jsettlers.common.player.IProductionStatistic;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.MatchConstants;
@@ -195,7 +197,15 @@ public class OriginalSinglePlayerWinCondition extends WinLoseHandler implements 
 	}
 
 	private boolean checkProduceCondition() {
-		// TODO implement production statistics
+		IProductionStatistic productionStatistic = players[MAIN_PLAYER].getProductionStatistic();
+
+		for(OriginalProduceGoodsWinCondition produceCondition : produceToWin) {
+			EMaterialType type = produceCondition.getType();
+			if(type == null || !type.isDroppable()) continue;
+
+			if(productionStatistic.getAmountProduced(type) < produceCondition.getAmount()) return false;
+		}
+
 		return true;
 	}
 }

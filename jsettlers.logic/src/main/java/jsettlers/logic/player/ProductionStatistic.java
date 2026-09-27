@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2026
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,53 +12,32 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.player;
+package jsettlers.logic.player;
+
+import java.io.Serializable;
+
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.player.IProductionStatistic;
 
 /**
- * @author codingberlin
+ * Counts the materials produced by the workers of a player.
  */
-public interface IInGamePlayer extends IPlayer {
-	/**
-	 * Gets the mana information (settler leveling progress) for this player
-	 * @return The mana information
-	 */
-	IMannaInformation getMannaInformation();
+public class ProductionStatistic implements IProductionStatistic, Serializable {
+	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Gets the combat strength information for the player
-	 * @return The combat strength information
-	 */
-	ICombatStrengthInformation getCombatStrengthInformation();
+	private final int[] produced = new int[EMaterialType.NUMBER_OF_MATERIALS];
 
-	IEndgameStatistic getEndgameStatistic();
+	public void materialProduced(EMaterialType materialType) {
+		if (materialType != null && materialType.isDroppable() && materialType.ordinal < produced.length) {
+			produced[materialType.ordinal]++;
+		}
+	}
 
-	/**
-	 * Gets the statistic about the materials this player has produced.
-	 * @return The production statistic
-	 */
-	IProductionStatistic getProductionStatistic();
-
-	/**
-	 * Gets the current movable statistics for this player
-	 * @return The statistics of movables.
-	 */
-	ISettlerInformation getSettlerInformation();
-
-	/**
-	 * Get the civilisation for the player
-	 * @return The civilisation the player has
-	 */
-	ECivilisation getCivilisation();
-
-	/**
-	 * Gets the current amount of beds
-	 * @return
-	 */
-	IBedInformation getBedInformation();
-
-	/**
-	 * Get win/lose state for the player
-	 * @return The win/lose state the player is in
-	 */
-	EWinState getWinState();
+	@Override
+	public int getAmountProduced(EMaterialType materialType) {
+		if (materialType == null || materialType.ordinal >= produced.length) {
+			return 0;
+		}
+		return produced[materialType.ordinal];
+	}
 }

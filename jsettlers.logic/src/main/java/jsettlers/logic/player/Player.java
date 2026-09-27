@@ -58,6 +58,10 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	 * Game time in milliseconds until which this player is in peace time. Old savegames deserialize this as 0 (no peace time).
 	 */
 	private int peaceTimeEndMs;
+	/**
+	 * Not final to be able to create it for old savegames.
+	 */
+	private ProductionStatistic productionStatistic = new ProductionStatistic();
 
 	private transient EPlayerType               playerType;
 	private transient CombatStrengthInformation combatStrengthInfo = new CombatStrengthInformation();
@@ -77,6 +81,9 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
+		if (productionStatistic == null) {
+			productionStatistic = new ProductionStatistic();
+		}
 		combatStrengthInfo = new CombatStrengthInformation();
 		updateCombatStrengths();
 	}
@@ -115,6 +122,11 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	@Override
 	public EndgameStatistic getEndgameStatistic() {
 		return endgameStatistic;
+	}
+
+	@Override
+	public ProductionStatistic getProductionStatistic() {
+		return productionStatistic;
 	}
 
 	public TradeManager getLandTradeManager() {

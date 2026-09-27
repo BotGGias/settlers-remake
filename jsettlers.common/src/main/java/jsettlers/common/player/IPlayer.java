@@ -73,6 +73,11 @@ public interface IPlayer {
 		}
 
 		@Override
+		public IProductionStatistic getProductionStatistic() {
+			return null;
+		}
+
+		@Override
 		public IBedInformation getBedInformation() {
 			return null;
 		}

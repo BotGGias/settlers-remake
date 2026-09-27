@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2026
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,51 +14,17 @@
  *******************************************************************************/
 package jsettlers.common.player;
 
+import jsettlers.common.material.EMaterialType;
+
 /**
- * @author codingberlin
+ * Statistic about the materials a player has produced since the start of the game.
  */
-public interface IInGamePlayer extends IPlayer {
-	/**
-	 * Gets the mana information (settler leveling progress) for this player
-	 * @return The mana information
-	 */
-	IMannaInformation getMannaInformation();
+public interface IProductionStatistic {
 
 	/**
-	 * Gets the combat strength information for the player
-	 * @return The combat strength information
+	 * @param materialType
+	 *            The material.
+	 * @return The amount of the given material produced by the player since the start of the game.
 	 */
-	ICombatStrengthInformation getCombatStrengthInformation();
-
-	IEndgameStatistic getEndgameStatistic();
-
-	/**
-	 * Gets the statistic about the materials this player has produced.
-	 * @return The production statistic
-	 */
-	IProductionStatistic getProductionStatistic();
-
-	/**
-	 * Gets the current movable statistics for this player
-	 * @return The statistics of movables.
-	 */
-	ISettlerInformation getSettlerInformation();
-
-	/**
-	 * Get the civilisation for the player
-	 * @return The civilisation the player has
-	 */
-	ECivilisation getCivilisation();
-
-	/**
-	 * Gets the current amount of beds
-	 * @return
-	 */
-	IBedInformation getBedInformation();
-
-	/**
-	 * Get win/lose state for the player
-	 * @return The win/lose state the player is in
-	 */
-	EWinState getWinState();
+	int getAmountProduced(EMaterialType materialType);
 }
