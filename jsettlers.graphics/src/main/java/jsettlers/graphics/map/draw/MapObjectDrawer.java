@@ -33,6 +33,7 @@ import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
+import jsettlers.common.mapobject.ISiegeProjectileMapObject;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.mapobject.IMannaBowlObject;
 import jsettlers.common.mapobject.IMapObject;
@@ -43,6 +44,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EEffectType;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESiegeWeaponType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.IGraphicsBuildingWorker;
 import jsettlers.common.movable.IGraphicsCargoShip;
@@ -108,6 +110,16 @@ public class MapObjectDrawer {
 	private static final int SOUND_BUILDING_DESTROYED = 93;
 	private static final int SOUND_SETTLER_KILLED     = 35;
 	private static final int SOUND_FALLING_TREE       = 36;
+	private static final int SOUND_CATAPULT           = 84;
+	private static final int SOUND_BALLISTA           = 85;
+	private static final int SOUND_CANNON             = 86;
+	private static final int SOUND_GONG               = 111;
+
+	private static final int CATAPULT_BOULDER_FILE       = 12;
+	private static final int CANNON_BALL_FILE            = 32;
+	private static final int SIEGE_PROJECTILE_SEQUENCE   = 8;
+	private static final int SIEGE_PROJECTILE_FRAMES     = 12;
+	private static final int SIEGE_PROJECTILE_ARC_HEIGHT = 60;
 
 
 	private static final int OBJECTS_FILE   = 1;
@@ -432,6 +444,112 @@ public class MapObjectDrawer {
 		return shipDirection.getNeighbor(((x + seatIndex + slowerAnimationStep) / 8 + (y + seatIndex + slowerAnimationStep) / 11 + seatIndex) % 3 - 1);
 	}
 
+	/**
+	 * Draws a siege weapon in layers: the body (NO_MATERIAL), the wheels (TRUNK) and, while firing, the firing animation (the ammunition).
+	 */
+	private void drawSiegeWeapon(IGraphicsMovable weapon, int x, int y) {
+		byte fogStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
+		if (fogStatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
+			return;
+		}
+
+		EMovableType type = weapon.getMovableType();
+		ESiegeWeaponType weaponType = ESiegeWeaponType.fromMovableType(type);
+		ECivilisation civilisation = weapon.getPlayer().getCivilisation();
+		EMovableAction action = weapon.getAction();
+		EDirection direction = weapon.getDirection();
+		float progress = weapon.getMoveProgress();
+		Color color = MapDrawContext.getPlayerColor(weapon.getPlayer().getPlayerId());
+		float shade = getColor(fogStatus);
+
+		float viewX;
+		float viewY;
+		if (action == EMovableAction.WALKING) {
+			viewX = betweenTilesX(x, y, direction.getInverseDirection(), 1 - progress);
+			viewY = betweenTilesY;
+		} else {
+			int height = context.getHeight(x, y);
+			viewX = context.getConverter().getViewX(x, y, height);
+			viewY = context.getConverter().getViewY(x, y, height);
+		}
+
+		GLDrawContext gl = context.getGl();
+		float z = getZ(0, y);
+		imageMap.getImageForSettler(civilisation, type, action, EMaterialType.NO_MATERIAL, direction, progress).drawAt(gl, viewX, viewY, z, color, shade);
+		if (weaponType.usesAmmo()) { // the gong has no wheels and its firing animation replaces its body
+			imageMap.getImageForSettler(civilisation, type, action, EMaterialType.TRUNK, direction, progress).drawAt(gl, viewX, viewY, z, color, shade);
+			if (action == EMovableAction.ACTION1) {
+				imageMap.getImageForSettler(civilisation, type, action, weaponType.getAmmo(), direction, progress).drawAt(gl, viewX, viewY, z, color, shade);
+			}
+		}
+
+		drawSettlerMark(viewX, viewY, weapon);
+	}
+
+	private void drawSiegeProjectile(ISiegeProjectileMapObject projectile, float color) {
+		float progress = projectile.getStateProgress();
+		if (progress >= 1) {
+			return; // it already hit its target
+		}
+
+		EDirection direction = projectile.getDirection();
+		Image image;
+		switch (projectile.getWeaponType()) {
+			case BALLISTA:
+				image = imageProvider.getSettlerSequence(OBJECTS_FILE, getArrowSequence(direction)).getImageSafe(Math.round(progress * 2), () -> "ballista-bolt");
+				break;
+			case CANNON:
+				// TODO: the cannon ball sequence is guessed like the other cannon images, verify it against the original GFX
+				image = getRotatingProjectileImage(CANNON_BALL_FILE, direction, progress);
+				break;
+			default:
+				image = getRotatingProjectileImage(CATAPULT_BOULDER_FILE, direction, progress);
+				break;
+		}
+
+		int startX = projectile.getSourceX();
+		int startY = projectile.getSourceY();
+		int destinationX = projectile.getTargetX();
+		int destinationY = projectile.getTargetY();
+		float startHeight = context.getHeight(startX, startY);
+		float destinationHeight = context.getHeight(destinationX, destinationY);
+
+		float x = startX + progress * (destinationX - startX);
+		float y = startY + progress * (destinationY - startY);
+		float h = startHeight + progress * (destinationHeight - startHeight);
+
+		MapCoordinateConverter converter = context.getConverter();
+		float viewX = converter.getViewX(x, y, h);
+		float viewY = converter.getViewY(x, y, h);
+		image.drawAt(context.getGl(), viewX, viewY + SIEGE_PROJECTILE_ARC_HEIGHT * progress * (1 - progress) + 20, getZ(0, y), null, color);
+	}
+
+	/**
+	 * The boulder and the cannon ball rotate while they fly. Projectiles flying to the west rotate backwards.
+	 */
+	private Image getRotatingProjectileImage(int file, EDirection direction, float progress) {
+		Sequence<? extends Image> sequence = imageProvider.getSettlerSequence(file, SIEGE_PROJECTILE_SEQUENCE);
+		int frame = Math.min((int) (progress * SIEGE_PROJECTILE_FRAMES), SIEGE_PROJECTILE_FRAMES - 1);
+		boolean westwards = direction == EDirection.SOUTH_WEST || direction == EDirection.WEST || direction == EDirection.NORTH_WEST;
+		int index = westwards ? SIEGE_PROJECTILE_FRAMES - 1 - frame : frame;
+		return sequence.getImageSafe(index, () -> "siege-projectile-" + file);
+	}
+
+	private static int getArrowSequence(EDirection direction) {
+		switch (direction) {
+			case SOUTH_WEST:
+				return 100;
+			case WEST:
+				return 101;
+			case NORTH_WEST:
+				return 102;
+			case NORTH_EAST:
+				return 103;
+			default:
+				return 104;
+		}
+	}
+
 	private void drawShipLink(IGraphicsMovable ship, EMaterialType fakeMat, GLDrawContext gl, float viewX, float viewY, float y, Color color, float shade) {
 		Image image = imageMap.getImageForSettler(ship.getPlayer().getCivilisation(), ship.getMovableType(), ship.getAction(), fakeMat, ship.getDirection(), 0);
 		image.drawAt(gl, viewX, viewY, getZ(0, y), color, shade);
@@ -444,6 +562,9 @@ public class MapObjectDrawer {
 		switch (type) {
 			case ARROW:
 				drawArrow(context, (IArrowMapObject) object, color);
+				break;
+			case SIEGE_PROJECTILE:
+				drawSiegeProjectile((ISiegeProjectileMapObject) object, color);
 				break;
 			case TREE_ADULT:
 				drawTree(x, y, color);
@@ -715,6 +836,8 @@ public class MapObjectDrawer {
 		final ShortPoint2D pos = movable.getPosition();
 		if (movable.getMovableType().isShip()) {
 			drawShip(movable, pos.x, pos.y);
+		} else if (movable.getMovableType().isSiegeWeapon()) {
+			drawSiegeWeapon(movable, pos.x, pos.y);
 		} else {
 			drawMovableAt(movable, pos.x, pos.y);
 		}
@@ -822,6 +945,26 @@ public class MapObjectDrawer {
 					case CHARCOAL_BURNER:
 						if (delay > .8) {
 							soundNumber = 45;
+						}
+						break;
+					case CATAPULT:
+						if (delay > .5) {
+							soundNumber = SOUND_CATAPULT;
+						}
+						break;
+					case BALLISTA:
+						if (delay > .5) {
+							soundNumber = SOUND_BALLISTA;
+						}
+						break;
+					case CANNON:
+						if (delay > .5) {
+							soundNumber = SOUND_CANNON;
+						}
+						break;
+					case GONG:
+						if (delay > .3) {
+							soundNumber = SOUND_GONG;
 						}
 						break;
 				}

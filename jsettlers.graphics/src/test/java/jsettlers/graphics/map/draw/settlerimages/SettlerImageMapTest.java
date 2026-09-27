@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2026
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,55 +12,19 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.input.tasks;
+package jsettlers.graphics.map.draw.settlerimages;
 
-/**
- * Actions of the gui used to send them over the network.
- * 
- * @author Andreas Eberle
- * 
- */
-public enum EGuiAction {
-	BUILD,
-	SET_WORK_AREA,
+import static org.junit.Assert.assertNotNull;
 
-	SET_DOCK,
-	ORDER_SHIP,
-	UNLOAD_FERRY,
+import org.junit.Test;
 
-	MAKE_FERRY,
-	MAKE_CARGO_SHIP,
-	MOVE_TO,
-	QUICK_SAVE,
-	DESTROY_MOVABLES,
-	DESTROY_BUILDING,
-	STOP_WORKING,
-	START_WORKING,
-	CONVERT,
-	SET_BUILDING_PRIORITY,
-	SET_MATERIAL_DISTRIBUTION_SETTINGS,
+public class SettlerImageMapTest {
 
 	/**
-	 * The user wants to change the order in which materials are served by bearers.
-	 * 
-	 * @see SetMaterialPrioritiesGuiTask
+	 * The parser throws for unknown movable types, actions, materials or directions. So this checks that all movables*.txt lines are valid.
 	 */
-	SET_MATERIAL_PRIORITIES,
-	UPGRADE_SOLDIERS,
-	SET_MATERIAL_PRODUCTION,
-
-	CHANGE_TRADING,
-	SET_TRADING_WAYPOINT,
-
-	CHANGE_TOWER_SOLDIERS,
-	SET_ACCEPTED_STOCK_MATERIAL,
-	CAST_SPELL,
-	CHANGE_MOVABLE_SETTINGS,
-	SET_MOVABLE_LIMIT_TYPE,
-	PAUSE_GAME,
-	CONVERT_AT_POSITION,
-	ORDER_SIEGE_WEAPON,
-	;
-
-	public static final EGuiAction[] VALUES = values();
+	@Test
+	public void testAllMovableFilesCanBeParsed() {
+		assertNotNull(SettlerImageMap.getInstance());
+	}
 }

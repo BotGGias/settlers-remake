@@ -62,6 +62,8 @@ public class BuildingState {
 	private final boolean isSeaTrading;
 	private final boolean isDockyard;
 	private final boolean isWorkingDockyard;
+	private final boolean isSiegeWorkshop;
+	private final int orderedSiegeWeapons;
 
 	private static final Map<IBuilding.IOccupied, AvailableSoldiersCache> AVAILABLE_SOLDIERS_CACHE = new WeakHashMap<>();
 
@@ -241,6 +243,12 @@ public class BuildingState {
 		isSeaTrading = building instanceof IBuilding.ITrading && ((IBuilding.ITrading) building).isSeaTrading();
 		isDockyard = building.getBuildingVariant().isVariantOf(EBuildingType.DOCKYARD);
 		isWorkingDockyard = (building instanceof IBuilding.IShipConstruction && ((IBuilding.IShipConstruction) building).getOrderedShipType() != null);
+		isSiegeWorkshop = building instanceof IBuilding.ISiegeWorkshop;
+		orderedSiegeWeapons = computeOrderedSiegeWeapons(building);
+	}
+
+	private static int computeOrderedSiegeWeapons(IBuilding building) {
+		return building instanceof IBuilding.ISiegeWorkshop ? ((IBuilding.ISiegeWorkshop) building).getOrderedSiegeWeapons() : 0;
 	}
 
 	private void mergeConstructionStacks(IBuilding building) {
@@ -369,7 +377,8 @@ public class BuildingState {
 				&& hasSameOccupiers(building)
 				&& hasSameAvailableSoldiers(building)
 				&& hasSameStock(building)
-				&& hasSameTrading(building);
+				&& hasSameTrading(building)
+				&& orderedSiegeWeapons == computeOrderedSiegeWeapons(building);
 	}
 
 	private boolean hasSameTrading(IBuilding building) {
@@ -462,5 +471,19 @@ public class BuildingState {
 	 */
 	public boolean isWorkingDockyard() {
 		return isWorkingDockyard;
+	}
+
+	/**
+	 * @return <code>true</code> if this building builds siege weapons.
+	 */
+	public boolean isSiegeWorkshop() {
+		return isSiegeWorkshop;
+	}
+
+	/**
+	 * @return The number of siege weapons that were ordered in this siege workshop.
+	 */
+	public int getOrderedSiegeWeapons() {
+		return orderedSiegeWeapons;
 	}
 }

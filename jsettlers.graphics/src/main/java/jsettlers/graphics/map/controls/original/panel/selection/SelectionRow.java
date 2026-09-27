@@ -64,7 +64,7 @@ public class SelectionRow extends UIPanel {
 				.getMinY() + getPosition().getHeight() / 4;
 		float left = getPosition().getMinX();
 		float imagex = left + width / 20;
-		if(type == EMovableType.FERRY || type == EMovableType.CARGO_SHIP) {
+		if(type.isShip() || type.isSiegeWeapon()) {
 			image.drawImageAtRect(gl, imagex, bottomy, width/5, width/5, 1);
 		} else {
 			image.drawAt(gl, imagex, bottomy, 0, color, 1);
