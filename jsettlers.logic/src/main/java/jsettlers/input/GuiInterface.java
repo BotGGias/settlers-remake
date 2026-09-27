@@ -33,6 +33,7 @@ import jsettlers.common.action.BuildAction;
 import jsettlers.common.action.CastSpellAction;
 import jsettlers.common.action.ChangeTradingRequestAction;
 import jsettlers.common.action.ConvertAction;
+import jsettlers.common.action.ConvertAtPositionAction;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.action.EMoveToType;
 import jsettlers.common.action.IAction;
@@ -77,6 +78,7 @@ import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask.EChangeTowerSoldierTaskType;
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
+import jsettlers.input.tasks.ConvertAtPositionGuiTask;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MovableGuiTask;
@@ -436,6 +438,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				SetMovableLimitTypeAction setTypeAction = (SetMovableLimitTypeAction) action;
 
 				scheduleTask(new SetMovableLimitTypeTask(playerId, setTypeAction.getPosition(), setTypeAction.getMovableType(), setTypeAction.isRelative()));
+				break;
+
+			case CONVERT_AT_POSITION:
+				ConvertAtPositionAction convertAtPositionAction = (ConvertAtPositionAction) action;
+				scheduleTask(new ConvertAtPositionGuiTask(playerId, convertAtPositionAction.getPosition(), convertAtPositionAction.getSourceType(),
+						convertAtPositionAction.getTargetType(), convertAtPositionAction.getAmount()));
+				break;
 
 			default:
 				System.out.println("WARNING: GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
@@ -538,7 +547,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				for (final ISelectable curr : currentSelection) {
 					if (curr instanceof IGraphicsMovable) {
 						final EMovableType currType = ((IGraphicsMovable) curr).getMovableType();
-						if (currType == EMovableType.PIONEER) {
+						if (currType == EMovableType.PIONEER || currType == EMovableType.GEOLOGIST || currType == EMovableType.THIEF) {
 							convertables.add(curr);
 							if (convertables.size() >= action.getAmount()) {
 								break;

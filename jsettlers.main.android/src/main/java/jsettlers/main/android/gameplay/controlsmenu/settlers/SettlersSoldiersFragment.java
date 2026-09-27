@@ -59,7 +59,7 @@ public class SettlersSoldiersFragment extends Fragment {
 
 		viewModel.getStrengthText().observe(this, s -> soldierStrengthTextView.setText(s));
 		viewModel.getPromotionText().observe(this, s -> soldierPromotionTextView.setText(s));
-		viewModel.getSwordsmenPromotionEnabled().observe(this, enabled -> bowmenPromotionImageView.setEnabled(enabled));
+		viewModel.getSwordsmenPromotionEnabled().observe(this, enabled -> swordsmenPromotionImageView.setEnabled(enabled));
 		viewModel.getBowmenPromotionEnabled().observe(this, enabled -> bowmenPromotionImageView.setEnabled(enabled));
 		viewModel.getPikemenPromotionEnabled().observe(this, enabled -> pikemenPromotionImageView.setEnabled(enabled));
 		viewModel.getSwordsmenImageLink().observe(this, imageLink -> setPromotionButtonImage(swordsmenPromotionImageView, imageLink));

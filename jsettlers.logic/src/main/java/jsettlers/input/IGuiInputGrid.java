@@ -144,4 +144,21 @@ public interface IGuiInputGrid {
 	void changeMovableSettings(ShortPoint2D position, EMovableType movableType, boolean relative, int amount);
 
 	void setMovableLimitType(ShortPoint2D position, EMovableType movableType, boolean relative);
+
+	/**
+	 * Converts settlers of the given player in the area (partition) at the given position without the need to select them.<br>
+	 * Supported are bearers to pioneers, geologists and thieves and these specialists back to bearers.
+	 *
+	 * @param playerId
+	 *            The player whose settlers shall be converted. The area at the position must belong to him.
+	 * @param position
+	 *            A position in the area.
+	 * @param sourceType
+	 *            The type of the settlers to convert.
+	 * @param targetType
+	 *            The type to convert them to.
+	 * @param amount
+	 *            The maximum number of settlers to convert. The ones closest to the position are converted first.
+	 */
+	void convertAtPosition(byte playerId, ShortPoint2D position, EMovableType sourceType, EMovableType targetType, int amount);
 }
