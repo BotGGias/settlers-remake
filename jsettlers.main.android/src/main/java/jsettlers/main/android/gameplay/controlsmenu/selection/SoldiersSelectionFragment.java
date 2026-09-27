@@ -15,7 +15,6 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.selection;
 
-import org.androidannotations.annotations.CheckedChange;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
@@ -28,13 +27,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import java.util.EnumSet;
-import java.util.Set;
-
-import go.graphics.event.command.EModifier;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.ECivilisation;
@@ -72,9 +66,6 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 	LinearLayout soldiers2Layout;
 	@ViewById(R.id.layout_soldiers_level_3)
 	LinearLayout soldiers3Layout;
-
-	@ViewById(R.id.force_move)
-	Switch forceMove;
 
 	private ActionControls actionControls;
 
@@ -132,13 +123,6 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 		default:
 			throw new RuntimeException("SoldiersSelectionFragment can't display movable: " + movableType.name());
 		}
-	}
-
-	@Override
-	public Set<EModifier> getModifiers() {
-		Set<EModifier> mods = EnumSet.noneOf(EModifier.class);
-		if(forceMove.isChecked()) mods.add(EModifier.CTRL);
-		return mods;
 	}
 
 	@Click(R.id.button_halt)

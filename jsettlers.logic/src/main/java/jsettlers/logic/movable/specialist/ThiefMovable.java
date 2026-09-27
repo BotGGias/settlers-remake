@@ -72,6 +72,7 @@ public class ThiefMovable extends AttackableHumanMovable implements IGraphicsThi
 						action(mov -> {
 							mov.enterFerry();
 							mov.goToTarget = null;
+							mov.startNextWaypoint();
 						})
 					)
 				),
@@ -119,6 +120,11 @@ public class ThiefMovable extends AttackableHumanMovable implements IGraphicsThi
 		);
 	}
 
+
+	@Override
+	protected boolean hasActiveMoveOrder() {
+		return super.hasActiveMoveOrder() || currentTarget != null || goToTarget != null;
+	}
 
 	@Override
 	public boolean convertToBearer() {

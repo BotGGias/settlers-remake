@@ -58,6 +58,7 @@ public class PioneerMovable extends AttackableHumanMovable implements IPioneerMo
 						action(mov -> {
 							mov.enterFerry();
 							mov.goToTarget = null;
+							mov.startNextWaypoint();
 						})
 					)
 				),
@@ -67,7 +68,7 @@ public class PioneerMovable extends AttackableHumanMovable implements IPioneerMo
 							condition(mov -> mov.position.equals(mov.currentTarget)),
 							goToPos(mov -> mov.currentTarget)
 						),
-						ignoreFailure(repeat(mov -> true,
+						ignoreFailure(repeat(mov -> !mov.startNextWaypoint(), // walk through all waypoints and work at the last one
 							sequence(
 								findWorkablePosition(),
 								ignoreFailure(workOnPosition())
@@ -80,6 +81,11 @@ public class PioneerMovable extends AttackableHumanMovable implements IPioneerMo
 				),
 				doingNothingGuard()
 		);
+	}
+
+	@Override
+	protected boolean hasActiveMoveOrder() {
+		return super.hasActiveMoveOrder() || currentTarget != null || goToTarget != null;
 	}
 
 	@Override

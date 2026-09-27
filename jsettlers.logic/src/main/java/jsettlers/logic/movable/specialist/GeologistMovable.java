@@ -60,6 +60,7 @@ public class GeologistMovable extends AttackableHumanMovable implements ISpecial
 						action(mov -> {
 							mov.enterFerry();
 							mov.goToTarget = null;
+							mov.startNextWaypoint();
 						})
 					)
 				),
@@ -70,7 +71,7 @@ public class GeologistMovable extends AttackableHumanMovable implements ISpecial
 							goToPos(mov -> mov.currentTarget)
 						),
 						action(mov -> {mov.centerPos = mov.currentTarget;}),
-						ignoreFailure(repeat(mov -> true,
+						ignoreFailure(repeat(mov -> !mov.startNextWaypoint(), // walk through all waypoints and work at the last one
 							sequence(
 								findWorkablePosition(),
 								resetAfter(mov -> mov.grid.setMarked(mov.currentTarget, false),
@@ -91,6 +92,11 @@ public class GeologistMovable extends AttackableHumanMovable implements ISpecial
 				),
 				doingNothingGuard()
 		);
+	}
+
+	@Override
+	protected boolean hasActiveMoveOrder() {
+		return super.hasActiveMoveOrder() || currentTarget != null || goToTarget != null;
 	}
 
 	@Override

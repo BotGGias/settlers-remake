@@ -6,7 +6,13 @@ public enum EMoveToType {
 	/**
 	 * patrol (for soldiers; behaves like {@link #DEFAULT} in all other cases)
 	 */
-	PATROL(true, true);
+	PATROL(true, true),
+	/**
+	 * waypoint: behaves like {@link #DEFAULT}, but is appended to the movable's list of waypoints if it is already on its way somewhere.
+	 * <p>
+	 * Must stay after the other values, because the ordinal is serialized.
+	 */
+	WAYPOINT(true, true);
 	
 	public static EMoveToType[] VALUES = values();
 

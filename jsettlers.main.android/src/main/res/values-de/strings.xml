@@ -129,6 +129,8 @@
 	<string name="dock">Steg</string>
 	<string name="destination">Ziel</string>
 	<string name="global_stock_message">Die globalen Lagereinstellungen können nur in einer eigenen Siedlung gesetzt werden.</string>
+	<string name="own_territory_message">Bewege die Ansicht über eine eigene Siedlung, um diese Einstellungen zu ändern.</string>
+	<string name="settlers_statistics_total">Gesamt</string>
 	<string name="goods_stock_title">Globale Lagereinstellungen</string>
 
 	<string name="game_menu_skip_minute">Eine Minute vorspulen</string>
@@ -139,11 +141,15 @@
 	<string name="ask_workarea">Arbeitsbereich auswählen</string>
 	<string name="ask_dock">Stegposition auswählen</string>
 	<string name="ask_spell">Zauberstelle auswählen</string>
-	<string name="force_move">Zielpunkt erzwingen</string>
 	<string name="settings_play_all_music">Alle Musikdateien abspielen</string>
 	<string name="settings_audio">Audio</string>
 	<string name="settings_music_enabled">Musik abspielen</string>
 	<string name="settings_music_volume">Musiklautstärke</string>
 	<string name="settings_sound_volume">Soundeffekte-Lautstärke</string>
 	<string name="settings_volume_percent">%d %%</string>
+	<string name="move_to_title">Bewegen</string>
+	<string name="move_to_normal">Normal</string>
+	<string name="move_to_forced">Erzwungen</string>
+	<string name="move_to_waypoint">Wegpunkt</string>
+	<string name="move_to_patrol">Patrouille</string>
 </resources>

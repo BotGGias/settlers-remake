@@ -170,6 +170,8 @@
 	<string name="destination">Dest.</string>
 	<string name="goods_stock_title">Global storage</string>
 	<string name="global_stock_message">Global storage settings must be set in one of your own settlements.</string>
+	<string name="own_territory_message">Move the view over one of your own settlements to change these settings.</string>
+	<string name="settlers_statistics_total">Total</string>
 	<string name="goods_inventory_title">Inventory</string>
 	<string name="good_distribution_title">Distribution</string>
 	<string name="confirm_destory_ships">Destroy ships?</string>
@@ -177,7 +179,6 @@
 	<string name="ask_workarea">Choose work area</string>
 	<string name="ask_dock">Choose dock position</string>
 	<string name="ask_spell">Choose spell position</string>
-	<string name="force_move">Force moving to location</string>
 	<string name="menu_multi_player_start_server">Start server</string>
 	<string name="settings_server_address">Server address</string>
 	<string name="settings_address">Address</string>
@@ -188,4 +189,9 @@
 	<string name="settings_music_volume">Music volume</string>
 	<string name="settings_sound_volume">Sound effects volume</string>
 	<string name="settings_volume_percent">%d %%</string>
+	<string name="move_to_title">Move</string>
+	<string name="move_to_normal">Normal</string>
+	<string name="move_to_forced">Forced</string>
+	<string name="move_to_waypoint">Waypoint</string>
+	<string name="move_to_patrol">Patrol</string>
 </resources>
