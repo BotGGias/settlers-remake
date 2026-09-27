@@ -19,6 +19,7 @@ import java.util.Optional;
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
+import go.graphics.event.mouse.GOPanEvent;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.action.IAction;
@@ -109,6 +110,17 @@ public interface IControls extends IMapInterfaceListener {
 	 * @return If the event was handled.
 	 */
 	boolean handleDrawEvent(GODrawEvent event);
+
+	/**
+	 * Handles a pan event that started inside the interface (see {@link #containsPoint(UIPoint)}).
+	 *
+	 * @param event
+	 *            The event to handle
+	 * @return If the event was handled.
+	 */
+	default boolean handlePanEvent(GOPanEvent event) {
+		return false;
+	}
 
 	/**
 	 * Changes the selection for the map.

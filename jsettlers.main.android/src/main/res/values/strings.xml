@@ -133,6 +133,8 @@
 	<string name="start_game">Start game</string>
 
 	<string name="game_menu_title">Menu</string>
+	<string name="minimap_show">Show minimap</string>
+	<string name="minimap_hide">Hide minimap</string>
 	<string name="game_menu_quit">Quit</string>
 	<string name="game_menu_quit_confirm">Sure?</string>
 	<string name="game_menu_save">Save</string>

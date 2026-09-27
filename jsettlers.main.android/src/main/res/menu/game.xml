@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
 	  xmlns:app="http://schemas.android.com/apk/res-auto">
 	<item
+		android:id="@+id/menu_item_toggle_minimap"
+		android:orderInCategory="5"
+		android:title="@string/minimap_hide"
+		android:icon="@drawable/ic_action_minimap"
+		app:showAsAction="always"/>
+	<item
 		android:id="@+id/menu_item_show_game_menu"
 		android:orderInCategory="10"
 		android:title="@string/game_menu_title"

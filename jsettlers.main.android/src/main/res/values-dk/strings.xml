@@ -74,6 +74,8 @@
 	<string name="game_menu_save">Gem</string>
 	<string name="game_menu_saved">Spillet blev gemt</string>
 	<string name="game_menu_title">Menu</string>
+	<string name="minimap_show">Vis minikort</string>
+	<string name="minimap_hide">Skjul minikort</string>
 	<string name="game_menu_unpause">Fortsæt</string>
 	<string name="halt">Stop</string>
 	<string name="join_multi_player_game">Deltag i netværksspil</string>

@@ -761,9 +761,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	@Override
 	public void handleEvent(GOEvent event) {
 		if (event instanceof GOPanEvent) {
-			UIPoint center = ((GOPanEvent) event).getPanCenter();
+			GOPanEvent panEvent = (GOPanEvent) event;
+			UIPoint center = panEvent.getPanCenter();
 			if (center == null || !controls.containsPoint(center)) {
 				event.setHandler(new PanHandler(this.context.getScreen()));
+			} else {
+				controls.handlePanEvent(panEvent);
 			}
 		} else if (event instanceof GOCommandEvent) {
 			GOCommandEvent commandEvent = (GOCommandEvent) event;
