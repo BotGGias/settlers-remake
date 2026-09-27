@@ -150,12 +150,14 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		if (gameMenu.isPausedState().getValue() == Boolean.FALSE) {
 			gameMenu.unMute();
 		}
+		gameMenu.onGameVisible();
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 		gameMenu.mute();
+		gameMenu.onGameHidden();
 	}
 
 	@Override

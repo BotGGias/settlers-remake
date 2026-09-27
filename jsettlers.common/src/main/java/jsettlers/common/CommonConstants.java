@@ -105,6 +105,11 @@ public abstract class CommonConstants {
 
 	public static Supplier<Boolean> PLAYALL_MUSIC = () -> false;
 
+	/**
+	 * Whether the music is started when a game starts.
+	 */
+	public static Supplier<Boolean> MUSIC_ENABLED = () -> true;
+
 	public static Supplier<Float> MUSIC_VOLUME = () -> 1f;
 
 	public static Supplier<Boolean> AI_MORE_TOWERS = () -> false;

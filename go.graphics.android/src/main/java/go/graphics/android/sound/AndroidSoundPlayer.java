@@ -26,7 +26,6 @@ import java.io.IOException;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.media.SoundPool;
 
 public class AndroidSoundPlayer implements SoundPlayer {
 	private static final int SAMPLERATE = 22050;
@@ -36,6 +35,7 @@ public class AndroidSoundPlayer implements SoundPlayer {
 	private ISoundDataRetriever soundDataRetriever;
 
 	private boolean paused;
+	private volatile float volume = 1f;
 
 	public AndroidSoundPlayer(int parallelSounds) {
 		ThreadGroup soundgroup = new ThreadGroup("soundplayer");
@@ -47,8 +47,10 @@ public class AndroidSoundPlayer implements SoundPlayer {
 	@Override
 	public void playSound(int soundStart, float leftVolume, float rightVolume) {
 		try {
-			if (!paused) {
-				queue.offer(soundStart, leftVolume, rightVolume);
+			float currentVolume = volume;
+			if (!paused && currentVolume > 0) {
+				float perceivedVolume = toPerceivedVolume(currentVolume);
+				queue.offer(soundStart, leftVolume * perceivedVolume, rightVolume * perceivedVolume);
 			}
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
@@ -98,5 +100,26 @@ public class AndroidSoundPlayer implements SoundPlayer {
 
 	public void setPaused(boolean paused) {
 		this.paused = paused;
+	}
+
+	/**
+	 * @param volume
+	 *            The volume of all sound effects (0..1).
+	 */
+	public void setVolume(float volume) {
+		this.volume = Math.max(0, Math.min(1, volume));
+	}
+
+	public float getVolume() {
+		return volume;
+	}
+
+	/**
+	 * Maps a volume setting (0..1) to the amplitude factor. The ear perceives loudness logarithmically, so a linear mapping would make the lower
+	 * half of a volume slider nearly as loud as the maximum.
+	 */
+	static float toPerceivedVolume(float volume) {
+		float limited = Math.max(0, Math.min(1, volume));
+		return limited * limited;
 	}
 }
