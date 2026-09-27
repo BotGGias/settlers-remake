@@ -16,6 +16,7 @@ package jsettlers.graphics.messages;
 
 import java.util.LinkedList;
 
+import jsettlers.common.menu.messages.EMessageType;
 import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.statistics.IGameTimeProvider;
@@ -26,8 +27,13 @@ import jsettlers.common.statistics.IGameTimeProvider;
  * @author Michael Zangl
  */
 public class Messenger {
+	/**
+	 * The number of chat messages that are kept after they disappeared from the screen.
+	 */
+	public static final int MAX_CHAT_HISTORY = 30;
 
 	private final LinkedList<IMessage> messages = new LinkedList<>();
+	private final LinkedList<IMessage> chatHistory = new LinkedList<>();
 	private final IGameTimeProvider gameTimeProvider;
 	private int latestTickTime;
 	private int focusedMessageIndex = 0;
@@ -44,7 +50,7 @@ public class Messenger {
 	 * 
 	 * @return The messages to display.
 	 */
-	public IMessage[] getMessages() {
+	public synchronized IMessage[] getMessages() {
 		return messages.toArray(new IMessage[messages.size()]);
 	}
 
@@ -57,6 +63,12 @@ public class Messenger {
 	 * @return
 	 */
 	public synchronized boolean addMessage(IMessage message) {
+		if (message.getType() == EMessageType.CHAT) {
+			chatHistory.addLast(message);
+			if (chatHistory.size() > MAX_CHAT_HISTORY) {
+				chatHistory.removeFirst();
+			}
+		}
 		if (isNews(message)) {
 			messages.addFirst(message);
 			if (messages.size() > IMessage.MAX_MESSAGES)
@@ -65,6 +77,15 @@ public class Messenger {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Gets the latest chat messages, including the ones that are no longer shown on the screen.
+	 *
+	 * @return The chat messages, the oldest one first.
+	 */
+	public synchronized IMessage[] getChatHistory() {
+		return chatHistory.toArray(new IMessage[0]);
 	}
 
 	/**

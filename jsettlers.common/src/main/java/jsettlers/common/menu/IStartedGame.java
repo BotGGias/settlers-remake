@@ -72,4 +72,20 @@ public interface IStartedGame {
 	default String getPlayerName(byte playerId) {
 		return null;
 	}
+
+	/**
+	 * @return true if the players of this game can send chat messages to each other.
+	 */
+	default boolean isChatAvailable() {
+		return false;
+	}
+
+	/**
+	 * Sends a chat message to all players of the game. The message is shown to the local player as soon as the server sent it back.
+	 *
+	 * @param message
+	 *            The text to send.
+	 */
+	default void sendChatMessage(String message) {
+	}
 }

@@ -28,11 +28,18 @@ import android.widget.SeekBar;
 import java.util.function.IntConsumer;
 
 import jsettlers.main.android.R;
+import jsettlers.main.android.core.ui.dialogs.EditTextDialog;
 import jsettlers.main.android.databinding.DialogGameMenuBinding;
 import jsettlers.main.android.mainmenu.MainActivity_;
 
 public class GameMenuDialog extends DialogFragment {
+	/**
+	 * The request code of the {@link EditTextDialog} for chat messages. The parent of this dialog receives the entered text.
+	 */
+	public static final int REQUEST_CODE_CHAT = 1;
+
 	private static final String TAG_PLAYERS_DIALOG = "players_dialog";
+	private static final String TAG_CHAT_DIALOG = "chat_dialog";
 
 	private GameMenuViewModel viewModel;
 
@@ -61,6 +68,7 @@ public class GameMenuDialog extends DialogFragment {
 		binding.seekBarMusicVolume.setOnSeekBarChangeListener(new VolumeSeekBarListener(viewModel::musicVolumeMoved));
 		binding.seekBarSoundVolume.setOnSeekBarChangeListener(new VolumeSeekBarListener(viewModel::soundVolumeMoved));
 		binding.buttonPlayers.setOnClickListener(view -> showPlayers());
+		binding.buttonChat.setOnClickListener(view -> showChat());
 
 		AlertDialog dialog = new AlertDialog.Builder(requireActivity(), R.style.GameMenuDialogTheme)
 				.setView(binding.getRoot())
@@ -75,6 +83,11 @@ public class GameMenuDialog extends DialogFragment {
 
 	private void showPlayers() {
 		PlayersDialog.create().show(requireFragmentManager(), TAG_PLAYERS_DIALOG);
+		dismiss();
+	}
+
+	private void showChat() {
+		EditTextDialog.create(REQUEST_CODE_CHAT, R.string.network_chat, R.string.chat_hint, "").show(requireFragmentManager(), TAG_CHAT_DIALOG);
 		dismiss();
 	}
 

@@ -41,7 +41,7 @@ import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
 import jsettlers.graphics.map.controls.original.panel.content.ContentType;
-import jsettlers.graphics.map.controls.original.panel.content.MessageContent;
+import jsettlers.graphics.map.controls.original.panel.content.ChatContent;
 import jsettlers.graphics.map.controls.original.panel.selection.PeopleSelectionContent;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent;
 import jsettlers.graphics.map.controls.original.panel.selection.PriestSelectionContent;
@@ -72,6 +72,8 @@ public class OriginalControls implements IControls {
 	private boolean lastSelectionWasNull = true;
 	private MapDrawContext context;
 	private final IInGamePlayer player;
+	private final MapContent parentMapContent;
+	private final IStartedGame game;
 
 	/**
 	 * Creates a new {@link OriginalControls} overlay.
@@ -84,6 +86,8 @@ public class OriginalControls implements IControls {
 		final MiniMapLayoutProperties miniMap = layoutProperties.miniMap;
 		mainPanel = new MainPanel(parentMapContent, game);
 		player = game.getInGamePlayer();
+		this.parentMapContent = parentMapContent;
+		this.game = game;
 
 		chatButton = new Button(
 				new ShowChatAction(), miniMap.IMAGELINK_BUTTON_CHAT_ACTIVE, miniMap.IMAGELINK_BUTTON_CHAT_INACTIVE, "");
@@ -315,32 +319,24 @@ public class OriginalControls implements IControls {
 	}
 
 	/**
-	 * This should one day display the chat.
+	 * Shows the chat in the main panel.
 	 */
 	private final class ShowChatAction extends ExecutableAction {
-		private final MessageContent messageContent = new MessageContent(
-				"This is not yet implemented.",
-				"Cancel",
-				new ExecutableAction() {
-					@Override
-					public void execute() {
-						mainPanel.setContent(ContentType.BUILD_NORMAL);
-						chatButton.setActive(false);
-					}
-				},
-				"Ok",
-				new ExecutableAction() {
-					@Override
-					public void execute() {
-						mainPanel.setContent(ContentType.BUILD_NORMAL);
-						chatButton.setActive(false);
-					}
-				});
+		private ChatContent chatContent;
 
 		@Override
 		public void execute() {
-			mainPanel.setContent(messageContent);
-			chatButton.setActive(true); // TODO needs to be unset when content changes.
+			if (chatContent == null) {
+				// created on first use, because the text input is set up after the controls
+				chatContent = new ChatContent(game, parentMapContent, new ExecutableAction() {
+					@Override
+					public void execute() {
+						mainPanel.setContent(ContentType.BUILD_NORMAL);
+					}
+				}, () -> chatButton.setActive(false));
+			}
+			mainPanel.setContent(chatContent);
+			chatButton.setActive(true);
 		}
 	}
 

@@ -60,6 +60,7 @@
 	<string name="preferences_server">Network server address</string>
 	<string name="preferences_ok">Save</string>
 	<string name="network_chat">Chat…</string>
+	<string name="chat_hint">Message to all players</string>
 	<string name="filechoser_ok">Use this directory</string>
 	<string name="filechoser_message">Where are the GFX and SND folders?</string>
 

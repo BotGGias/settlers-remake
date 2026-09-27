@@ -54,6 +54,7 @@ public class GameMenu implements Consumer<IStartedGame> {
 	private final MutableLiveData<Boolean> pausedState = new MutableLiveData<>();
 	private final GameSpeedLiveData gameSpeedLiveData;
 	private final boolean isMultiplayer;
+	private final IStartedGame game;
 	private final MusicManager musicManager;
 	private final AndroidPreferences preferences;
 	private final MutableLiveData<Boolean> musicEnabled = new MutableLiveData<>();
@@ -80,12 +81,14 @@ public class GameMenu implements Consumer<IStartedGame> {
 			GameSpeedLiveData gameSpeedLiveData,
 			boolean isMultiplayer,
 			MusicManager musicManager,
-			AndroidPreferences preferences) {
+			AndroidPreferences preferences,
+			IStartedGame game) {
 		this.context = context;
 		this.soundPlayer = soundPlayer;
 		this.actionControls = actionFireable;
 		this.gameSpeedLiveData = gameSpeedLiveData;
 		this.isMultiplayer = isMultiplayer;
+		this.game = game;
 		this.musicManager = musicManager;
 		this.preferences = preferences;
 
@@ -168,6 +171,14 @@ public class GameMenu implements Consumer<IStartedGame> {
 
 	public boolean isMultiplayer() {
 		return isMultiplayer;
+	}
+
+	public boolean isChatAvailable() {
+		return game.isChatAvailable();
+	}
+
+	public void sendChatMessage(String message) {
+		game.sendChatMessage(message);
 	}
 
 	public LiveData<Boolean> isMusicEnabled() {
