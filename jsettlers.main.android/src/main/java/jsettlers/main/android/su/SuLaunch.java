@@ -18,16 +18,25 @@ package jsettlers.main.android.su;
 import android.content.Intent;
 import android.os.Bundle;
 
+import jsettlers.logic.map.loading.EMapStartResources;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.main.su.SuSlotPlan;
+
 /**
  * Settlers United launcher contract v1 (Launcher PROTOKOLLE §16.7): the launcher app starts JSettlers with action
  * {@link #ACTION} and string extras. Host: start a local server and open "new multiplayer game" with the lobby id as match
  * name. Join: connect to the launcher's tunnel on loopback, wait for the match with that name and join it. Player id and name
  * are only used for this session; the stored settings stay untouched.
+ * <p>
+ * Contract v2 (PROTOKOLLE §16.9): the launcher lobby decided everything, JSettlers goes straight into the game. Additionally
+ * {@code su.map} (map id of a map JSettlers ships) or {@code su.mapFile} + {@code su.mapUri} (map file shared by the launcher,
+ * copied to the own maps folder), {@code su.startResources} (LOW|MEDIUM|HIGH), {@code su.slots} ({@link SuSlotPlan}) and
+ * {@code su.startTimeout} (seconds until the match must be running).
  */
 public final class SuLaunch {
 	public static final String ACTION = "jsettlers.main.android.action.SU_LAUNCH";
 	/** Contract version this build understands; also published as manifest meta-data {@code su.launcher.contract}. */
-	public static final int CONTRACT_VERSION = 1;
+	public static final int CONTRACT_VERSION = 2;
 
 	public static final String EXTRA_VERSION = "su.version";
 	public static final String EXTRA_ROLE = "su.role";
@@ -37,8 +46,15 @@ public final class SuLaunch {
 	public static final String EXTRA_PLAYER_NAME = "su.playerName";
 	public static final String EXTRA_MATCH_NAME = "su.matchName";
 	public static final String EXTRA_WAIT_SECS = "su.waitSecs";
+	public static final String EXTRA_MAP = "su.map";
+	public static final String EXTRA_MAP_FILE = "su.mapFile";
+	public static final String EXTRA_MAP_URI = "su.mapUri";
+	public static final String EXTRA_START_RESOURCES = "su.startResources";
+	public static final String EXTRA_SLOTS = "su.slots";
+	public static final String EXTRA_START_TIMEOUT = "su.startTimeout";
 
 	public static final int DEFAULT_WAIT_SECS = 30;
+	public static final int DEFAULT_START_TIMEOUT = 90;
 	private static final int MAX_WAIT_SECS = 600;
 	private static final int MAX_TEXT = 128;
 
@@ -54,7 +70,18 @@ public final class SuLaunch {
 	public final String matchName;
 	public final int waitSecs;
 
-	private SuLaunch(Role role, String server, int port, String playerId, String playerName, String matchName, int waitSecs) {
+	/** Contract version of this start (1 or 2). The fields below are only set for v2. */
+	public final int version;
+	/** Map id (bundled map) or null if the map comes as file ({@link #mapFile}, {@link #mapUri}). */
+	public final String mapId;
+	public final String mapFile;
+	public final String mapUri;
+	public final EMapStartResources startResources;
+	public final SuSlotPlan slots;
+	public final int startTimeoutSecs;
+
+	private SuLaunch(Role role, String server, int port, String playerId, String playerName, String matchName, int waitSecs, int version, String mapId,
+			String mapFile, String mapUri, EMapStartResources startResources, SuSlotPlan slots, int startTimeoutSecs) {
 		this.role = role;
 		this.server = server;
 		this.port = port;
@@ -62,6 +89,18 @@ public final class SuLaunch {
 		this.playerName = playerName;
 		this.matchName = matchName;
 		this.waitSecs = waitSecs;
+		this.version = version;
+		this.mapId = mapId;
+		this.mapFile = mapFile;
+		this.mapUri = mapUri;
+		this.startResources = startResources;
+		this.slots = slots;
+		this.startTimeoutSecs = startTimeoutSecs;
+	}
+
+	/** v2: the launcher lobby decided everything; no JSettlers setup screens. */
+	public boolean isDirect() {
+		return version >= 2;
 	}
 
 	/** Server address for the multiplayer connector ({@code host:port}). */
@@ -90,9 +129,14 @@ public final class SuLaunch {
 		if (extras == null) {
 			return error("no extras");
 		}
-		String version = text(extras, EXTRA_VERSION);
-		if (!String.valueOf(CONTRACT_VERSION).equals(version)) {
-			return error("unsupported su.version " + version);
+		String v = text(extras, EXTRA_VERSION);
+		int version;
+		if ("1".equals(v)) {
+			version = 1;
+		} else if ("2".equals(v)) {
+			version = 2;
+		} else {
+			return error("unsupported su.version " + v);
 		}
 		Role role;
 		String r = text(extras, EXTRA_ROLE);
@@ -124,7 +168,62 @@ public final class SuLaunch {
 		if (waitSecs < 1 || waitSecs > MAX_WAIT_SECS) {
 			waitSecs = DEFAULT_WAIT_SECS;
 		}
-		return new Result(new SuLaunch(role, "127.0.0.1", port, playerId, playerName, matchName, waitSecs), null);
+		if (version == 1) {
+			return new Result(new SuLaunch(role, "127.0.0.1", port, playerId, playerName, matchName, waitSecs, 1, null, null, null,
+					EMapStartResources.HIGH_GOODS, null, 0), null);
+		}
+
+		String mapId = text(extras, EXTRA_MAP);
+		String mapFile = text(extras, EXTRA_MAP_FILE);
+		String mapUri = text(extras, EXTRA_MAP_URI);
+		if (empty(mapId)) {
+			mapId = null;
+		}
+		if (empty(mapUri)) {
+			mapUri = null;
+		}
+		if (mapUri != null) {
+			if (!validMapFile(mapFile)) {
+				return error("invalid su.mapFile " + mapFile);
+			}
+			if (!mapUri.startsWith("content://")) {
+				return error("su.mapUri must be a content uri");
+			}
+		} else if (mapId == null) {
+			return error("su.map or su.mapUri is required");
+		}
+		EMapStartResources startResources;
+		String res = text(extras, EXTRA_START_RESOURCES);
+		if (empty(res) || "HIGH".equals(res)) {
+			startResources = EMapStartResources.HIGH_GOODS;
+		} else if ("MEDIUM".equals(res)) {
+			startResources = EMapStartResources.MEDIUM_GOODS;
+		} else if ("LOW".equals(res)) {
+			startResources = EMapStartResources.LOW_GOODS;
+		} else {
+			return error("invalid su.startResources " + res);
+		}
+		SuSlotPlan slots;
+		try {
+			slots = SuSlotPlan.parse(text(extras, EXTRA_SLOTS));
+		} catch (IllegalArgumentException e) {
+			return error("su.slots: " + e.getMessage());
+		}
+		if (slots.findHuman(playerId) == null) {
+			return error("su.slots does not contain su.playerId");
+		}
+		int startTimeout = number(extras, EXTRA_START_TIMEOUT, DEFAULT_START_TIMEOUT);
+		if (startTimeout < 10 || startTimeout > MAX_WAIT_SECS) {
+			startTimeout = DEFAULT_START_TIMEOUT;
+		}
+		return new Result(new SuLaunch(role, "127.0.0.1", port, playerId, playerName, matchName, waitSecs, 2, mapId, mapFile, mapUri, startResources,
+				slots, startTimeout), null);
+	}
+
+	/** Plain file name with a map extension JSettlers can load; the id of original maps depends on it, so it is kept as is. */
+	private static boolean validMapFile(String name) {
+		return !empty(name) && name.length() <= MAX_TEXT && !name.startsWith(".") && name.indexOf('/') < 0 && name.indexOf('\\') < 0
+				&& MapLoader.isExtensionKnown(name);
 	}
 
 	private static Result error(String message) {

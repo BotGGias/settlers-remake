@@ -175,4 +175,11 @@
 	<string name="su_launch_server_failed">Could not start the server: %1$s</string>
 	<string name="su_join_timeout">The host\'s match did not show up – pick it from the list as soon as it appears.</string>
 	<string name="su_join_map_missing">The host\'s map is missing on this device – the game cannot be joined.</string>
+	<string name="su_wait_title">Starting game</string>
+	<string name="su_wait_preparing">Preparing the map…</string>
+	<string name="su_wait_players">%1$s\nPlayers connected: %2$d of %3$d, ready: %4$d</string>
+	<string name="su_wait_cancel">Cancel</string>
+	<string name="su_start_failed">The game could not be started (%1$s).</string>
+	<string name="su_start_timeout">The game did not start within %1$d seconds.</string>
+	<string name="su_map_missing">The map %1$s is missing on this device.</string>
 </resources>

@@ -22,6 +22,7 @@ import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.IOpenMultiplayerGameInfo;
 import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.datatypes.JoinableGame;
 import jsettlers.network.client.IClientConnection;
 import jsettlers.network.client.RemoteMapDirectory;
@@ -45,11 +46,20 @@ public class MultiplayerConnector implements IMultiplayerConnector, IClientConne
 
 	private final String userId;
 	private final String userName;
+	private EMapStartResources startResources = EMapStartResources.HIGH_GOODS;
 
 	public MultiplayerConnector(final String serverAddress, final String userId, final String userName, Logger log) {
 		this.userId = userId;
 		this.userName = userName;
 		networkClientFactory = new AsyncNetworkClientConnector(serverAddress, userId, userName, generateMatchesReceiver(), log);
+	}
+
+	/**
+	 * Start resources of the games opened or joined from now on. Not part of the network protocol, so every player has to set the
+	 * same value (default {@link EMapStartResources#HIGH_GOODS}).
+	 */
+	public void setStartResources(EMapStartResources startResources) {
+		this.startResources = startResources;
 	}
 
 	private IPacketReceiver<ArrayOfMatchInfosPacket> generateMatchesReceiver() {
@@ -69,13 +79,13 @@ public class MultiplayerConnector implements IMultiplayerConnector, IClientConne
 
 	@Override
 	public IJoiningGame joinMultiplayerGame(IJoinableGame game) throws IllegalStateException {
-		MultiplayerGame multiplayerGame = new MultiplayerGame(networkClientFactory);
+		MultiplayerGame multiplayerGame = new MultiplayerGame(networkClientFactory, startResources);
 		return multiplayerGame.join(game.getId());
 	}
 
 	@Override
 	public IJoiningGame openNewMultiplayerGame(IOpenMultiplayerGameInfo gameInfo) {
-		MultiplayerGame multiplayerGame = new MultiplayerGame(networkClientFactory);
+		MultiplayerGame multiplayerGame = new MultiplayerGame(networkClientFactory, startResources);
 		return multiplayerGame.openNewGame(gameInfo);
 	}
 

@@ -135,4 +135,11 @@
 	<string name="su_launch_server_failed">Der Server ließ sich nicht starten: %1$s</string>
 	<string name="su_join_timeout">Das Match des Hosts ist nicht aufgetaucht – wähle es aus der Liste, sobald es erscheint.</string>
 	<string name="su_join_map_missing">Die Karte des Hosts fehlt auf diesem Gerät – dem Spiel kann nicht beigetreten werden.</string>
+	<string name="su_wait_title">Spiel wird gestartet</string>
+	<string name="su_wait_preparing">Karte wird vorbereitet…</string>
+	<string name="su_wait_players">%1$s\nSpieler verbunden: %2$d von %3$d, bereit: %4$d</string>
+	<string name="su_wait_cancel">Abbrechen</string>
+	<string name="su_start_failed">Das Spiel ließ sich nicht starten (%1$s).</string>
+	<string name="su_start_timeout">Das Spiel ist nicht innerhalb von %1$d Sekunden gestartet.</string>
+	<string name="su_map_missing">Die Karte %1$s fehlt auf diesem Gerät.</string>
 </resources>

@@ -19,8 +19,8 @@
 		android:largeHeap="true"
 		android:theme="@style/SettlersTheme">
 
-		<!-- Settlers United launcher: contract version this build understands (su.launcher.contract, launcher E20.9). -->
-		<meta-data android:name="su.launcher.contract" android:value="1"/>
+		<!-- Settlers United launcher: contract version this build understands (su.launcher.contract, launcher E20.9; v2 E21). -->
+		<meta-data android:name="su.launcher.contract" android:value="2"/>
 
 		<!-- Settlers United launcher entry point (action SU_LAUNCH with su.* extras); forwards to the main menu. -->
 		<activity

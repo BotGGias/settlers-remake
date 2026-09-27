@@ -118,7 +118,11 @@ public class MainApplication extends MultiDexApplication implements GameStarter,
 				playerId = session.launch.playerId;
 				playerName = session.launch.playerName;
 			}
-			multiplayerConnector = new MultiplayerConnector(server, playerId, playerName, new ConsoleLogger("jsettlers.main.android-network"));
+			MultiplayerConnector connector = new MultiplayerConnector(server, playerId, playerName, new ConsoleLogger("jsettlers.main.android-network"));
+			if (session != null) {
+				connector.setStartResources(session.launch.startResources); // v2: same value for everyone, from the launcher lobby
+			}
+			multiplayerConnector = connector;
 		}
 		return multiplayerConnector;
 	}
@@ -175,6 +179,12 @@ public class MainApplication extends MultiDexApplication implements GameStarter,
 	public String getNewMatchName() {
 		SuSession session = suSession;
 		return session != null ? session.launch.matchName : new AndroidPreferences(this).getPlayerName();
+	}
+
+	@Override
+	public void refreshMapList() {
+		new AndroidResourcesLoader(this).setup(); // new map list factory: rescans the map folders
+		mapList = null;
 	}
 
 	@Override

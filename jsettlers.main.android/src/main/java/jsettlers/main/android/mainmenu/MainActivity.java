@@ -40,6 +40,7 @@ import jsettlers.main.android.mainmenu.mappicker.NewSinglePlayerPickerFragment;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.su.SuLaunch;
+import jsettlers.main.android.su.SuWaitingFragment;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity implements MainMenuNavigator {
@@ -103,7 +104,12 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 			Toast.makeText(this, getString(R.string.su_launch_server_failed, error), Toast.LENGTH_LONG).show();
 			return;
 		}
-		if (result.launch.role == SuLaunch.Role.HOST) {
+		if (result.launch.isDirect()) { // v2: everything was set up in the launcher lobby
+			getSupportFragmentManager().beginTransaction()
+					.replace(R.id.frame_layout, SuWaitingFragment.create())
+					.addToBackStack(null)
+					.commit();
+		} else if (result.launch.role == SuLaunch.Role.HOST) {
 			showNewMultiPlayerPicker();
 		} else {
 			showJoinMultiPlayerPicker();

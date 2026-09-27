@@ -35,6 +35,7 @@ import jsettlers.common.menu.IMultiplayerSlot;
 import jsettlers.common.menu.IOpenMultiplayerGameInfo;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.player.InitialGameState;
@@ -70,9 +71,19 @@ public class MultiplayerGame {
 	private IChatMessageListener chatMessageListener;
 	private boolean iAmTheHost = false;
 	private int maxPlayers;
+	private final EMapStartResources startResources;
 
 	public MultiplayerGame(AsyncNetworkClientConnector networkClientFactory) {
+		this(networkClientFactory, EMapStartResources.HIGH_GOODS);
+	}
+
+	/**
+	 * @param startResources
+	 *            not part of the network protocol: all players must use the same value (Settlers United launcher passes it to everyone)
+	 */
+	public MultiplayerGame(AsyncNetworkClientConnector networkClientFactory, EMapStartResources startResources) {
 		this.networkClientFactory = networkClientFactory;
+		this.startResources = startResources;
 	}
 
 	public IJoiningGame join(final String matchId) {
@@ -136,8 +147,7 @@ public class MultiplayerGame {
 			long randomSeed = packet.getRandomSeed();
 			PlayerSetting[] playerSettings = determinePlayerSettings();
 			byte ownPlayerId = calculateOwnPlayerId();
-			// TODO start resources
-			InitialGameState initialGameState = new InitialGameState(ownPlayerId, playerSettings, randomSeed);
+			InitialGameState initialGameState = new InitialGameState(ownPlayerId, playerSettings, randomSeed, startResources);
 
 			JSettlersGame game = new JSettlersGame(mapLoader, networkClient.getNetworkConnector(), initialGameState);
 

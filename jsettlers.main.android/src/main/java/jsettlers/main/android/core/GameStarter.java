@@ -59,6 +59,9 @@ public interface GameStarter {
 	/** Name of a new multiplayer match: the lobby id in a launcher session, otherwise the player name. */
 	String getNewMatchName();
 
+	/** Rescans the map folders (e.g. after a map file was added). Blocking. */
+	void refreshMapList();
+
 	/** Current launcher session (Settlers United), or null. */
 	SuSession getSuSession();
 
