@@ -48,7 +48,7 @@ public class NewMultiPlayerPickerViewModel extends MapPickerViewModel implements
 		joiningGame = gameStarter.getMultiPlayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {
 			@Override
 			public String getMatchName() {
-				return androidPreferences.getPlayerName();
+				return gameStarter.getNewMatchName(); // launcher session: lobby id, so the launcher finds the match
 			}
 
 			@Override

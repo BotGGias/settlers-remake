@@ -23,6 +23,9 @@ import android.arch.lifecycle.Observer;
 import android.support.multidex.MultiDexApplication;
 
 import java.io.IOException;
+import java.net.InetAddress;
+
+import android.os.SystemClock;
 
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGame;
@@ -43,6 +46,8 @@ import jsettlers.main.android.core.controls.GameMenu;
 import jsettlers.main.android.core.resources.scanner.AndroidResourcesLoader;
 import jsettlers.network.client.IClientConnection;
 import jsettlers.network.server.GameServerThread;
+import jsettlers.main.android.su.SuLaunch;
+import jsettlers.main.android.su.SuSession;
 
 @EApplication
 public class MainApplication extends MultiDexApplication implements GameStarter, GameManager {
@@ -104,10 +109,72 @@ public class MainApplication extends MultiDexApplication implements GameStarter,
 		if (multiplayerConnector == null) {
 			AndroidPreferences androidPreferences = new AndroidPreferences(this);
 			String server = androidPreferences.getServer();
+			String playerId = androidPreferences.getPlayerId();
+			String playerName = androidPreferences.getPlayerName();
 			if(serverHandle != null) server = "localhost";
-			multiplayerConnector = new MultiplayerConnector(server, androidPreferences.getPlayerId(), androidPreferences.getPlayerName(), new ConsoleLogger("jsettlers.main.android-network"));
+			SuSession session = suSession;
+			if (session != null) { // launcher: tunnel or own loopback server, session identity; the settings stay untouched
+				server = session.launch.serverAddress();
+				playerId = session.launch.playerId;
+				playerName = session.launch.playerName;
+			}
+			multiplayerConnector = new MultiplayerConnector(server, playerId, playerName, new ConsoleLogger("jsettlers.main.android-network"));
 		}
 		return multiplayerConnector;
+	}
+
+	/**
+	 * Settlers United launcher session (contract {@link SuLaunch}).
+	 */
+	private volatile SuSession suSession;
+	/** Loopback server started for a launcher host session (not the LAN server of the main menu). */
+	private GameServerThread suServer;
+
+	@Override
+	public SuSession getSuSession() {
+		return suSession;
+	}
+
+	@Override
+	public synchronized String startSuSession(SuLaunch launch) {
+		endSuSession();
+		closeMultiPlayerConnector();
+		if (launch.role == SuLaunch.Role.HOST && serverHandle == null) {
+			try {
+				suServer = new GameServerThread(false, InetAddress.getByName("127.0.0.1"), launch.port, new ConsoleLogger("jsettlers.main.android-su-server"));
+				suServer.start();
+			} catch (IOException e) {
+				suServer = null;
+				return e.getMessage();
+			}
+		}
+		suSession = new SuSession(launch, SystemClock.uptimeMillis());
+		return null;
+	}
+
+	@Override
+	public synchronized void endSuSession() {
+		if (suSession == null && suServer == null) {
+			return;
+		}
+		suSession = null;
+		if (suServer != null) {
+			closeMultiPlayerConnector();
+			suServer.shutdown();
+			suServer = null;
+		}
+	}
+
+	@Override
+	public String getPlayerId() {
+		SuSession session = suSession;
+		return session != null ? session.launch.playerId : new AndroidPreferences(this).getPlayerId();
+	}
+
+	@Override
+	public String getNewMatchName() {
+		SuSession session = suSession;
+		return session != null ? session.launch.matchName : new AndroidPreferences(this).getPlayerName();
 	}
 
 	@Override
@@ -192,6 +259,7 @@ public class MainApplication extends MultiDexApplication implements GameStarter,
 			mapList = null; // Nulling this means that any new saved games will be available next time mapList is set
 
 			closeMultiPlayerConnector();
+			endSuSession();
 		}
 	};
 }

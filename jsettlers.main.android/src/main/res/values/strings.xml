@@ -168,4 +168,11 @@
 	<string name="settings_address">Address</string>
 	<string name="menu_multi_player_stop_server">Stop server</string>
 	<string name="settings_play_all_music">play all music</string>
+	<!-- Settlers United launcher mode -->
+	<string name="su_launch_game_running">A game is running – the launcher start was ignored.</string>
+	<string name="su_launch_invalid">Launcher start not possible (%1$s). Please update JSettlers or the launcher.</string>
+	<string name="su_launch_no_data">The Settlers III data is missing – set it up in JSettlers first.</string>
+	<string name="su_launch_server_failed">Could not start the server: %1$s</string>
+	<string name="su_join_timeout">The host\'s match did not show up – pick it from the list as soon as it appears.</string>
+	<string name="su_join_map_missing">The host\'s map is missing on this device – the game cannot be joined.</string>
 </resources>

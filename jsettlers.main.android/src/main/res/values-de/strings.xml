@@ -128,4 +128,11 @@
 	<string name="ask_spell">Zauberstelle auswählen</string>
 	<string name="force_move">Zielpunkt erzwingen</string>
 	<string name="settings_play_all_music">Alle Musikdateien abspielen</string>
+	<!-- Settlers United Launcher-Modus -->
+	<string name="su_launch_game_running">Eine Partie läuft – der Start aus dem Launcher wurde ignoriert.</string>
+	<string name="su_launch_invalid">Start aus dem Launcher nicht möglich (%1$s). Bitte JSettlers oder den Launcher aktualisieren.</string>
+	<string name="su_launch_no_data">Die Siedler-III-Daten fehlen – bitte zuerst in JSettlers einrichten.</string>
+	<string name="su_launch_server_failed">Der Server ließ sich nicht starten: %1$s</string>
+	<string name="su_join_timeout">Das Match des Hosts ist nicht aufgetaucht – wähle es aus der Liste, sobald es erscheint.</string>
+	<string name="su_join_map_missing">Die Karte des Hosts fehlt auf diesem Gerät – dem Spiel kann nicht beigetreten werden.</string>
 </resources>

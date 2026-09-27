@@ -135,7 +135,7 @@ public abstract class MultiPlayerSetupViewModel extends MapSetupViewModel implem
 				playerSlotPresenter.setReady(player.isReady());
 				playerSlotPresenter.setShowReadyControl(true);
 
-				boolean isMe = player.getId().equals(androidPreferences.getPlayerId());
+				boolean isMe = player.getId().equals(gameStarter.getPlayerId()); // launcher session id, else settings
 
 				if(isMe || amITheHost()) {
 					playerSlotPresenter.setSlotStateListener(this, isMe, amITheHost());
