@@ -15,8 +15,10 @@
 package jsettlers.logic.map.grid.partition.manager;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -174,6 +176,19 @@ public abstract class PartitionManager implements IScheduledTimerable, Serializa
 
 	public void removeJobless(IManageableBearer bearer) {
 		this.joblessBearer.remove(bearer);
+	}
+
+	/**
+	 * Removes up to the given amount of jobless bearers from this partition, starting with the ones closest to the given position.
+	 *
+	 * @return The removed bearers.
+	 */
+	public List<IManageableBearer> removeJoblessBearersNextTo(ShortPoint2D position, int amount) {
+		List<IManageableBearer> bearers = new ArrayList<>();
+		while (bearers.size() < amount && !joblessBearer.isEmpty()) {
+			bearers.add(joblessBearer.removeObjectNextTo(position));
+		}
+		return bearers;
 	}
 
 	public void addJobless(IManageableDigger digger) {

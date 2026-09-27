@@ -189,6 +189,13 @@ public enum EActionType {
 	CONVERT,
 
 	/**
+	 * Converts settlers of the area at a position without selecting them.
+	 *
+	 * @see ConvertAtPositionAction
+	 */
+	CONVERT_AT_POSITION,
+
+	/**
 	 * GUI internal. Implements ExecutableAction
 	 */
 	EXECUTABLE,
