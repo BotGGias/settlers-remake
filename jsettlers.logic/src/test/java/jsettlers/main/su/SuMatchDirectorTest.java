@@ -117,6 +117,10 @@ public class SuMatchDirectorTest {
 		check(slots.get(1), "B", EPlayerType.HUMAN, ECivilisation.ASIAN, 1, 1);
 		check(slots.get(2), null, EPlayerType.AI_VERY_EASY, ECivilisation.AMAZON, 1, 0);
 
+		// MATCH_STARTED updates the lists once more: no second start.
+		match.publish();
+		assertEquals(1, match.startRequests);
+
 		director.gameIsStarting(null);
 		assertTrue(rec.started);
 		assertNull(rec.failure);

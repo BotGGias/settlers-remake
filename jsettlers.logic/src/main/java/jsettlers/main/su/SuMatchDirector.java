@@ -51,6 +51,8 @@ public class SuMatchDirector implements IMultiplayerListener, IChangingListListe
 
 	/** Host: join order the slots were configured for; null = not configured yet. */
 	private List<String> configuredOrder;
+	/** Host: startGame() sent – never twice (on MATCH_STARTED MultiplayerGame updates the lists once more). */
+	private boolean startSent;
 	private boolean finished;
 
 	public SuMatchDirector(IJoinPhaseMultiplayerGameConnector connector, SuSlotPlan plan, boolean host, Listener listener) {
@@ -133,8 +135,12 @@ public class SuMatchDirector implements IMultiplayerListener, IChangingListListe
 			configure(assigned);
 			return;
 		}
-		if (ready == assigned.length - countAi(assigned) && matches(assigned, connector.getSlots().getItems())) {
-			connector.startGame();
+		if (!startSent && ready == assigned.length - countAi(assigned) && matches(assigned, connector.getSlots().getItems())) {
+			try {
+				startSent = connector.startGame();
+			} catch (RuntimeException e) { // wrong client state (e.g. match already running) – do not throw into the network thread
+				startSent = true;
+			}
 		}
 	}
 
