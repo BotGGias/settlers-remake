@@ -63,6 +63,7 @@ public class MainApplication extends MultiDexApplication implements GameStarter,
 		super.onCreate();
 		System.setProperty("org.xml.sax.driver", "org.xmlpull.v1.sax2.Driver");
 		new AndroidResourcesLoader(this).setup();
+		new AndroidPreferences(this); // connects the audio settings to CommonConstants, also for games loaded directly
 	}
 
 	/**

@@ -47,6 +47,7 @@ public class SettingsMenuPanel extends JPanel {
 	 */
 	private final JTextField playerNameField = new JTextField();
 	private final SettingsSlider volumeSlider = new SettingsSlider("%", 0,100, null);
+	private final JCheckBox musicEnabledCheckBox = new JCheckBox();
 	private final SettingsSlider volumeMusicSlider = new SettingsSlider("%", 0,100, null);
 	private final JCheckBox playAllMusicCheckBox = new JCheckBox();
 	private final SettingsSlider fpsLimitSlider = new SettingsSlider("fps", 0,240, "timerless redraw");
@@ -78,6 +79,8 @@ public class SettingsMenuPanel extends JPanel {
 		addSetting("settings-name", playerNameField);
 
 		addSetting("settings-volume", volumeSlider);
+
+		addSetting("settings-music-enabled", musicEnabledCheckBox);
 
 		addSetting("settings-volume-music", volumeMusicSlider);
 
@@ -122,6 +125,7 @@ public class SettingsMenuPanel extends JPanel {
 			SettingsManager settingsManager = SettingsManager.getInstance();
 			settingsManager.setUserName(playerNameField.getText());
 			settingsManager.setVolume(volumeSlider.getValue() / 100f);
+			settingsManager.setMusicEnabled(musicEnabledCheckBox.isSelected());
 			settingsManager.setMusicVolume(volumeMusicSlider.getValue() / 100f);
 			settingsManager.setMusicPlayAll(playAllMusicCheckBox.isSelected());
 			settingsManager.setFpsLimit(fpsLimitSlider.getValue());
@@ -142,6 +146,7 @@ public class SettingsMenuPanel extends JPanel {
 		SettingsManager settingsManager = SettingsManager.getInstance();
 		playerNameField.setText(settingsManager.getPlayer().getName());
 		volumeSlider.setValue((int) (settingsManager.getVolume() * 100));
+		musicEnabledCheckBox.setSelected(settingsManager.isMusicEnabled());
 		volumeMusicSlider.setValue((int) (settingsManager.getMusicVolume() * 100));
 		playAllMusicCheckBox.setSelected(settingsManager.isMusicPlayAll());
 		fpsLimitSlider.setValue(settingsManager.getFpsLimit());

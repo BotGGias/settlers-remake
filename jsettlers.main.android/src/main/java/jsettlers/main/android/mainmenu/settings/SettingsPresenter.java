@@ -34,6 +34,9 @@ public class SettingsPresenter {
 		view.setPlayerName(androidPreferences.getPlayerName());
 		view.setServerAddress(androidPreferences.getServer());
 		view.setPlayAllMusic(androidPreferences.isPlayAllMusic());
+		view.setMusicEnabled(androidPreferences.isMusicEnabled());
+		view.setMusicVolume(toPercent(androidPreferences.getMusicVolume()));
+		view.setSoundVolume(toPercent(androidPreferences.getSoundVolume()));
 	}
 
 	public void playerNameEdited(String playerName) {
@@ -49,5 +52,24 @@ public class SettingsPresenter {
 	public void playAllMusicEdited(boolean playAll) {
 		androidPreferences.setPlayAllMusic(playAll);
 		view.setPlayAllMusic(playAll);
+	}
+
+	public void musicEnabledEdited(boolean musicEnabled) {
+		androidPreferences.setMusicEnabled(musicEnabled);
+		view.setMusicEnabled(musicEnabled);
+	}
+
+	public void musicVolumeEdited(int percent) {
+		androidPreferences.setMusicVolume(percent / 100f);
+		view.setMusicVolume(percent);
+	}
+
+	public void soundVolumeEdited(int percent) {
+		androidPreferences.setSoundVolume(percent / 100f);
+		view.setSoundVolume(percent);
+	}
+
+	private static int toPercent(float volume) {
+		return Math.round(volume * 100);
 	}
 }

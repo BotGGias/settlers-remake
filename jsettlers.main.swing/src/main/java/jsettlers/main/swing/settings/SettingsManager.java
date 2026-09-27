@@ -55,6 +55,7 @@ public class SettingsManager implements ISoundSettingsProvider {
 	private static final String SETTING_VOLUME = "volume";
 	private static final String SETTING_VOLUME_MUSIC = "volume-music";
 	private static final String SETTING_MUSIC_PLAYALL = "music-playall";
+	private static final String SETTING_MUSIC_ENABLED = "music-enabled";
 	private static final String SETTING_FULL_SCREEN_MODE = "fullScreenMode";
 
 	private static final String SETTING_GRAPHICS_DEBUG = "debug-opengl";
@@ -84,6 +85,7 @@ public class SettingsManager implements ISoundSettingsProvider {
 
 		CommonConstants.PLAYALL_MUSIC = manager::isMusicPlayAll;
 		CommonConstants.MUSIC_VOLUME = manager::getMusicVolume;
+		CommonConstants.MUSIC_ENABLED = manager::isMusicEnabled;
 		CommonConstants.AI_MORE_TOWERS = manager::getAiTowerFocus;
 	}
 
@@ -207,6 +209,10 @@ public class SettingsManager implements ISoundSettingsProvider {
 		return Boolean.parseBoolean(get(SETTING_MUSIC_PLAYALL));
 	}
 
+	public boolean isMusicEnabled() {
+		return Boolean.parseBoolean(getOrDefault(SETTING_MUSIC_ENABLED, () -> "true"));
+	}
+
 	public int getFpsLimit() {
 		String fpsLimitString = get(SETTING_FPS_LIMIT);
 		try {
@@ -246,6 +252,10 @@ public class SettingsManager implements ISoundSettingsProvider {
 
 	public void setMusicVolume(float volume) {
 		set(SETTING_VOLUME_MUSIC, Float.toString(volume));
+	}
+
+	public void setMusicEnabled(boolean musicEnabled) {
+		set(SETTING_MUSIC_ENABLED, Boolean.toString(musicEnabled));
 	}
 
 	public void setMusicPlayAll(boolean playall) {

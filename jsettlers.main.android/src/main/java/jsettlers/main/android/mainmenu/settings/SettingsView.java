@@ -24,4 +24,18 @@ public interface SettingsView {
 	void setServerAddress(String serverAddress);
 
 	void setPlayAllMusic(boolean playAll);
+
+	void setMusicEnabled(boolean musicEnabled);
+
+	/**
+	 * @param percent
+	 *            The volume of the music in percent (0..100).
+	 */
+	void setMusicVolume(int percent);
+
+	/**
+	 * @param percent
+	 *            The volume of the sound effects in percent (0..100).
+	 */
+	void setSoundVolume(int percent);
 }
