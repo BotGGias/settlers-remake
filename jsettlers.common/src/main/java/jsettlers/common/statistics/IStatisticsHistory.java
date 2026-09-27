@@ -12,43 +12,16 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.player;
-
-import java.io.Serializable;
-
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.player.IProductionStatistic;
+package jsettlers.common.statistics;
 
 /**
- * Counts the materials produced by the workers of a player.
+ * The values of {@link EStatisticType} that are recorded for a player over the course of a game.
+ * <p>
+ * The history is written by the game thread and may be read by any thread.
  */
-public class ProductionStatistic implements IProductionStatistic, Serializable {
-	private static final long serialVersionUID = 1L;
-
-	private final int[] produced = new int[EMaterialType.NUMBER_OF_MATERIALS];
-
-	public void materialProduced(EMaterialType materialType) {
-		if (materialType != null && materialType.isDroppable() && materialType.ordinal < produced.length) {
-			produced[materialType.ordinal]++;
-		}
-	}
-
-	@Override
-	public int getAmountProduced(EMaterialType materialType) {
-		if (materialType == null || materialType.ordinal >= produced.length) {
-			return 0;
-		}
-		return produced[materialType.ordinal];
-	}
-
+public interface IStatisticsHistory {
 	/**
-	 * @return The number of all materials produced since the start of the game.
+	 * @return A consistent copy of all samples recorded so far.
 	 */
-	public int getTotalAmountProduced() {
-		int total = 0;
-		for (int amount : produced) {
-			total += amount;
-		}
-		return total;
-	}
+	StatisticsSeries copySeries();
 }
