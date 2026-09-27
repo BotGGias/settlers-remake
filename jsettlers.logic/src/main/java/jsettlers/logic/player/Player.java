@@ -27,6 +27,7 @@ import jsettlers.common.player.EWinState;
 import jsettlers.common.player.ICombatStrengthInformation;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.player.ISettlerInformation;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.trading.TradeManager;
 import jsettlers.logic.map.grid.partition.data.MaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
@@ -53,6 +54,14 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 
 	private EWinState winState;
 	private ECivilisation civilisation;
+	/**
+	 * Game time in milliseconds until which this player is in peace time. Old savegames deserialize this as 0 (no peace time).
+	 */
+	private int peaceTimeEndMs;
+	/**
+	 * Not final to be able to create it for old savegames.
+	 */
+	private ProductionStatistic productionStatistic = new ProductionStatistic();
 
 	private transient EPlayerType               playerType;
 	private transient CombatStrengthInformation combatStrengthInfo = new CombatStrengthInformation();
@@ -72,6 +81,9 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
+		if (productionStatistic == null) {
+			productionStatistic = new ProductionStatistic();
+		}
 		combatStrengthInfo = new CombatStrengthInformation();
 		updateCombatStrengths();
 	}
@@ -110,6 +122,11 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	@Override
 	public EndgameStatistic getEndgameStatistic() {
 		return endgameStatistic;
+	}
+
+	@Override
+	public ProductionStatistic getProductionStatistic() {
+		return productionStatistic;
 	}
 
 	public TradeManager getLandTradeManager() {
@@ -182,6 +199,30 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 
 	public void setWinState(EWinState newState) {
 		winState = newState;
+	}
+
+	/**
+	 * Sets the game time until which this player cannot attack or be attacked.
+	 *
+	 * @param peaceTimeEndMs
+	 *            The game time in milliseconds when the peace time ends.
+	 */
+	public void setPeaceTimeEnd(int peaceTimeEndMs) {
+		this.peaceTimeEndMs = peaceTimeEndMs;
+	}
+
+	public boolean isInPeaceTime() {
+		return getPeaceTimeRemainingMs() > 0;
+	}
+
+	/**
+	 * @return The game time in milliseconds until the peace time ends or 0 if there is no peace time (anymore).
+	 */
+	public int getPeaceTimeRemainingMs() {
+		if (peaceTimeEndMs <= 0) {
+			return 0;
+		}
+		return Math.max(0, peaceTimeEndMs - MatchConstants.clock().getTime());
 	}
 
 	public boolean hasSameTeam(Player player) {

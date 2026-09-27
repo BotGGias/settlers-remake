@@ -67,7 +67,7 @@ public class SettlersMenuFragment extends Fragment {
 
 		@Override
 		public int getCount() {
-			return 1;
+			return 2;
 		}
 
 		@Override
@@ -75,8 +75,10 @@ public class SettlersMenuFragment extends Fragment {
 			switch (position) {
 			case 0:
 				return SettlersSoldiersFragment.newInstance();
+			case 1:
+				return SettlersSpecialistsFragment.newInstance();
 			default:
-				throw new RuntimeException("PagerAdapter count doesn't match available number of Goods menu fragments");
+				throw new RuntimeException("PagerAdapter count doesn't match available number of Settlers menu fragments");
 			}
 		}
 	}

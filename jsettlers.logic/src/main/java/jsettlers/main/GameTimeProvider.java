@@ -15,6 +15,7 @@
 package jsettlers.main;
 
 import jsettlers.common.statistics.IGameTimeProvider;
+import jsettlers.input.MultiplayerPauseController;
 import jsettlers.network.client.interfaces.IGameClock;
 
 /**
@@ -26,9 +27,11 @@ import jsettlers.network.client.interfaces.IGameClock;
 public class GameTimeProvider implements IGameTimeProvider {
 
 	private IGameClock gameClock;
+	private final MultiplayerPauseController pauseController;
 
-	public GameTimeProvider(IGameClock gameTimer) {
+	public GameTimeProvider(IGameClock gameTimer, MultiplayerPauseController pauseController) {
 		this.gameClock = gameTimer;
+		this.pauseController = pauseController;
 	}
 
 	@Override
@@ -44,5 +47,15 @@ public class GameTimeProvider implements IGameTimeProvider {
 	@Override
 	public float getGameSpeed() {
 		return gameClock.getGameSpeed();
+	}
+
+	@Override
+	public int getResumeCountdownMs() {
+		return pauseController.getResumeCountdownMs();
+	}
+
+	@Override
+	public int getRemainingPauses() {
+		return pauseController.getRemainingPauses();
 	}
 }

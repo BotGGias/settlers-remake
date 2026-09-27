@@ -31,8 +31,7 @@ import jsettlers.testutils.map.MapUtils;
 public class AutoReplaySetting {
 	public static Collection<AutoReplaySetting> getDefaultSettings() {
 		return List.of(
-				// TODO currently broken
-			//new AutoReplaySetting("fullproduction", 0, 10, 20, 40, 65, 90)
+				new AutoReplaySetting("fullproduction", 0, 10, 20, 40, 65, 90)
 		);
 	}
 

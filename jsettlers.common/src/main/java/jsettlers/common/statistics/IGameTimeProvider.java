@@ -58,4 +58,18 @@ public interface IGameTimeProvider {
 	 * @return true if the game is pausing, false if not.
 	 */
 	boolean isGamePausing();
+
+	/**
+	 * @return The remaining time in milliseconds until a paused game continues or 0 if the game is not about to continue.
+	 */
+	default int getResumeCountdownMs() {
+		return 0;
+	}
+
+	/**
+	 * @return The number of pauses the local player can still use or -1 if the number of pauses is not limited.
+	 */
+	default int getRemainingPauses() {
+		return -1;
+	}
 }

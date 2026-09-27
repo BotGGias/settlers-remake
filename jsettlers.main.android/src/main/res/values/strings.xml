@@ -75,6 +75,14 @@
 	<string name="convert_all">Convert all</string>
 	<string name="convert_one">Convert one</string>
 
+	<!-- Settlers Menu: Specialists -->
+	<string name="specialists_carriers">Carriers: %d</string>
+	<string name="specialists_add_one">+1</string>
+	<string name="specialists_add_five">+5</string>
+	<string name="specialists_add_all">+All</string>
+	<string name="specialists_remove_one">-1</string>
+	<string name="specialists_remove_all">-All</string>
+
 	<!-- Specialists Selection -->
 	<string name="convert_to_carriers">Convert to carriers</string>
 	<string name="work_here">Work here</string>

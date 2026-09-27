@@ -164,6 +164,15 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * Sound ID when we are attacked.
 	 */
 	private static final int NOTIFY_ATTACKED_SOUND_ID = 80;
+	/**
+	 * Sound ID played every second of the countdown before a paused game continues.
+	 */
+	private static final int RESUME_COUNTDOWN_SOUND_ID = 57;
+
+	/**
+	 * The last second of the resume countdown that has been displayed, 0 if no countdown is running.
+	 */
+	private int lastResumeCountdownSecond = 0;
 
 	private final IGraphicsGrid map;
 	private final IMapObject[] objectsGrid;
@@ -354,6 +363,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			controls.drawAt(gl);
 			drawMessages(gl);
 			drawWinStateMsg(gl);
+			drawPauseOverlay(gl);
 
 			drawFramerateTimeAndHash(gl);
 
@@ -440,6 +450,37 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.HEADLINE);
 
 		drawer.drawString((windowWidth - drawer.getWidth(msg)) / 2, windowHeight - 7 * EFontSize.HEADLINE.getSize(), color, msg);
+	}
+
+	private void drawPauseOverlay(GLDrawContext gl) {
+		int countdownMs = gameTimeProvider.getResumeCountdownMs();
+		int countdownSecond = (countdownMs + 999) / 1000;
+		if (countdownSecond != lastResumeCountdownSecond) {
+			lastResumeCountdownSecond = countdownSecond;
+			if (countdownSecond > 0) {
+				soundmanager.playSound(RESUME_COUNTDOWN_SOUND_ID, 1);
+			}
+		}
+
+		if (!gameTimeProvider.isGamePausing()) {
+			return;
+		}
+
+		String headline = countdownSecond > 0 ? Labels.getString("game_resume_countdown", countdownSecond) : Labels.getString("game_paused");
+		float y = windowHeight / 2f;
+		drawCenteredText(textDrawer.getTextDrawer(gl, EFontSize.HEADLINE), y, headline);
+
+		int remainingPauses = gameTimeProvider.getRemainingPauses();
+		if (remainingPauses >= 0) {
+			String remaining = Labels.getString("remaining_pauses", remainingPauses);
+			drawCenteredText(textDrawer.getTextDrawer(gl, EFontSize.NORMAL), y - 2 * EFontSize.HEADLINE.getSize(), remaining);
+		}
+	}
+
+	private void drawCenteredText(TextDrawer drawer, float y, String text) {
+		float x = (windowWidth - drawer.getWidth(text)) / 2;
+		drawer.drawString(x + 1, y - 1, Color.BLACK, text); // shadow to be readable on bright ground
+		drawer.drawString(x, y, Color.WHITE, text);
 	}
 
 	private void drawMessages(GLDrawContext gl) {
@@ -804,8 +845,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		} else if ("o".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_ORIGINAL_GRAPHICS);
 		} else if ("q".equalsIgnoreCase(keyCode)) {
-			// TODO: Only show the exit menu.
-			return new Action(EActionType.EXIT);
+			return new Action(EActionType.ASK_EXIT);
 		} else if ("w".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_FOG_OF_WAR);
 		} else if ("z".equalsIgnoreCase(keyCode)) {

@@ -29,23 +29,50 @@ ext {
     versionId += c.get(Calendar.HOUR_OF_DAY)
 }
 
+// AndroidAnnotations reads the package from the manifest, but AGP 8 does not allow a package attribute in the source manifest
+// any more (it is replaced by the namespace). Therefore AndroidAnnotations gets a copy of the manifest with the package.
+def androidAnnotationsManifest = layout.buildDirectory.file('androidannotations/AndroidManifest.xml').get().asFile
+
+task createAndroidAnnotationsManifest {
+    def sourceManifest = file('AndroidManifest.xml')
+    inputs.file sourceManifest
+    outputs.file androidAnnotationsManifest
+    doLast {
+        androidAnnotationsManifest.parentFile.mkdirs()
+        androidAnnotationsManifest.text = sourceManifest.text.replaceFirst('<manifest\\b', '<manifest package="jsettlers.main.android"')
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    dependsOn createAndroidAnnotationsManifest
+}
+
 android {
-    compileSdkVersion rootProject.ext.androidCompileSdkVersion
-    buildToolsVersion rootProject.ext.androidBuildToolsVersion
+    namespace = 'jsettlers.main.android'
+    compileSdk = rootProject.ext.androidCompileSdkVersion
 
     defaultConfig {
-        applicationId "jsettlers.main.android"
-        minSdkVersion rootProject.ext.androidMinSdkVersion
-        targetSdkVersion rootProject.ext.androidTargetSdkVersion
-        versionCode versionId
-        versionName versionString
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
+        applicationId = "jsettlers.main.android"
+        minSdk = rootProject.ext.androidMinSdkVersion
+        targetSdk = rootProject.ext.androidTargetSdkVersion
+        versionCode = versionId
+        versionName = versionString
+        testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments.putAll([
+                        androidManifestFile: androidAnnotationsManifest.absolutePath,
+                        resourcePackageName: 'jsettlers.main.android'
+                ])
+            }
+        }
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
@@ -60,19 +87,19 @@ android {
         }
     }
 
-    lintOptions {
-        abortOnError false
+    lint {
+        abortOnError = false
     }
 
-    aaptOptions {
-        ignoreAssetsPattern "!cache:!logs:!textures_raw:!save:!last-used.properties:!maps/testmaps"
+    androidResources {
+        ignoreAssetsPattern = "!cache:!logs:!textures_raw:!save:!last-used.properties:!maps/testmaps"
     }
 
     compileOptions {
-        coreLibraryDesugaringEnabled true
+        coreLibraryDesugaringEnabled = true
 
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     buildFeatures {
@@ -104,5 +131,5 @@ dependencies {
     implementation 'org.androidannotations:androidannotations-api:' + rootProject.ext.androidAnnotationsVersion
     annotationProcessor 'org.androidannotations:androidannotations:' + rootProject.ext.androidAnnotationsVersion
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 }

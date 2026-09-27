@@ -30,6 +30,7 @@ import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.logic.SerializationUtils;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IInformable;
 
@@ -222,7 +223,8 @@ public final class ObjectsGrid implements Serializable {
 				.forEach((x, y) -> {
 					IAttackable currTower = (IAttackable) getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
 
-					if (currTower != null && currTower.getPlayer().getTeamId() != movableTeam) {
+					if (currTower != null && currTower.getPlayer().getTeamId() != movableTeam
+							&& !MovableGrid.isPeaceTimeBetween(attackable.getPlayer(), currTower.getPlayer())) {
 						currTower.informAboutAttackable(attackable);
 
 						if (informAttackable) {

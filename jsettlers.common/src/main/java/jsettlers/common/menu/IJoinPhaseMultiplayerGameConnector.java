@@ -66,6 +66,32 @@ public interface IJoinPhaseMultiplayerGameConnector {
 	void setPlayerCount(int playerCount);
 
 	/**
+	 * Sets the start resources of the match. Only the host can change them.
+	 *
+	 * @param startResourcesValue
+	 *            The value of the start resources (see EMapStartResources.value).
+	 */
+	void setStartResources(int startResourcesValue);
+
+	/**
+	 * @return The value of the currently selected start resources (see EMapStartResources.value).
+	 */
+	int getStartResourcesValue();
+
+	/**
+	 * Sets the peace time of the match. Only the host can change it.
+	 *
+	 * @param peaceTime
+	 *            The new peace time.
+	 */
+	void setPeaceTime(EPeaceTime peaceTime);
+
+	/**
+	 * @return The currently selected peace time.
+	 */
+	EPeaceTime getPeaceTime();
+
+	/**
 	 * Starts the game if all players are currently ready. Calls the game listener as soon as it is starting.
 	 * 
 	 * @return returns true if all players were ready and thus the game start has been triggered. false if the players weren't ready.

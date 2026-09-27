@@ -68,6 +68,12 @@
 	<string name="convert_all">Alle umwandeln</string>
 	<string name="convert_one">Einen umwandeln</string>
 	<string name="convert_to_carriers">Konvertiere zu Trägern</string>
+	<string name="specialists_carriers">Träger: %d</string>
+	<string name="specialists_add_one">+1</string>
+	<string name="specialists_add_five">+5</string>
+	<string name="specialists_add_all">+Alle</string>
+	<string name="specialists_remove_one">-1</string>
+	<string name="specialists_remove_all">-Alle</string>
 	<string name="empty_directory">Dieses Verzeichnis ist leer</string>
 	<string name="game_menu_pause">Pause</string>
 	<string name="game_menu_paused">Pausiert</string>

@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.network.server;
 
+import jsettlers.network.common.packets.ByteTuplePacket;
 import jsettlers.network.common.packets.ChatMessagePacket;
 import jsettlers.network.common.packets.OpenNewMatchPacket;
 import jsettlers.network.common.packets.TimeSyncPacket;
@@ -47,6 +48,11 @@ public interface IServerManager {
 	void forwardChatMessage(Player player, ChatMessagePacket packet);
 
 	/**
+	 * Forwards the request of a player to resume the paused game to all players of the match.
+	 */
+	void forwardResumeGame(Player player, ByteTuplePacket packet);
+
+	/**
 	 * Sends the given {@link TimeSyncPacket} to the other players in the {@link Player}s match.
 	 * 
 	 * @param player
@@ -68,6 +74,10 @@ public interface IServerManager {
 	void setTeamForSlot(Player player, byte slot, byte team);
 
 	void setPlayerCount(Player player, int playerCount);
+
+	void setStartResources(Player player, int startResources);
+
+	void setPeaceTime(Player player, int peaceTimeMinutes);
 
 	void sendMatchesToPlayer(Player player);
 

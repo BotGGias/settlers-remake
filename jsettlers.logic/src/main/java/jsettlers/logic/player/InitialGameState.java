@@ -1,6 +1,7 @@
 package jsettlers.logic.player;
 
 import jsettlers.common.ai.EPlayerType;
+import jsettlers.common.menu.EPeaceTime;
 import jsettlers.logic.map.loading.EMapStartResources;
 
 import java.io.DataInputStream;
@@ -15,14 +16,23 @@ public class InitialGameState implements Cloneable, Serializable {
 	private final PlayerSetting[] playerSettings;
 	private final long randomSeed;
 	private final EMapStartResources startResources;
+	private final EPeaceTime peaceTime;
 
-	private static final byte VERSION = 1;
+	/**
+	 * Version 2 added the peace time.
+	 */
+	private static final byte VERSION = 2;
 
-	public InitialGameState(byte playerId, PlayerSetting[] playerSettings, long randomSeed, EMapStartResources startResources) {
+	public InitialGameState(byte playerId, PlayerSetting[] playerSettings, long randomSeed, EMapStartResources startResources, EPeaceTime peaceTime) {
 		this.playerId = playerId;
 		this.playerSettings = playerSettings;
 		this.randomSeed = randomSeed;
 		this.startResources = startResources;
+		this.peaceTime = peaceTime;
+	}
+
+	public InitialGameState(byte playerId, PlayerSetting[] playerSettings, long randomSeed, EMapStartResources startResources) {
+		this(playerId, playerSettings, randomSeed, startResources, EPeaceTime.WITHOUT);
 	}
 
 	public InitialGameState(byte playerId, PlayerSetting[] playerSettings, long randomSeed) {
@@ -42,6 +52,11 @@ public class InitialGameState implements Cloneable, Serializable {
 			playerSettings[i] = PlayerSetting.readFromStream(dis);
 		}
 
+		if (readVersion >= 2) {
+			peaceTime = EPeaceTime.fromMinutes(dis.readInt());
+		} else {
+			peaceTime = EPeaceTime.WITHOUT;
+		}
 	}
 
 	public byte getPlayerId() {
@@ -58,6 +73,10 @@ public class InitialGameState implements Cloneable, Serializable {
 
 	public EMapStartResources getStartResources() {
 		return startResources;
+	}
+
+	public EPeaceTime getPeaceTime() {
+		return peaceTime != null ? peaceTime : EPeaceTime.WITHOUT;
 	}
 
 	public PlayerSetting[] getReplayablePlayerSettings() {
@@ -79,11 +98,13 @@ public class InitialGameState implements Cloneable, Serializable {
 		for (PlayerSetting playerSetting : playerSettings) {
 			playerSetting.writeTo(dos);
 		}
+
+		dos.writeInt(getPeaceTime().minutes);
 	}
 
 	@Override
 	public InitialGameState clone() {
-		return new InitialGameState(playerId, getReplayablePlayerSettings(), randomSeed, startResources);
+		return new InitialGameState(playerId, getReplayablePlayerSettings(), randomSeed, startResources, getPeaceTime());
 	}
 
 	@Override
@@ -93,6 +114,7 @@ public class InitialGameState implements Cloneable, Serializable {
 				", playerSettings=" + Arrays.toString(playerSettings) +
 				", randomSeed=" + randomSeed +
 				", startResources=" + startResources +
+				", peaceTime=" + peaceTime +
 				'}';
 	}
 }

@@ -189,6 +189,13 @@ public enum EActionType {
 	CONVERT,
 
 	/**
+	 * Converts settlers of the area at a position without selecting them.
+	 *
+	 * @see ConvertAtPositionAction
+	 */
+	CONVERT_AT_POSITION,
+
+	/**
 	 * GUI internal. Implements ExecutableAction
 	 */
 	EXECUTABLE,
@@ -197,6 +204,11 @@ public enum EActionType {
 	 * Exit the game. Does not ask any more.
 	 */
 	EXIT,
+
+	/**
+	 * Asks the user if he really wants to exit the game.
+	 */
+	ASK_EXIT,
 
 	/**
 	 * Sets the speed to be not paused.

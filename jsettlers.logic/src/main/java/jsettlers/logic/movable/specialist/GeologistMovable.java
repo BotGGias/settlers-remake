@@ -14,11 +14,12 @@ import jsettlers.logic.movable.MovableManager;
 import jsettlers.logic.movable.other.AttackableHumanMovable;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
+import jsettlers.logic.movable.interfaces.ISpecialistMovable;
 import jsettlers.logic.player.Player;
 
 import static jsettlers.algorithms.simplebehaviortree.BehaviorTreeHelper.*;
 
-public class GeologistMovable extends AttackableHumanMovable {
+public class GeologistMovable extends AttackableHumanMovable implements ISpecialistMovable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -90,6 +91,18 @@ public class GeologistMovable extends AttackableHumanMovable {
 				),
 				doingNothingGuard()
 		);
+	}
+
+	@Override
+	public boolean convertToBearer() {
+		if(!player.equals(grid.getPlayerAt(position))) return false;
+
+		if(currentTarget != null) {
+			grid.setMarked(currentTarget, false); // the marking is normally reset by the behaviour tree, which is not executed any more
+		}
+		createMovable(EMovableType.BEARER, player, position, grid, this);
+
+		return true;
 	}
 
 	protected static Node<GeologistMovable> findWorkablePosition() {

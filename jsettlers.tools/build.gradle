@@ -1,6 +1,8 @@
 apply plugin: 'application'
 
-mainClassName = 'jsettlers.ToolsMain'
+application {
+    mainClass = 'jsettlers.ToolsMain'
+}
 
 dependencies {
     implementation 'junit:junit:4.12'
@@ -18,7 +20,7 @@ dependencies {
 jar {
     archiveBaseName = 'JSettlersTools'
     manifest {
-        attributes 'Main-Class': mainClassName
+        attributes 'Main-Class': application.mainClass
         attributes 'Class-Path' : 'JSettlers.jar'
     }
 }

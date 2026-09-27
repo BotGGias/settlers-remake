@@ -6,7 +6,9 @@ startScripts {
     applicationName = "jsettlers.mapcreator"
 }
 
-mainClassName = 'jsettlers.mapcreator.main.MapCreatorApp'
+application {
+    mainClass = 'jsettlers.mapcreator.main.MapCreatorApp'
+}
 
 dependencies {
     implementation project(':go.graphics')
@@ -25,7 +27,7 @@ dependencies {
 jar {
     archiveBaseName = 'MapCreator'
     manifest {
-        attributes 'Main-Class': mainClassName
+        attributes 'Main-Class': application.mainClass
         attributes 'Class-Path' : 'JSettlers.jar'
     }
 }

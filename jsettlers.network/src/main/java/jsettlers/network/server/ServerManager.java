@@ -17,6 +17,7 @@ package jsettlers.network.server;
 import java.util.Timer;
 
 import jsettlers.network.NetworkConstants;
+import jsettlers.network.common.packets.ByteTuplePacket;
 import jsettlers.network.common.packets.ChatMessagePacket;
 import jsettlers.network.common.packets.OpenNewMatchPacket;
 import jsettlers.network.common.packets.TimeSyncPacket;
@@ -25,11 +26,14 @@ import jsettlers.network.infrastructure.channel.reject.RejectPacket;
 import jsettlers.network.server.db.IDBFacade;
 import jsettlers.network.server.exceptions.NotAllPlayersReadyException;
 import jsettlers.network.server.listeners.ChangeCivilisationPacketListener;
+import jsettlers.network.server.listeners.ChangePeaceTimePacketListener;
 import jsettlers.network.server.listeners.ChangePlayerCountPacketListener;
+import jsettlers.network.server.listeners.ChangeStartResourcesPacketListener;
 import jsettlers.network.server.listeners.ChangePlayerTypePacketListener;
 import jsettlers.network.server.listeners.ChangePositionPacketListener;
 import jsettlers.network.server.listeners.ChangeTeamPacketListener;
 import jsettlers.network.server.listeners.ChatMessageForwardingListener;
+import jsettlers.network.server.listeners.ResumeGameForwardingListener;
 import jsettlers.network.server.listeners.IdentifyUserListener;
 import jsettlers.network.server.listeners.ReadyStatePacketListener;
 import jsettlers.network.server.listeners.ServerChannelClosedListener;
@@ -89,6 +93,7 @@ public class ServerManager implements IServerManager {
 			channel.registerListener(new StartMatchListener(this, player));
 			channel.registerListener(new JoinMatchListener(this, player));
 			channel.registerListener(new ChatMessageForwardingListener(this, player));
+			channel.registerListener(new ResumeGameForwardingListener(this, player));
 			channel.registerListener(new TimeSyncForwardingListener(this, player));
 			channel.registerListener(new ReadyStatePacketListener(this, player));
 			channel.registerListener(new StartFinishedSignalListener(this, player));
@@ -97,6 +102,8 @@ public class ServerManager implements IServerManager {
 			channel.registerListener(new ChangePositionPacketListener(this, player));
 			channel.registerListener(new ChangeTeamPacketListener(this, player));
 			channel.registerListener(new ChangePlayerCountPacketListener(this, player));
+			channel.registerListener(new ChangeStartResourcesPacketListener(this, player));
+			channel.registerListener(new ChangePeaceTimePacketListener(this, player));
 
 			return true;
 		} else {
@@ -158,6 +165,15 @@ public class ServerManager implements IServerManager {
 	public void forwardChatMessage(Player player, ChatMessagePacket packet) {
 		try {
 			player.forwardChatMessage(packet);
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void forwardResumeGame(Player player, ByteTuplePacket packet) {
+		try {
+			player.forwardResumeGame(packet);
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
@@ -261,6 +277,30 @@ public class ServerManager implements IServerManager {
 		} catch (IllegalStateException e) {
 			player.sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET,
 					new RejectPacket(NetworkConstants.ENetworkMessage.INVALID_STATE_ERROR, NetworkConstants.ENetworkKey.CHANGE_PLAYER_COUNT));
+		}
+	}
+
+	@Override
+	public void setStartResources(Player player, int startResources) {
+		try {
+			Match match = verifyAndGetMatch(player);
+
+			match.setStartResources(startResources);
+		} catch (IllegalStateException e) {
+			player.sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.ENetworkMessage.INVALID_STATE_ERROR, NetworkConstants.ENetworkKey.CHANGE_START_RESOURCES));
+		}
+	}
+
+	@Override
+	public void setPeaceTime(Player player, int peaceTimeMinutes) {
+		try {
+			Match match = verifyAndGetMatch(player);
+
+			match.setPeaceTime(peaceTimeMinutes);
+		} catch (IllegalStateException e) {
+			player.sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.ENetworkMessage.INVALID_STATE_ERROR, NetworkConstants.ENetworkKey.CHANGE_PEACE_TIME));
 		}
 	}
 

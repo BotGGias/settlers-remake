@@ -1,12 +1,19 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply plugin: 'java'
 
+/**
+ * Gives tasks access to file operations at execution time without using the deprecated Task.project.
+ */
+interface FileSystemOperationsProvider {
+    @javax.inject.Inject
+    FileSystemOperations getFileSystemOperations()
+}
+
 ext {
 
     androidAnnotationsVersion = '4.8.0'
     androidSupportLibraryVersion = '28.0.0'
 
-    androidBuildToolsVersion = '30.0.3'
     androidCompileSdkVersion = 30
     androidMinSdkVersion = 19
     androidTargetSdkVersion = 26
@@ -22,7 +29,7 @@ buildscript {
     dependencies {
         classpath 'org.eclipse.jgit:org.eclipse.jgit:6.1.0.202203080745-r'
         if (findProject(':jsettlers.main.android')) {
-            classpath 'com.android.tools.build:gradle:7.0.0'
+            classpath 'com.android.tools.build:gradle:8.7.3'
         }
     }
 }
@@ -33,9 +40,8 @@ allprojects {
         google()
         //jcenter()
         // fallback for vbps
-        maven { url "https://raw.github.com/laenger/maven-releases/master/releases" }
-        maven { url "https://maven.google.com" }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+        maven { url = "https://raw.github.com/laenger/maven-releases/master/releases" }
+        maven { url = "https://maven.google.com" }
     }
 }
 
@@ -43,26 +49,36 @@ allprojects {
 subprojects {
 
     plugins.withType(JavaPlugin).whenPluginAdded {
+        // The build runs on JDK 17+ (Gradle 8), but the classes stay compatible with Java 11.
         compileJava {
-            sourceCompatibility = JavaVersion.VERSION_11
-            targetCompatibility = JavaVersion.VERSION_11
             options.release = 11
         }
         compileTestJava {
-            sourceCompatibility = JavaVersion.VERSION_11
-            targetCompatibility = JavaVersion.VERSION_11
             options.release = 11
         }
 
-        task copyMainResources(type: Copy) {
-            from sourceSets.main.resources
-            into sourceSets.main.output.classesDirs[0]
+        // The resources are also copied next to the classes, because other projects only get the classes directory on their
+        // compile classpath. The copy is part of the compile task, so that Gradle knows who produces these files.
+        def fileSystem = objects.newInstance(FileSystemOperationsProvider).fileSystemOperations
+        [(compileJava): sourceSets.main, (compileTestJava): sourceSets.test].each { compileTask, sourceSet ->
+            def resources = sourceSet.resources
+            def classesDirectory = compileTask.destinationDirectory
+            compileTask.inputs.files(resources).withPropertyName('copiedResources').withPathSensitivity(PathSensitivity.RELATIVE)
+            compileTask.doLast {
+                fileSystem.copy {
+                    from resources
+                    into classesDirectory
+                }
+            }
+        }
+
+        task copyMainResources {
+            dependsOn compileJava
         }
         processResources.dependsOn copyMainResources
 
-        task copyTestResources(type: Copy) {
-            from sourceSets.test.resources
-            into sourceSets.test.output.classesDirs[0]
+        task copyTestResources {
+            dependsOn compileTestJava
         }
         processTestResources.dependsOn copyTestResources
     }
@@ -85,7 +101,7 @@ subprojects {
     }
 
     tasks.withType(Jar) {
-        duplicatesStrategy DuplicatesStrategy.EXCLUDE
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 
     def addGlobalDependencies = {
@@ -154,7 +170,7 @@ def releaseDir = project.file('release')
 
 task releaseJSettlers(type: Zip) {
     into('JSettlers') {
-        from { project.getRootProject().file('LICENSE.txt') }
+        from rootProject.file('LICENSE.txt')
         from tasks.getByPath(':jsettlers.main.swing:shadowJar')
         from tasks.getByPath(':jsettlers.mapcreator:jar')
         from tasks.getByPath(':jsettlers.tools:jar')
@@ -188,8 +204,8 @@ task releaseDedicatedServer(type: Copy) {
 if (findProject(':jsettlers.main.android')) {
     task releaseAndroid(type: Zip, dependsOn: ':jsettlers.main.android:assembleDebug') {
         into('JSettlers-Android') {
-            from { project.getRootProject().file('LICENSE.txt') }
-            from file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/debug/jsettlers.main.android-debug.apk')
+            from rootProject.file('LICENSE.txt')
+            from project(':jsettlers.main.android').layout.buildDirectory.file('outputs/apk/debug/jsettlers.main.android-debug.apk')
             rename 'jsettlers.main.android-debug.apk', 'JSettlers-Android.apk'
         }
 

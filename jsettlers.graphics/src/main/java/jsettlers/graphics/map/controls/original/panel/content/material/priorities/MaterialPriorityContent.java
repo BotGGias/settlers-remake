@@ -154,13 +154,8 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 				setOrder(null);
 				removeAll();
 			} else {
-				EMaterialType[] newOrder = new EMaterialType[EMaterialType.DROPPABLE_MATERIALS.length];
+				EMaterialType[] newOrder = data.getPartitionSettings().getMaterialTypesForPriorities();
 				BitSet materialsAccepted = new BitSet();
-
-				for (int i = 0; i < newOrder.length; i++) {
-					// FIXME: Synchronize!
-					newOrder[i] = data.getPartitionSettings().getMaterialTypeForPriority(i);
-				}
 
 				IStockSettings stockSettings = data.getPartitionSettings().getStockSettings();
 				for (EMaterialType materialType : EMaterialType.DROPPABLE_MATERIALS) {

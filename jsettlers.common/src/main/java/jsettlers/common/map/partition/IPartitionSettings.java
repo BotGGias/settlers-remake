@@ -45,6 +45,13 @@ public interface IPartitionSettings {
 	 */
 	EMaterialType getMaterialTypeForPriority(int priorityIdx);
 
+	/**
+	 * This method gives a consistent snapshot of the priorities of all droppable {@link EMaterialType}s. Use it when reading the priorities from a thread other than the game thread.
+	 *
+	 * @return Returns a copy of the droppable {@link EMaterialType}s ordered by their priority. The first element has the highest priority.
+	 */
+	EMaterialType[] getMaterialTypesForPriorities();
+
 	IStockSettings getStockSettings();
 
 	IProfessionSettings getProfessionSettings();

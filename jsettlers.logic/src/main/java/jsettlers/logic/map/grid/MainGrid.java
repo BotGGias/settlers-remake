@@ -19,11 +19,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.BitSet;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.Locale;
+import java.util.List;
 import java.util.Set;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -125,11 +129,14 @@ import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableManager;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IAttackableMovable;
+import jsettlers.logic.movable.interfaces.IBearerMovable;
 import jsettlers.logic.movable.interfaces.IFerryMovable;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
+import jsettlers.logic.movable.interfaces.ISpecialistMovable;
 import jsettlers.logic.movable.interfaces.ISoldierMovable;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.stack.StackMapObject;
@@ -143,6 +150,11 @@ import jsettlers.logic.player.PlayerSetting;
  */
 public final class MainGrid implements Serializable {
 	private static final long serialVersionUID = 3824511313693431424L;
+
+	/**
+	 * The specialists bearers can be converted to and back.
+	 */
+	private static final Set<EMovableType> CONVERTIBLE_SPECIALISTS = EnumSet.of(EMovableType.PIONEER, EMovableType.GEOLOGIST, EMovableType.THIEF);
 
 	final String mapId;
 	final String mapName;
@@ -368,18 +380,22 @@ public final class MainGrid implements Serializable {
 	public void save(Byte playerId, UIState uiState) throws IOException {
 		boolean savedPausingState = MatchConstants.clock().isPausing();
 		MatchConstants.clock().setPausing(true);
-		try {
-			Thread.sleep(300L); // FIXME @Andreas serializer should wait until threads did their work!
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		// the fog of war is written into the savegame, but updated by its own threads
+		FogOfWar pausedFogOfWar = fogOfWar;
+		if (pausedFogOfWar != null) {
+			pausedFogOfWar.pauseThreads();
 		}
-
-		PlayerState[] playerStates = calculatePlayerStates(playerId, uiState);
-		MapFileHeader header = generateSaveHeader(playerId);
-		MapList list = MapList.getDefaultList();
-		list.saveMap(playerStates, header, MainGrid.this);
-
-		MatchConstants.clock().setPausing(savedPausingState);
+		try {
+			PlayerState[] playerStates = calculatePlayerStates(playerId, uiState);
+			MapFileHeader header = generateSaveHeader(playerId);
+			MapList list = MapList.getDefaultList();
+			list.saveMap(playerStates, header, MainGrid.this);
+		} finally {
+			if (pausedFogOfWar != null) {
+				pausedFogOfWar.resumeThreads();
+			}
+			MatchConstants.clock().setPausing(savedPausingState);
+		}
 	}
 
 	private PlayerState[] calculatePlayerStates(Byte playerId, UIState uiState) {
@@ -588,7 +604,8 @@ public final class MainGrid implements Serializable {
 			switch (searchType) {
 
 				case UNENFORCED_FOREIGN_GROUND:
-					return !objectsGrid.isBuildingAt(x, y) && !hasSameTeam(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
+					return !objectsGrid.isBuildingAt(x, y) && !hasSameTeam(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y)
+							&& !isForeignGroundInPeaceTime(x, y, pathCalculable);
 
 				case VALID_FREE_POSITION:
 					return isValidPosition(pathCalculable, x, y) && movableGrid.hasNoMovableAt(x, y);
@@ -650,7 +667,8 @@ public final class MainGrid implements Serializable {
 					return isInBounds(x, y) && !flagsGrid.isProtected(x, y) && !flagsGrid.isMarked(x, y) && canAddResourceSign(x, y);
 
 				case FOREIGN_MATERIAL:
-					return isInBounds(x, y) && !hasSamePlayer(x, y, pathCalculable) && mapObjectsManager.hasStealableMaterial(x, y);
+					return isInBounds(x, y) && !hasSamePlayer(x, y, pathCalculable) && mapObjectsManager.hasStealableMaterial(x, y)
+							&& !isForeignGroundInPeaceTime(x, y, pathCalculable);
 
 				case ENEMY: {
 					ILogicMovable movable = movableGrid.getMovableAt(x, y);
@@ -735,6 +753,11 @@ public final class MainGrid implements Serializable {
 
 		private boolean hasSamePlayer(int x, int y, IPathCalculatable requester) {
 			return partitionsGrid.getPlayerIdAt(x, y) == requester.getPlayer().getPlayerId();
+		}
+
+		private boolean isForeignGroundInPeaceTime(int x, int y, IPathCalculatable requester) {
+			Player player = partitionsGrid.getPlayerAt(x, y);
+			return player != null && MovableGrid.isPeaceTimeBetween(player, requester.getPlayer());
 		}
 
 		private boolean hasSameTeam(int x, int y, IPathCalculatable requester) {
@@ -2256,6 +2279,34 @@ public final class MainGrid implements Serializable {
 			partitionsGrid.getPartitionSettings(position).setAcceptedStockMaterial(materialType, accepted);
 		}
 		
+		@Override
+		public void convertAtPosition(byte playerId, ShortPoint2D position, EMovableType sourceType, EMovableType targetType, int amount) {
+			if (amount <= 0 || !isInBounds(position) || partitionsGrid.getPlayerIdAt(position.x, position.y) != playerId) {
+				return;
+			}
+
+			Partition partition = partitionsGrid.getPartitionAt(position.x, position.y);
+
+			if (sourceType == EMovableType.BEARER && CONVERTIBLE_SPECIALISTS.contains(targetType)) {
+				for (IManageableBearer bearer : partition.removeJoblessBearersNextTo(position, amount)) {
+					((IBearerMovable) bearer).convertTo(targetType);
+				}
+
+			} else if (targetType == EMovableType.BEARER && CONVERTIBLE_SPECIALISTS.contains(sourceType)) {
+				List<ISpecialistMovable> specialists = MovableManager.getAllMovables().stream()
+						.filter(movable -> movable.isAlive() && movable.getMovableType() == sourceType && movable instanceof ISpecialistMovable)
+						.filter(movable -> movable.getPlayer().getPlayerId() == playerId)
+						.filter(movable -> partitionsGrid.getPartitionAt(movable.getPosition().x, movable.getPosition().y) == partition)
+						.sorted(Comparator.<ILogicMovable>comparingInt(movable -> movable.getPosition().getOnGridDistTo(position))
+								.thenComparingInt(ILogicMovable::getID))
+						.limit(amount)
+						.map(movable -> (ISpecialistMovable) movable)
+						.collect(Collectors.toList());
+
+				specialists.forEach(ISpecialistMovable::convertToBearer);
+			}
+		}
+
 		@Override
 		public void changeMovableSettings(ShortPoint2D position, EMovableType movableType, boolean relative,
 										  int amount) {

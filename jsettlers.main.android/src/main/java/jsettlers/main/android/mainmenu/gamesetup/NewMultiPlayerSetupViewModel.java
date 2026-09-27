@@ -32,6 +32,18 @@ public class NewMultiPlayerSetupViewModel extends MultiPlayerSetupViewModel {
 	}
 
 	@Override
+	public void startResourcesSelected(StartResources item) {
+		connector.setStartResources(item.getType().value);
+		super.startResourcesSelected(item);
+	}
+
+	@Override
+	public void peaceTimeSelected(Peacetime item) {
+		connector.setPeaceTime(item.getType());
+		super.peaceTimeSelected(item);
+	}
+
+	@Override
 	protected void abort() {
 		super.abort();
 		connector.abort();

@@ -22,11 +22,13 @@ import org.androidannotations.annotations.ViewById;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.widget.ImageView;
 
 import jsettlers.common.action.ConvertAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.ECivilisation;
+import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.map.draw.ECommonLinkType;
 import jsettlers.graphics.map.draw.ImageLinkMap;
 import jsettlers.main.android.R;
@@ -59,7 +61,21 @@ public class CarriersSelectionFragment extends SelectionFragment {
 		super.onActivityCreated(savedInstanceState);
 		actionControls = new ControlsResolver(getActivity()).getActionControls();
 
-		ECivilisation civilisation = getSelection().get(0).getPlayer().getCivilisation();
+		ISelectionSet selection = getSelection();
+		if (selection.getSize() == 0) {
+			return; // the selection has been removed, the menu is going to be dismissed
+		}
+
+		if (selection.getMovableCount(EMovableType.BEARER, null) == 0) {
+			// only bearers can be converted, e.g. a selection of workers can't
+			View view = getView();
+			if (view != null) {
+				view.setVisibility(View.GONE);
+			}
+			return;
+		}
+
+		ECivilisation civilisation = selection.get(0).getPlayer().getCivilisation();
 
 		OriginalImageProvider.get(ImageLinkMap.get(civilisation, ECommonLinkType.SETTLER_GUI, EMovableType.PIONEER)).setAsImage(pioneerImageView);
 		OriginalImageProvider.get(ImageLinkMap.get(civilisation, ECommonLinkType.SETTLER_GUI, EMovableType.GEOLOGIST)).setAsImage(geologistImageView);

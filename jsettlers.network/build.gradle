@@ -1,8 +1,10 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'com.gradleup.shadow' version '8.3.9'
     id 'application'
 }
-mainClassName = 'jsettlers.network.server.DedicatedServerApp'
+application {
+    mainClass = 'jsettlers.network.server.DedicatedServerApp'
+}
 
 startScripts {
     applicationName = "jsettlers.network"
@@ -10,13 +12,13 @@ startScripts {
 
 jar {
     manifest {
-        attributes 'Main-Class': mainClassName
+        attributes 'Main-Class': application.mainClass
     }
 }
 
 shadowJar {
     archiveBaseName = 'DedicatedJSettlersServer'
-    classifier = ''
+    archiveClassifier = ''
 }
 
 dependencies {

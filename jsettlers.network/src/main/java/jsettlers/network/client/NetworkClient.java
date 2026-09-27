@@ -20,6 +20,7 @@ import java.util.Timer;
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.NetworkConstants.ENetworkKey;
 import jsettlers.network.client.interfaces.IGameClock;
+import jsettlers.network.client.interfaces.IGameResumeListener;
 import jsettlers.network.client.interfaces.INetworkClient;
 import jsettlers.network.client.interfaces.INetworkConnector;
 import jsettlers.network.client.interfaces.ITaskScheduler;
@@ -67,6 +68,7 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 	private PlayerInfoPacket playerInfo;
 
 	private MatchInfoPacket matchInfo;
+	private volatile IGameResumeListener gameResumeListener;
 
 	/**
 	 * 
@@ -196,6 +198,18 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 	}
 
 	@Override
+	public void setStartResources(int startResources) {
+		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
+		channel.sendPacketAsync(ENetworkKey.CHANGE_START_RESOURCES, new IntegerMessagePacket(startResources));
+	}
+
+	@Override
+	public void setPeaceTime(int peaceTimeMinutes) {
+		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
+		channel.sendPacketAsync(ENetworkKey.CHANGE_PEACE_TIME, new IntegerMessagePacket(peaceTimeMinutes));
+	}
+
+	@Override
 	public void setStartFinished(boolean startFinished) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_RUNNING_MATCH);
 		channel.sendPacketAsync(NetworkConstants.ENetworkKey.CHANGE_START_FINISHED, new BooleanMessagePacket(startFinished));
@@ -275,6 +289,7 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 		channel.removeListener(NetworkConstants.ENetworkKey.MATCH_STARTED);
 
 		startTimeSynchronization(clock);
+		channel.registerListener(generateDefaultListener(ENetworkKey.RESUME_GAME, ByteTuplePacket.class, this::resumeGameReceived));
 		channel.initPinging();
 	}
 
@@ -344,6 +359,24 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 			allStartFinished = allStartFinished && currPlayer.isStartFinished();
 		}
 		return allStartFinished;
+	}
+
+	@Override
+	public void requestGameResume(byte playerId, int pauseCount) {
+		EPlayerState.assertState(state, EPlayerState.IN_RUNNING_MATCH);
+		channel.sendPacketAsync(ENetworkKey.RESUME_GAME, new ByteTuplePacket(playerId, (byte) pauseCount));
+	}
+
+	@Override
+	public void setGameResumeListener(IGameResumeListener listener) {
+		this.gameResumeListener = listener;
+	}
+
+	private void resumeGameReceived(ByteTuplePacket packet) {
+		IGameResumeListener listener = gameResumeListener;
+		if (listener != null) {
+			listener.resumeRequested(packet.getValueA(), packet.getValueB());
+		}
 	}
 
 	@Override

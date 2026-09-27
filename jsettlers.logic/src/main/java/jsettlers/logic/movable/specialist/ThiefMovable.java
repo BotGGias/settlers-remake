@@ -16,11 +16,12 @@ import jsettlers.logic.movable.MovableManager;
 import jsettlers.logic.movable.other.AttackableHumanMovable;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
+import jsettlers.logic.movable.interfaces.ISpecialistMovable;
 import jsettlers.logic.player.Player;
 
 import static jsettlers.algorithms.simplebehaviortree.BehaviorTreeHelper.*;
 
-public class ThiefMovable extends AttackableHumanMovable implements IGraphicsThief {
+public class ThiefMovable extends AttackableHumanMovable implements IGraphicsThief, ISpecialistMovable {
 
 	private static final long serialVersionUID = 1;
 
@@ -118,6 +119,16 @@ public class ThiefMovable extends AttackableHumanMovable implements IGraphicsThi
 		);
 	}
 
+
+	@Override
+	public boolean convertToBearer() {
+		if(!player.equals(grid.getPlayerAt(position))) return false;
+
+		// a stolen material is dropped when the thief is decoupled
+		createMovable(EMovableType.BEARER, player, position, grid, this);
+
+		return true;
+	}
 
 	@Override
 	public boolean isUncoveredBy(byte teamId) {

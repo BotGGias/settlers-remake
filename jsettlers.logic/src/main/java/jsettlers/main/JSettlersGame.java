@@ -32,6 +32,7 @@ import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MultiplexingOutputStream;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.menu.EPeaceTime;
 import jsettlers.common.menu.EGameError;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IMapInterfaceConnector;
@@ -43,6 +44,7 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IGameTimeProvider;
 import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
+import jsettlers.input.MultiplayerPauseController;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.trading.HarborBuilding;
@@ -55,6 +57,8 @@ import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.movable.MovableManager;
 import jsettlers.logic.player.InitialGameState;
+import jsettlers.logic.player.PeaceTimeNotifier;
+import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.timer.RescheduleTimer;
 import jsettlers.main.replay.ReplayUtils;
@@ -178,6 +182,7 @@ public class JSettlersGame {
 		private Consumer<IStartedGame> exitListener;
 		private boolean gameRunning;
 		private AiExecutor aiExecutor;
+		private MultiplayerPauseController pauseController;
 
 		@Override
 		public void run() {
@@ -201,11 +206,16 @@ public class JSettlersGame {
 				MainGridWithUiSettings gridWithUiState = mapCreator.loadMainGrid(initialGameState.getPlayerSettings(), initialGameState.getStartResources());
 				mainGrid = gridWithUiState.getMainGrid();
 				PlayerState playerState = gridWithUiState.getPlayerState(initialGameState.getPlayerId());
+				startPeaceTime(initialGameState.getPeaceTime());
 
 				RescheduleTimer.schedule(MatchConstants.clock()); // schedule timer
 
 				updateProgressListener(EProgressState.LOADING_IMAGES, 0.7f);
-				gameTimeProvider = new GameTimeProvider(MatchConstants.clock());
+				Player localPlayer = mainGrid.getPartitionsGrid().getPlayer(initialGameState.getPlayerId());
+				pauseController = new MultiplayerPauseController(MatchConstants.clock(), networkConnector.getTaskScheduler(), networkConnector, multiplayer,
+						initialGameState.getPlayerId(), initialGameState.getPlayerSettings().length, localPlayer);
+				networkConnector.setGameResumeListener(pauseController::resumeRequested);
+				gameTimeProvider = new GameTimeProvider(MatchConstants.clock(), pauseController);
 
 				mainGrid.initForPlayer(initialGameState.getPlayerId(), playerState.getFogOfWar());
 				mainGrid.startThreads();
@@ -224,12 +234,13 @@ public class JSettlersGame {
 
 				final IMapInterfaceConnector connector = startingGameListener.preLoadFinished(this);
 				GuiInterface guiInterface = new GuiInterface(connector, MatchConstants.clock(), networkConnector.getTaskScheduler(),
-						mainGrid.getGuiInputGrid(), this, initialGameState.getPlayerId(), multiplayer);
+						mainGrid.getGuiInputGrid(), this, initialGameState.getPlayerId(), multiplayer, pauseController);
 				connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that
 				// ConstructionMarksThread has it's mapArea variable initialized via the EActionType.SCREEN_CHANGE event.
 
 				aiExecutor = new AiExecutor(initialGameState.getPlayerSettings(), mainGrid, networkConnector.getTaskScheduler());
 				networkConnector.getGameClock().schedule(aiExecutor, (short) 1000);
+				schedulePeaceTimeNotifier();
 
 				MatchConstants.clock().startExecution(); // WARNING: GAME CLOCK IS STARTED!
 				// NO CONFIGURATION AFTER THIS POINT! =================================
@@ -246,6 +257,7 @@ public class JSettlersGame {
 					}
 				}
 
+				pauseController.shutdown();
 				networkConnector.shutdown();
 				mainGrid.stopThreads();
 				connector.shutdown();
@@ -266,6 +278,26 @@ public class JSettlersGame {
 				if (exitListener != null) {
 					exitListener.accept(this);
 				}
+			}
+		}
+
+		private void startPeaceTime(EPeaceTime peaceTime) {
+			if (peaceTime.getDurationMs() <= 0) {
+				return; // keep the peace time stored in a savegame
+			}
+
+			int peaceTimeEnd = MatchConstants.clock().getTime() + peaceTime.getDurationMs();
+			for (Player player : mainGrid.getPartitionsGrid().getPlayers()) {
+				if (player != null) {
+					player.setPeaceTimeEnd(peaceTimeEnd);
+				}
+			}
+		}
+
+		private void schedulePeaceTimeNotifier() {
+			Player localPlayer = mainGrid.getPartitionsGrid().getPlayer(initialGameState.getPlayerId());
+			if (localPlayer != null && localPlayer.isInPeaceTime()) {
+				networkConnector.getGameClock().schedule(new PeaceTimeNotifier(localPlayer), (short) 1000);
 			}
 		}
 

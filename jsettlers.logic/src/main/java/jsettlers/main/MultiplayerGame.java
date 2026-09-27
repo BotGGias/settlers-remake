@@ -24,6 +24,7 @@ import java.util.stream.IntStream;
 
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.menu.ENetworkMessage;
+import jsettlers.common.menu.EPeaceTime;
 import jsettlers.common.menu.IChatMessageListener;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGame;
@@ -72,6 +73,8 @@ public class MultiplayerGame {
 	private boolean iAmTheHost = false;
 	private int maxPlayers;
 	private final EMapStartResources startResources;
+	private int startResourcesValue = EMapStartResources.HIGH_GOODS.value;
+	private EPeaceTime peaceTime = EPeaceTime.WITHOUT;
 
 	public MultiplayerGame(AsyncNetworkClientConnector networkClientFactory) {
 		this(networkClientFactory, EMapStartResources.HIGH_GOODS);
@@ -148,6 +151,8 @@ public class MultiplayerGame {
 			PlayerSetting[] playerSettings = determinePlayerSettings();
 			byte ownPlayerId = calculateOwnPlayerId();
 			InitialGameState initialGameState = new InitialGameState(ownPlayerId, playerSettings, randomSeed, startResources);
+			InitialGameState initialGameState = new InitialGameState(ownPlayerId, playerSettings, randomSeed,
+					EMapStartResources.fromMapValue(startResourcesValue), peaceTime);
 
 			JSettlersGame game = new JSettlersGame(mapLoader, networkClient.getNetworkConnector(), initialGameState);
 
@@ -196,6 +201,9 @@ public class MultiplayerGame {
 
 	void updateLists(MatchInfoPacket matchInfo) {
 		maxPlayers = matchInfo.getMaxPlayers();
+		// must be updated before the lists, because their listeners update the UI
+		startResourcesValue = matchInfo.getStartResources();
+		peaceTime = EPeaceTime.fromMinutes(matchInfo.getPeaceTimeMinutes());
 		List<IMultiplayerPlayer> players = new LinkedList<>();
 		for (PlayerInfoPacket playerInfoPacket : matchInfo.getPlayers()) {
 			players.add(new MultiplayerPlayer(playerInfoPacket));
@@ -291,6 +299,26 @@ public class MultiplayerGame {
 			@Override
 			public void setPlayerCount(int playerCount) {
 				networkClient.setPlayerCount(playerCount);
+			}
+
+			@Override
+			public void setStartResources(int startResourcesValue) {
+				networkClient.setStartResources(startResourcesValue);
+			}
+
+			@Override
+			public int getStartResourcesValue() {
+				return startResourcesValue;
+			}
+
+			@Override
+			public void setPeaceTime(EPeaceTime peaceTime) {
+				networkClient.setPeaceTime(peaceTime.minutes);
+			}
+
+			@Override
+			public EPeaceTime getPeaceTime() {
+				return peaceTime;
 			}
 
 			@Override

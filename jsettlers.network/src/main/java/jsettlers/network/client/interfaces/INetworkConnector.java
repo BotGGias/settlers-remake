@@ -43,4 +43,19 @@ public interface INetworkConnector {
 	void setStartFinished(boolean startFinished);
 
 	boolean haveAllPlayersStartFinished();
+
+	/**
+	 * Sends the request to resume the paused game to all players (including this one).
+	 *
+	 * @param playerId
+	 *            The id of the requesting player in the game.
+	 * @param pauseCount
+	 *            The number of the pause that shall be ended.
+	 */
+	void requestGameResume(byte playerId, int pauseCount);
+
+	/**
+	 * Sets the listener that receives the resume requests of all players.
+	 */
+	void setGameResumeListener(IGameResumeListener listener);
 }

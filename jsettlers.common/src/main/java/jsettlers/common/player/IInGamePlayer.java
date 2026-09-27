@@ -33,6 +33,12 @@ public interface IInGamePlayer extends IPlayer {
 	IEndgameStatistic getEndgameStatistic();
 
 	/**
+	 * Gets the statistic about the materials this player has produced.
+	 * @return The production statistic
+	 */
+	IProductionStatistic getProductionStatistic();
+
+	/**
 	 * Gets the current movable statistics for this player
 	 * @return The statistics of movables.
 	 */

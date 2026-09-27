@@ -36,5 +36,10 @@ public enum EMessageType {
 	/**
 	 * The worker of a building was not able to find a place to execute his action in his work are for some time.
 	 */
-	NOTHING_FOUND_IN_SEARCH_AREA
+	NOTHING_FOUND_IN_SEARCH_AREA,
+
+	/**
+	 * A general information about the game, e.g. about the peace time.
+	 */
+	INFO
 }

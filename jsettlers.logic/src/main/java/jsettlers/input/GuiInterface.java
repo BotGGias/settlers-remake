@@ -33,6 +33,7 @@ import jsettlers.common.action.BuildAction;
 import jsettlers.common.action.CastSpellAction;
 import jsettlers.common.action.ChangeTradingRequestAction;
 import jsettlers.common.action.ConvertAction;
+import jsettlers.common.action.ConvertAtPositionAction;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.action.EMoveToType;
 import jsettlers.common.action.IAction;
@@ -77,6 +78,7 @@ import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask.EChangeTowerSoldierTaskType;
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
+import jsettlers.input.tasks.ConvertAtPositionGuiTask;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MovableGuiTask;
@@ -125,14 +127,17 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private final boolean                 multiplayer;
 	private final ConstructionMarksThread constructionMarksCalculator;
 	private final Timer                   refreshSelectionTimer;
+	private final MultiplayerPauseController pauseController;
 
 	/**
 	 * The current selection. This is updated by game logic.
 	 */
 	private SelectionSet currentSelection = new SelectionSet();
 
-	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid, IGameStoppable gameStoppable, byte playerId, boolean multiplayer) {
+	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid, IGameStoppable gameStoppable, byte playerId, boolean multiplayer,
+			MultiplayerPauseController pauseController) {
 		this.connector = connector;
+		this.pauseController = pauseController;
 		this.clock = clock;
 		this.taskScheduler = taskScheduler;
 		this.grid = grid;
@@ -183,15 +188,31 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				break;
 
 			case SPEED_TOGGLE_PAUSE:
-				clock.invertPausing();
+				if (multiplayer) {
+					if (clock.isPausing()) {
+						pauseController.requestResume();
+					} else {
+						pauseController.requestPause();
+					}
+				} else {
+					clock.invertPausing();
+				}
 				break;
 
 			case SPEED_SET_PAUSE:
-				clock.setPausing(true);
+				if (multiplayer) {
+					pauseController.requestPause();
+				} else {
+					clock.setPausing(true);
+				}
 				break;
 
 			case SPEED_UNSET_PAUSE:
-				clock.setPausing(false);
+				if (multiplayer) {
+					pauseController.requestResume();
+				} else {
+					clock.setPausing(false);
+				}
 				break;
 
 			case SPEED_FASTER:
@@ -388,6 +409,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				break;
 
 			case ABORT:
+			case ASK_EXIT: // only handled by the controls
 				break;
 
 			case EXIT:
@@ -416,6 +438,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				SetMovableLimitTypeAction setTypeAction = (SetMovableLimitTypeAction) action;
 
 				scheduleTask(new SetMovableLimitTypeTask(playerId, setTypeAction.getPosition(), setTypeAction.getMovableType(), setTypeAction.isRelative()));
+				break;
+
+			case CONVERT_AT_POSITION:
+				ConvertAtPositionAction convertAtPositionAction = (ConvertAtPositionAction) action;
+				scheduleTask(new ConvertAtPositionGuiTask(playerId, convertAtPositionAction.getPosition(), convertAtPositionAction.getSourceType(),
+						convertAtPositionAction.getTargetType(), convertAtPositionAction.getAmount()));
+				break;
 
 			default:
 				System.out.println("WARNING: GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
@@ -518,7 +547,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				for (final ISelectable curr : currentSelection) {
 					if (curr instanceof IGraphicsMovable) {
 						final EMovableType currType = ((IGraphicsMovable) curr).getMovableType();
-						if (currType == EMovableType.PIONEER) {
+						if (currType == EMovableType.PIONEER || currType == EMovableType.GEOLOGIST || currType == EMovableType.THIEF) {
 							convertables.add(curr);
 							if (convertables.size() >= action.getAmount()) {
 								break;
@@ -778,6 +807,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				setSelection(newSelection);
 			}
 		}
+	}
+
+	@Override
+	public MultiplayerPauseController getPauseController() {
+		return pauseController;
 	}
 
 	@Override
