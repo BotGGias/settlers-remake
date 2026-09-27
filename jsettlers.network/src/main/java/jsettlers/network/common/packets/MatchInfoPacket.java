@@ -35,17 +35,31 @@ public class MatchInfoPacket extends Packet {
 	private MapInfoPacket mapInfo;
 	private PlayerInfoPacket[] players;
 	private SlotInfoPacket[] slots;
+	private int startResources = DEFAULT_START_RESOURCES;
+	private int peaceTimeMinutes = 0;
+
+	/**
+	 * The value of the start resources if nothing else has been selected (high goods).
+	 */
+	public static final int DEFAULT_START_RESOURCES = 3;
 
 	public MatchInfoPacket() {
 	}
 
 	public MatchInfoPacket(String id, String matchName, int maxPlayers, MapInfoPacket mapInfo, PlayerInfoPacket[] players, SlotInfoPacket[] slots) {
+		this(id, matchName, maxPlayers, mapInfo, players, slots, DEFAULT_START_RESOURCES, 0);
+	}
+
+	public MatchInfoPacket(String id, String matchName, int maxPlayers, MapInfoPacket mapInfo, PlayerInfoPacket[] players, SlotInfoPacket[] slots,
+			int startResources, int peaceTimeMinutes) {
 		this.id = id;
 		this.matchName = matchName;
 		this.maxPlayers = maxPlayers;
 		this.mapInfo = mapInfo;
 		this.players = players;
 		this.slots = slots;
+		this.startResources = startResources;
+		this.peaceTimeMinutes = peaceTimeMinutes;
 	}
 
 	public MatchInfoPacket(Match match) {
@@ -56,6 +70,8 @@ public class MatchInfoPacket extends Packet {
 		mapInfo = match.getMap();
 		players = match.getPlayerInfos();
 		slots = match.getSlotInfos();
+		startResources = match.getStartResources();
+		peaceTimeMinutes = match.getPeaceTimeMinutes();
 	}
 
 	@Override
@@ -76,6 +92,9 @@ public class MatchInfoPacket extends Packet {
 		for(SlotInfoPacket curr : slots) {
 			curr.serialize(dos);
 		}
+
+		dos.writeInt(startResources);
+		dos.writeInt(peaceTimeMinutes);
 	}
 
 	@Override
@@ -104,6 +123,9 @@ public class MatchInfoPacket extends Packet {
 		}
 
 		this.slots = slots;
+
+		startResources = dis.readInt();
+		peaceTimeMinutes = dis.readInt();
 	}
 
 	public String getId() {
@@ -130,17 +152,28 @@ public class MatchInfoPacket extends Packet {
 		return maxPlayers;
 	}
 
+	/**
+	 * @return The value of the selected start resources (see EMapStartResources.value).
+	 */
+	public int getStartResources() {
+		return startResources;
+	}
+
+	public int getPeaceTimeMinutes() {
+		return peaceTimeMinutes;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		MatchInfoPacket that = (MatchInfoPacket) o;
-		return maxPlayers == that.maxPlayers && Objects.equals(id, that.id) && Objects.equals(matchName, that.matchName) && Objects.equals(mapInfo, that.mapInfo) && Arrays.equals(players, that.players) && Arrays.equals(slots, that.slots);
+		return maxPlayers == that.maxPlayers && startResources == that.startResources && peaceTimeMinutes == that.peaceTimeMinutes && Objects.equals(id, that.id) && Objects.equals(matchName, that.matchName) && Objects.equals(mapInfo, that.mapInfo) && Arrays.equals(players, that.players) && Arrays.equals(slots, that.slots);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = Objects.hash(id, matchName, maxPlayers, mapInfo);
+		int result = Objects.hash(id, matchName, maxPlayers, mapInfo, startResources, peaceTimeMinutes);
 		result = 31 * result + Arrays.hashCode(players);
 		result = 31 * result + Arrays.hashCode(slots);
 		return result;
@@ -149,6 +182,7 @@ public class MatchInfoPacket extends Packet {
 	@Override
 	public String toString() {
 		return "MatchInfoPacket [id=" + id + ", matchName=" + matchName + ", maxPlayers=" + maxPlayers + ", mapInfo=" + mapInfo + ", players="
-				+ Arrays.toString(players) + ", slots=" + Arrays.toString(slots) + "]";
+				+ Arrays.toString(players) + ", slots=" + Arrays.toString(slots) + ", startResources=" + startResources + ", peaceTimeMinutes="
+				+ peaceTimeMinutes + "]";
 	}
 }

@@ -163,6 +163,11 @@ public class MageMovable extends AttackableHumanMovable implements IMageMovable 
 	private boolean castSpell() {
 		if(currentSpell.forcePresence() && position.getOnGridDistTo(currentTarget) > Constants.MAGE_CAST_DISTANCE) return false;
 
+		if(player.isInPeaceTime() && ESpellType.OFFENSIVE_SPELLS.contains(currentSpell)) {
+			player.showMessage(SimpleMessage.castFailed(position, "spell_failed_peace_time"));
+			return false;
+		}
+
 		if(!player.getMannaInformation().useSpell(currentSpell)) {
 			player.showMessage(SimpleMessage.castFailed(position, "spell_failed"));
 			return false;
@@ -314,6 +319,7 @@ public class MageMovable extends AttackableHumanMovable implements IMageMovable 
 							}
 						});
 				animation = 121;
+				break;
 			case CURSE_BOWMAN:
 				sort(spellRegion()).map(grid::getMovableAt)
 						.filter(lm -> lm!=null&&lm.isAlive()&&lm instanceof IBowmanMovable)
@@ -328,11 +334,11 @@ public class MageMovable extends AttackableHumanMovable implements IMageMovable 
 						.limit(MatchConstants.random().nextInt(ESpellType.GIFTS_MAX_STACKS+1))
 						.forEach((x, y) -> {
 							ShortPoint2D at = new ShortPoint2D(x, y);
-							//TODO only give useful stuff
-							EMaterialType type = EMaterialType.values()[MatchConstants.random().nextInt(EMaterialType.values().length)];
-							int size = MatchConstants.random().nextInt(9);
-							for(int i = 0; i != size; i++) grid.dropMaterial(at, type, true, false);
-							effectLocations.add(at);
+							EMaterialType type = EMaterialType.DROPPABLE_MATERIALS[MatchConstants.random().nextInt(EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS)];
+							int size = 1 + MatchConstants.random().nextInt(8);
+							boolean droppedSomething = false;
+							for(int i = 0; i != size; i++) droppedSomething |= grid.dropMaterial(at, type, true, false);
+							if(droppedSomething) effectLocations.add(at);
 						});
 				duration = 1;
 				sound = 78;
@@ -470,7 +476,7 @@ public class MageMovable extends AttackableHumanMovable implements IMageMovable 
 			ShortPoint2D pos = new ShortPoint2D(x, y);
 			boolean tookSomething = false;
 
-			while(grid.takeMaterial(pos, from) && materialCount.value <= limit) {
+			while(materialCount.value < limit && grid.takeMaterial(pos, from)) {
 				materialCount.value++;
 				tookSomething = true;
 			}

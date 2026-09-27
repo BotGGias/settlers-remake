@@ -122,7 +122,7 @@ public class PacketSerializationTest {
 				new SlotInfoPacket((byte) 4, (byte) 42, (byte) 3, (byte) 1),
 				new SlotInfoPacket((byte) 0, (byte) 42, (byte) 3, (byte) 2),
 		};
-		return new MatchInfoPacket("id28948298fedkj", "KHDHifuh(&/%T", (byte) 3, mapInfo, players, slots);
+		return new MatchInfoPacket("id28948298fedkj", "KHDHifuh(&/%T", (byte) 3, mapInfo, players, slots, 1, 45);
 	}
 
 	private static <T extends Packet> Object d(Class<T> classType) {

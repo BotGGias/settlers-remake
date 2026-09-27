@@ -11,6 +11,7 @@ import android.arch.lifecycle.ViewModel;
 import java.util.stream.Stream;
 import java.util.Arrays;
 import jsettlers.common.ai.EPlayerType;
+import jsettlers.common.menu.EPeaceTime;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.logic.map.loading.MapLoader;
@@ -55,9 +56,9 @@ public abstract class MapSetupViewModel extends ViewModel implements PositionCha
 		playerCountOptions.setValue(playerCountOptions());
 		playerCount.setValue(new PlayerCount(mapLoader.getMaxPlayers()));
 		startResourcesOptions.setValue(startResourcesOptions());
-		startResources.setValue(new StartResources(EMapStartResources.MEDIUM_GOODS));
+		startResources.setValue(new StartResources(EMapStartResources.HIGH_GOODS));
 		peaceTimeOptions.setValue(peaceTimeOptions());
-		peaceTime.setValue(peaceTimeOptions.getValue()[0]);
+		peaceTime.setValue(new Peacetime(EPeaceTime.WITHOUT));
 		image.setValue(mapLoader.getImage());
 		title.setValue(mapLoader.getMapName());
 
@@ -250,6 +251,8 @@ public abstract class MapSetupViewModel extends ViewModel implements PositionCha
 	}
 
 	private Peacetime[] peaceTimeOptions() {
-		return new Peacetime[] { new Peacetime("Without") };
+		return Arrays.stream(EPeaceTime.VALUES)
+				.map(Peacetime::new)
+				.toArray(Peacetime[]::new);
 	}
 }

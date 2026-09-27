@@ -61,6 +61,8 @@ public class BuildingWorkerMovable extends CivilianMovable implements IBuildingW
 	private static PrintStream OUT;
 
 	protected void produce(EMaterialType material) {
+		getPlayer().getProductionStatistic().materialProduced(material);
+
 		if(material == EMaterialType.GOLD) {
 			getPlayer().getEndgameStatistic().incrementAmountOfProducedGold();
 		}

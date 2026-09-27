@@ -7,4 +7,6 @@ public enum ECommonLinkType {
 
 	SHIP_GUI_ACTIVE,
 	SHIP_GUI_INACTIVE,
+
+	STATISTIC_SOLDIERS,
 }

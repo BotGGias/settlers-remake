@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2026
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,53 +12,47 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.player;
+package jsettlers.common.menu;
 
 /**
- * @author codingberlin
+ * The possible durations of the peace time at the beginning of a game. During the peace time, no player can attack another player.
  */
-public interface IInGamePlayer extends IPlayer {
-	/**
-	 * Gets the mana information (settler leveling progress) for this player
-	 * @return The mana information
-	 */
-	IMannaInformation getMannaInformation();
+public enum EPeaceTime {
+	WITHOUT(0),
+	MIN_10(10),
+	MIN_20(20),
+	MIN_30(30),
+	MIN_45(45),
+	MIN_60(60),
+	MIN_90(90),
+	MIN_120(120);
+
+	public static final EPeaceTime[] VALUES = values();
+
+	public final int minutes;
+
+	EPeaceTime(int minutes) {
+		this.minutes = minutes;
+	}
 
 	/**
-	 * Gets the combat strength information for the player
-	 * @return The combat strength information
+	 * @return The duration of the peace time in milliseconds of game time.
 	 */
-	ICombatStrengthInformation getCombatStrengthInformation();
-
-	IEndgameStatistic getEndgameStatistic();
-
-	/**
-	 * Gets the statistic about the materials this player has produced.
-	 * @return The production statistic
-	 */
-	IProductionStatistic getProductionStatistic();
+	public int getDurationMs() {
+		return minutes * 60 * 1000;
+	}
 
 	/**
-	 * Gets the current movable statistics for this player
-	 * @return The statistics of movables.
+	 * @param minutes
+	 *            The duration in minutes.
+	 * @return The {@link EPeaceTime} with the given duration or {@link #WITHOUT} if there is none.
 	 */
-	ISettlerInformation getSettlerInformation();
-
-	/**
-	 * Get the civilisation for the player
-	 * @return The civilisation the player has
-	 */
-	ECivilisation getCivilisation();
-
-	/**
-	 * Gets the current amount of beds
-	 * @return
-	 */
-	IBedInformation getBedInformation();
-
-	/**
-	 * Get win/lose state for the player
-	 * @return The win/lose state the player is in
-	 */
-	EWinState getWinState();
+	public static EPeaceTime fromMinutes(int minutes) {
+		for (EPeaceTime peaceTime : VALUES) {
+			if (peaceTime.minutes == minutes) {
+				return peaceTime;
+			}
+		}
+		return WITHOUT;
+	}
 }

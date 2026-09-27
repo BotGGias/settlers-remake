@@ -199,6 +199,11 @@ public enum EActionType {
 	EXIT,
 
 	/**
+	 * Asks the user if he really wants to exit the game.
+	 */
+	ASK_EXIT,
+
+	/**
 	 * Sets the speed to be not paused.
 	 */
 	SPEED_UNSET_PAUSE,

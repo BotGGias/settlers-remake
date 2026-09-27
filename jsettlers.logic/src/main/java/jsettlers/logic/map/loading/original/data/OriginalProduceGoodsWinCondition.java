@@ -15,6 +15,7 @@
 package jsettlers.logic.map.loading.original.data;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import jsettlers.common.material.EMaterialType;
 
@@ -46,5 +47,10 @@ public final class OriginalProduceGoodsWinCondition implements Serializable {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(amount, type);
 	}
 }

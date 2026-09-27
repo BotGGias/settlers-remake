@@ -202,3 +202,13 @@ SHIP_GUI_ACTIVE, CARGO_SHIP {
     ASIAN: original_34_GUI_288
     AMAZON: original_44_GUI_282
 }
+
+
+# header icon of the soldier column in the settler statistics
+# TODO: find the matching EGYPTIAN and ASIAN images
+STATISTIC_SOLDIERS, SWORDSMAN_L1 {
+    ROMAN: original_14_GUI_111
+    EGYPTIAN: original_14_GUI_111
+    ASIAN: original_14_GUI_111
+    AMAZON: original_44_GUI_120
+}

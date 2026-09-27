@@ -15,7 +15,6 @@
 
 package jsettlers.main.android.mainmenu.gamesetup;
 
-import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 
 import android.arch.lifecycle.ViewModelProviders;
@@ -39,11 +38,5 @@ public class NewMultiPlayerSetupFragment extends MapSetupFragment {
 	protected MapSetupViewModel createViewModel() {
 		viewModel = ViewModelProviders.of(this, new NewMultiPlayerSetupViewModel.Factory(getActivity(), mapId)).get(NewMultiPlayerSetupViewModel.class);
 		return viewModel;
-	}
-
-	@AfterViews
-	void disableUnavailableSpinners() {
-		startResourcesSpinner.setEnabled(false);
-		peacetimeSpinner.setEnabled(false);
 	}
 }

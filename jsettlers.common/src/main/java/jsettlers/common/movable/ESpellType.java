@@ -82,6 +82,12 @@ public enum ESpellType {
 		return forcePresence;
 	}
 
+	/**
+	 * Spells that harm other players. They can not be cast during the peace time.
+	 */
+	public static final Set<ESpellType> OFFENSIVE_SPELLS = EnumSet.of(DEFEATISM, FREEZE_FOES, DEFECT, CURSE_MOUNTAIN, SEND_FOES, CURSE_BOWMAN,
+			REMOVE_GOLD, DESTROY_ARROWS);
+
 	public static final int SEND_GOODS_MAX = 40;
 	public static final int CALL_GOODS_MAX = 40;
 	public static final int REMOVE_GOLD_MAX_GOLD = 40;

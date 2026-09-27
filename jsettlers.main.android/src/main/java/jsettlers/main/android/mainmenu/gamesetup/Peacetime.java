@@ -15,35 +15,35 @@
 
 package jsettlers.main.android.mainmenu.gamesetup;
 
+import jsettlers.common.menu.EPeaceTime;
+import jsettlers.graphics.localization.Labels;
+
 /**
  * Created by tompr on 24/02/2017.
  */
 public class Peacetime {
-	private final String type;
+	private final EPeaceTime type;
 
-	public Peacetime(String type) {
+	public Peacetime(EPeaceTime type) {
 		this.type = type;
 	}
 
-	public String getType() {
+	public EPeaceTime getType() {
 		return type;
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
+	public boolean equals(Object obj) {
+		return obj instanceof Peacetime && ((Peacetime) obj).getType() == type;
+	}
 
-		Peacetime peacetime = (Peacetime) o;
-
-		return type != null ? type.equals(peacetime.type) : peacetime.type == null;
-
+	@Override
+	public int hashCode() {
+		return type.hashCode();
 	}
 
 	@Override
 	public String toString() {
-		return type;
+		return Labels.getString("peace-time-" + type.name());
 	}
 }

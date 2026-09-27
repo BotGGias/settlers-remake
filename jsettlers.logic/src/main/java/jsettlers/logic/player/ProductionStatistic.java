@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2026
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,63 +14,30 @@
  *******************************************************************************/
 package jsettlers.logic.player;
 
-import jsettlers.common.ai.EPlayerType;
-import jsettlers.common.player.IEndgameStatistic;
-
 import java.io.Serializable;
 
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.player.IProductionStatistic;
+
 /**
- * @author codingberlin
+ * Counts the materials produced by the workers of a player.
  */
-public class EndgameStatistic implements IEndgameStatistic, Serializable {
-	private static final long serialVersionUID = -1352905249487671843L;
+public class ProductionStatistic implements IProductionStatistic, Serializable {
+	private static final long serialVersionUID = 1L;
 
-	private Player player;
-	private short amountOfProducedSoldiers = 0;
-	private short amountOfProducedGold = 0;
+	private final int[] produced = new int[EMaterialType.NUMBER_OF_MATERIALS];
 
-	public EndgameStatistic(Player player) {
-		this.player = player;
+	public void materialProduced(EMaterialType materialType) {
+		if (materialType != null && materialType.isDroppable() && materialType.ordinal < produced.length) {
+			produced[materialType.ordinal]++;
+		}
 	}
 
 	@Override
-	public short getAmountOfProducedSoldiers() {
-		return amountOfProducedSoldiers;
-	}
-
-	@Override
-	public short getAmountOfProducedMana() {
-		return player.getMannaInformation().getAmountOfProducedManna();
-	}
-
-	@Override
-	public short getAmountOfProducedGold() {
-		return amountOfProducedGold;
-	}
-
-	@Override
-	public String getName() {
-		return player.getPlayerType().toString();
-	}
-
-	@Override
-	public byte getTeam() {
-		return player.getTeamId();
-	}
-
-	public void incrementAmountOfProducedSoldiers() {
-		amountOfProducedSoldiers++;
-	}
-
-	public void incrementAmountOfProducedGold() {
-		amountOfProducedGold++;
-	}
-
-	@Override
-	public String toString() {
-
-		return "amountOfProducedSoldiers: " + amountOfProducedSoldiers +
-				", amountOfProducedGold: " + amountOfProducedGold +
-				", amountOfProducedMana: " + getAmountOfProducedMana();
+	public int getAmountProduced(EMaterialType materialType) {
+		if (materialType == null || materialType.ordinal >= produced.length) {
+			return 0;
+		}
+		return produced[materialType.ordinal];
 	}
 }

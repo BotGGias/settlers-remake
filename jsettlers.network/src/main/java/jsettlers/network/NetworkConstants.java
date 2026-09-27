@@ -45,7 +45,8 @@ public final class NetworkConstants {
 		}
 
 		// public static final int SERVER_PORT = 10213; // VERSION 1
-		public static final int SERVER_PORT = 10214; // VERSION 2
+		// public static final int SERVER_PORT = 10214; // VERSION 2
+		public static final int SERVER_PORT = 10215; // VERSION 3: start resources and peace time in MatchInfoPacket
 
 		public static final int BROADCAST_PORT = 10233;
 		public static final String BROADCAST_MESSAGE = "JSETTLERS-LAN-SERVER-BROADCAST-V1";
@@ -115,6 +116,7 @@ public final class NetworkConstants {
 		POSITION_CHANGED,
 		TYPE_CHANGED,
 		PLAYER_COUNT_CHANGED,
+		MATCH_SETTINGS_CHANGED,
 		;
 
 		private static final ENetworkMessage[] values = ENetworkMessage.values();
@@ -171,6 +173,8 @@ public final class NetworkConstants {
 		CHANGE_PLAYER_TYPE,
 		CHANGE_POSITION,
 		CHANGE_PLAYER_COUNT,
+		CHANGE_START_RESOURCES,
+		CHANGE_PEACE_TIME,
 		;
 
 		private static final ENetworkKey[] values = ENetworkKey.values();

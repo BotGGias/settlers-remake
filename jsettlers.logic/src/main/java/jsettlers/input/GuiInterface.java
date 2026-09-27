@@ -388,6 +388,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				break;
 
 			case ABORT:
+			case ASK_EXIT: // only handled by the controls
 				break;
 
 			case EXIT:

@@ -102,6 +102,22 @@ public interface INetworkClient {
 
 	void setPlayerCount(int playerCount);
 
+	/**
+	 * Sets the start resources of the match. Only the host is allowed to do this.
+	 *
+	 * @param startResources
+	 *            The value of the start resources.
+	 */
+	void setStartResources(int startResources);
+
+	/**
+	 * Sets the peace time of the match. Only the host is allowed to do this.
+	 *
+	 * @param peaceTimeMinutes
+	 *            The duration of the peace time in minutes.
+	 */
+	void setPeaceTime(int peaceTimeMinutes);
+
 	void sendChatMessage(String message) throws IllegalStateException;
 
 	void leaveMatch();

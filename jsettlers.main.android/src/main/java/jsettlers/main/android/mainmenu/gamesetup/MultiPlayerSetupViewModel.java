@@ -12,6 +12,7 @@ import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
+import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameStarter;
@@ -123,6 +124,8 @@ public abstract class MultiPlayerSetupViewModel extends MapSetupViewModel implem
 		Iterator<IMultiplayerSlot> slotIter = slots.iterator();
 		realPlayerCount = slots.size();
 		playerCount.postValue(new PlayerCount(slots.size()));
+		getStartResources().postValue(new StartResources(EMapStartResources.fromMapValue(connector.getStartResourcesValue())));
+		getPeaceTime().postValue(new Peacetime(connector.getPeaceTime()));
 
 		for (int i = 0; i < playerSlotPresenters.size() && slotIter.hasNext(); i++) {
 			IMultiplayerSlot remoteSlot = slotIter.next();
