@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2026
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,53 +12,54 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.data.objects;
+package jsettlers.logic.map.grid.objects;
 
-import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
-import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.common.mapobject.EDecorationType;
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.RelativePoint;
 
-public class MapObjectContainer implements ObjectContainer, IMapObject {
+/**
+ * A decorative landscape object loaded from an original map (stones, wrecks, plants, reefs, ...).
+ * <p>
+ * The state progress is the ordinal of the {@link EDecorationType}, so the variant also survives in the fog of war.
+ */
+public class LandscapeDecorationMapObject extends AbstractHexMapObject {
+	private static final long serialVersionUID = 4133482306327126715L;
 
-	private final DecorationMapDataObject object;
+	private static final RelativePoint[] SELF_BLOCKING = new RelativePoint[] { new RelativePoint(0, 0) };
 
-	public MapObjectContainer(DecorationMapDataObject object) {
-		this.object = object;
+	private final EDecorationType decorationType;
+
+	public LandscapeDecorationMapObject(EDecorationType decorationType) {
+		this.decorationType = decorationType;
 	}
 
-	@Override
-	public MapDataObject getMapObject() {
-		return object;
-	}
-
-	@Override
-	public RelativePoint[] getProtectedArea() {
-		return new RelativePoint[] {
-				new RelativePoint(0, 0)
-		};
+	public EDecorationType getDecorationType() {
+		return decorationType;
 	}
 
 	@Override
 	public EMapObjectType getObjectType() {
-		return object.getType();
+		return EMapObjectType.LANDSCAPE_DECORATION;
 	}
 
 	@Override
 	public float getStateProgress() {
-		EDecorationType decorationType = object.getDecorationType();
-		return decorationType != null ? decorationType.ordinal() : 0;
+		return decorationType.ordinal();
 	}
 
 	@Override
-	public IMapObject getNextObject() {
-		return null;
+	public RelativePoint[] getBlockedTiles() {
+		return decorationType.blocking ? SELF_BLOCKING : super.getBlockedTiles();
 	}
 
 	@Override
-	public IMapObject getMapObject(EMapObjectType type) {
-		return type == getObjectType() ? this : null;
+	public boolean cutOff() {
+		return false;
+	}
+
+	@Override
+	public boolean canBeCut() {
+		return false;
 	}
 }

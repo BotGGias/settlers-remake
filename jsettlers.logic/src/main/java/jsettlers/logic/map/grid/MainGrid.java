@@ -64,6 +64,7 @@ import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapLine;
 import jsettlers.common.map.shapes.MapNeighboursArea;
+import jsettlers.common.mapobject.EDecorationType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -98,6 +99,7 @@ import jsettlers.logic.map.grid.flags.FlagsGrid;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
 import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
+import jsettlers.logic.map.grid.objects.DecorationMapObject;
 import jsettlers.logic.map.grid.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 import jsettlers.logic.map.grid.objects.ObjectsGrid;
@@ -119,6 +121,7 @@ import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSet
 import jsettlers.logic.map.grid.partition.manager.settings.ProfessionSettings;
 import jsettlers.logic.map.loading.data.IMapData;
 import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
 import jsettlers.logic.map.loading.data.objects.IPlayerIdProvider;
 import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.logic.map.loading.data.objects.MapTreeObject;
@@ -156,6 +159,7 @@ public final class MainGrid implements Serializable {
 	 * The specialists bearers can be converted to and back.
 	 */
 	private static final Set<EMovableType> CONVERTIBLE_SPECIALISTS = EnumSet.of(EMovableType.PIONEER, EMovableType.GEOLOGIST, EMovableType.THIEF);
+	private static final Set<EMapObjectType> LANDSCAPE_DECORATION_TYPES = EnumSet.of(EMapObjectType.LANDSCAPE_DECORATION);
 
 	final String mapId;
 	final String mapName;
@@ -334,12 +338,22 @@ public final class MainGrid implements Serializable {
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				MapDataObject object = mapGrid.getMapObject(x, y);
-				if (object != null && !isOccupyableBuilding(object) && isActivePlayer(object, playerSettings)) {
+				if (object != null && !isOccupyableBuilding(object) && !(object instanceof DecorationMapDataObject) && isActivePlayer(object, playerSettings)) {
 					try {
 						addMapObject(x, y, object);
 					} catch (Throwable t) {
 						t.printStackTrace();
 					}
+				}
+			}
+		}
+
+		// decorations are placed last, so they never block tiles of buildings, trees, stones or settlers
+		for (short y = 0; y < height; y++) {
+			for (short x = 0; x < width; x++) {
+				MapDataObject object = mapGrid.getMapObject(x, y);
+				if (object instanceof DecorationMapDataObject) {
+					addDecoration(x, y, (DecorationMapDataObject) object);
 				}
 			}
 		}
@@ -394,6 +408,21 @@ public final class MainGrid implements Serializable {
 		} else if (object instanceof MovableObject) {
 			MovableObject movableObject = (MovableObject) object;
 			Movable.createMovable(movableObject.getType(), partitionsGrid.getPlayer(movableObject.getPlayerId()), pos, movablePathfinderGrid);
+		}
+	}
+
+	private void addDecoration(int x, int y, DecorationMapDataObject object) {
+		if (!isInBounds(x, y) || objectsGrid.isBuildingAt(x, y)) {
+			return;
+		}
+
+		EDecorationType decorationType = object.getDecorationType();
+		if (decorationType != null) {
+			if (!decorationType.blocking || movableGrid.hasNoMovableAt(x, y)) {
+				mapObjectsManager.addLandscapeDecoration(x, y, decorationType);
+			}
+		} else {
+			objectsGrid.addMapObjectAt(x, y, new DecorationMapObject(object.getType()));
 		}
 	}
 
@@ -1864,6 +1893,8 @@ public final class MainGrid implements Serializable {
 
 				if (canConstructAt(protectedArea)) {
 					setProtectedState(protectedArea, true);
+					// non blocking decorations below the building (e.g. mines are not flattened)
+					protectedArea.stream().filterBounds(width, height).forEach((x, y) -> objectsGrid.removeMapObjectTypes(x, y, LANDSCAPE_DECORATION_TYPES));
 					mapObjectsManager.addBuildingTo(position, newBuilding);
 					objectsGrid.setBuildingArea(protectedArea, newBuilding);
 					return true;

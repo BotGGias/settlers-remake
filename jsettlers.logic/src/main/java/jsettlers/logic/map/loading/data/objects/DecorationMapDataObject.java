@@ -14,16 +14,31 @@
  */
 package jsettlers.logic.map.loading.data.objects;
 
+import jsettlers.common.mapobject.EDecorationType;
 import jsettlers.common.mapobject.EMapObjectType;
 
 public class DecorationMapDataObject implements MapDataObject {
 	private final EMapObjectType type;
+	private final EDecorationType decorationType;
 
 	public DecorationMapDataObject(EMapObjectType type) {
 		this.type = type;
+		this.decorationType = null;
+	}
+
+	public DecorationMapDataObject(EDecorationType decorationType) {
+		this.type = EMapObjectType.LANDSCAPE_DECORATION;
+		this.decorationType = decorationType;
 	}
 
 	public EMapObjectType getType() {
 		return type;
+	}
+
+	/**
+	 * @return The decoration type if this is a {@link EMapObjectType#LANDSCAPE_DECORATION}, otherwise null.
+	 */
+	public EDecorationType getDecorationType() {
+		return decorationType;
 	}
 }
