@@ -23,6 +23,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import java.util.function.Consumer;
@@ -30,6 +32,7 @@ import java.util.function.Consumer;
 import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.logging.MultiplexingOutputStream;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.menu.EPeaceTime;
@@ -39,6 +42,7 @@ import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.IStartingGameListener;
+import jsettlers.common.menu.InGamePlayerStatus;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IGameTimeProvider;
@@ -46,6 +50,7 @@ import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
 import jsettlers.input.MultiplayerPauseController;
 import jsettlers.input.PlayerState;
+import jsettlers.input.PlayerStatusController;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.trading.HarborBuilding;
 import jsettlers.logic.buildings.trading.MarketBuilding;
@@ -183,6 +188,7 @@ public class JSettlersGame {
 		private boolean gameRunning;
 		private AiExecutor aiExecutor;
 		private MultiplayerPauseController pauseController;
+		private volatile PlayerStatusController playerStatusController;
 
 		@Override
 		public void run() {
@@ -215,6 +221,8 @@ public class JSettlersGame {
 				pauseController = new MultiplayerPauseController(MatchConstants.clock(), networkConnector.getTaskScheduler(), networkConnector, multiplayer,
 						initialGameState.getPlayerId(), initialGameState.getPlayerSettings().length, localPlayer);
 				networkConnector.setGameResumeListener(pauseController::resumeRequested);
+				playerStatusController = createPlayerStatusController(localPlayer);
+				networkConnector.setPlayerStatusListener(playerStatusController::playerStatusReceived);
 				gameTimeProvider = new GameTimeProvider(MatchConstants.clock(), pauseController);
 
 				mainGrid.initForPlayer(initialGameState.getPlayerId(), playerState.getFogOfWar());
@@ -247,6 +255,7 @@ public class JSettlersGame {
 				gameRunning = true;
 
 				startingGameListener.startFinished();
+				playerStatusController.start();
 
 				synchronized (stopMutex) {
 					while (!stopped) {
@@ -258,6 +267,8 @@ public class JSettlersGame {
 				}
 
 				pauseController.shutdown();
+				playerStatusController.shutdown();
+				networkConnector.setPlayerStatusListener(null);
 				networkConnector.shutdown();
 				mainGrid.stopThreads();
 				connector.shutdown();
@@ -279,6 +290,17 @@ public class JSettlersGame {
 					exitListener.accept(this);
 				}
 			}
+		}
+
+		private PlayerStatusController createPlayerStatusController(Player localPlayer) {
+			PlayerSetting[] playerSettings = initialGameState.getPlayerSettings();
+			Player[] players = mainGrid.getPartitionsGrid().getPlayers();
+			EPlayerType[] playerTypes = new EPlayerType[players.length];
+			for (int i = 0; i < playerTypes.length && i < playerSettings.length; i++) {
+				playerTypes[i] = playerSettings[i].isAvailable() ? playerSettings[i].getPlayerType() : null;
+			}
+			return new PlayerStatusController(MatchConstants.clock(), networkConnector, multiplayer, initialGameState.getPlayerId(), playerTypes,
+					players, localPlayer);
 		}
 
 		private void startPeaceTime(EPeaceTime peaceTime) {
@@ -389,6 +411,18 @@ public class JSettlersGame {
 		@Override
 		public boolean isMultiplayerGame() {
 			return multiplayer;
+		}
+
+		@Override
+		public List<InGamePlayerStatus> getPlayerStatuses() {
+			PlayerStatusController controller = playerStatusController;
+			return controller != null ? controller.getPlayerStatuses() : Collections.emptyList();
+		}
+
+		@Override
+		public String getPlayerName(byte playerId) {
+			PlayerStatusController controller = playerStatusController;
+			return controller != null ? controller.getPlayerName(playerId) : null;
 		}
 
 		@Override

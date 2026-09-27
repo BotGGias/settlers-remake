@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.common.menu.messages;
 
+import jsettlers.common.Color;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -86,4 +87,18 @@ public interface IMessage {
 	 * @return resulting age in milliseconds.
 	 */
 	int ageBy(int milliseconds);
+
+	/**
+	 * @return The time in milliseconds this message is shown.
+	 */
+	default long getTimeToLive() {
+		return MESSAGE_TTL;
+	}
+
+	/**
+	 * @return The color of a status dot shown in front of the message or null if no dot shall be shown.
+	 */
+	default Color getIndicatorColor() {
+		return null;
+	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2026
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,39 +12,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.menu.messages;
+package jsettlers.common.menu;
 
 /**
- * Denotes the type of the message. Used for context actions and e.g. playing the right sound.
- * 
- * @author Michael Zangl
+ * The network state of a human player in a multiplayer game.
  */
-public enum EMessageType {
+public enum EPlayerConnectionState {
 	/**
-	 * A chat message.
+	 * No information has been received yet.
 	 */
-	CHAT,
+	UNKNOWN,
 	/**
-	 * The user was attacked by an other user.
+	 * The player is connected and keeps up with the game.
 	 */
-	ATTACKED,
+	CONNECTED,
 	/**
-	 * Minerals have been found.
+	 * The player is connected, but the game has to wait for him or he does not respond.
 	 */
-	MINERALS,
-
+	WAITING,
 	/**
-	 * The worker of a building was not able to find a place to execute his action in his work are for some time.
+	 * The player has left the game or the connection to him is lost.
 	 */
-	NOTHING_FOUND_IN_SEARCH_AREA,
-
-	/**
-	 * A general information about the game, e.g. about the peace time.
-	 */
-	INFO,
-
-	/**
-	 * A short notice about the state of a player, e.g. a network problem. It is shown with a colored status dot.
-	 */
-	PLAYER_STATUS
+	DISCONNECTED
 }

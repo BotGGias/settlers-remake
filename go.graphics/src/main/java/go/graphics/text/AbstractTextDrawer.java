@@ -53,6 +53,8 @@ public abstract class AbstractTextDrawer<T extends GLDrawContext> {
 
 		// infinity symbol
 		charsBuilder.append('\u221E');
+		// black circle, used as status dot
+		charsBuilder.append('\u25CF');
 
 		CHARACTERS = charsBuilder.toString();
 		CHARACTER_COUNT = CHARACTERS.length();

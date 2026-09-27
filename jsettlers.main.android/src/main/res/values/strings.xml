@@ -144,6 +144,10 @@
 	<string name="game_menu_speed_title">Game speed x%.1f</string>
 	<string name="game_menu_speed_normal">Normal</string>
 	<string name="game_menu_speed_fast">Fast</string>
+	<string name="game_menu_players">Players</string>
+	<string name="players_title">Players</string>
+	<string name="players_close">Close</string>
+	<string name="players_team">Team %d</string>
 
 	<string name="no_saved_games">No saved games available</string>
 	<string name="resource_selection_dialog_title">Locate GFX and SND folders</string>

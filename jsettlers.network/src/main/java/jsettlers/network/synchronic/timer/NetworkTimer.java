@@ -55,6 +55,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	private int maxAllowedLockstep = -1;
 
 	private boolean isPausing;
+	private volatile long lastProgressMs = System.currentTimeMillis();
 	private int pauseTime;
 	private float speedFactor = 1.0f;
 	private float progress = 0.0f;
@@ -102,10 +103,18 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 					executeRun();
 					progress--;
 				}
+				lastProgressMs = System.currentTimeMillis();
 			} else {
 				pauseTime -= TIME_SLICE;
 			}
+		} else {
+			lastProgressMs = System.currentTimeMillis(); // a paused game does not wait for anybody
 		}
+	}
+
+	@Override
+	public long getMillisSinceLastProgress() {
+		return System.currentTimeMillis() - lastProgressMs;
 	}
 
 	private synchronized void executeRun() {

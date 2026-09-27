@@ -84,6 +84,7 @@ import jsettlers.graphics.action.ActionHandler;
 import jsettlers.graphics.action.ActionThreadBlockingListener;
 import jsettlers.graphics.font.FontDrawerFactory;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.localization.PlayerStatusTexts;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.OriginalControls;
 import jsettlers.graphics.map.draw.Background;
@@ -203,6 +204,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	private final ReplaceableTextDrawer textDrawer;
 	private final IGameTimeProvider gameTimeProvider;
+	private final IStartedGame game;
 
 	private final ETextDrawPosition textDrawPosition;
 
@@ -259,6 +261,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * 			  The menus on the side (swing) or on the bottom (android)
 	 */
 	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition, IControls controls) {
+		this.game = game;
 		this.map = game.getMap();
 		if(map instanceof IDirectGridProvider) {
 			IDirectGridProvider dgp = (IDirectGridProvider) map;
@@ -437,7 +440,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		int age = m.getAge();
 		return age < 1500
 				? Math.min(1, age / 1000f)
-				: Math.max(0, 1f - (float) age / IMessage.MESSAGE_TTL);
+				: Math.max(0, 1f - (float) age / m.getTimeToLive());
 	}
 
 	private void drawWinStateMsg(GLDrawContext gl) {
@@ -508,6 +511,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			float x = offsetX;
 			float y = offsetY + messageIndex * (fontSize.getSize()*1.3f) * yDirection;
 			float a = messageAlpha(m);
+			Color indicatorColor = m.getIndicatorColor();
+			if (indicatorColor != null) {
+				String dot = PlayerStatusTexts.STATUS_DOT;
+				drawer.drawString(x + 1, y - 1, new Color(0, 0, 0, a), dot);
+				drawer.drawString(x, y, new Color(indicatorColor.getRed(), indicatorColor.getGreen(), indicatorColor.getBlue(), a), dot);
+				x += drawer.getWidth(dot) + 8;
+			}
 			if (m.getSender() >= 0) {
 				String name = getPlayername(m.getSender()) + ":";
 				Color color = MapDrawContext.getPlayerColor(m.getSender());
@@ -526,8 +536,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private String getPlayername(byte sender) {
-		// TODO: Player names
-		return "player " + sender;
+		return PlayerStatusTexts.getName(game, sender);
 	}
 
 	private void adaptScreenSize() {
