@@ -35,4 +35,9 @@ public interface ITaskExecutorGuiInterface {
 	 */
 	UIState getUIState();
 
+	/**
+	 * @return The controller that pauses and resumes multiplayer games.
+	 */
+	MultiplayerPauseController getPauseController();
+
 }

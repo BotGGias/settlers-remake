@@ -44,6 +44,7 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IGameTimeProvider;
 import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
+import jsettlers.input.MultiplayerPauseController;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.trading.HarborBuilding;
@@ -181,6 +182,7 @@ public class JSettlersGame {
 		private Consumer<IStartedGame> exitListener;
 		private boolean gameRunning;
 		private AiExecutor aiExecutor;
+		private MultiplayerPauseController pauseController;
 
 		@Override
 		public void run() {
@@ -209,7 +211,11 @@ public class JSettlersGame {
 				RescheduleTimer.schedule(MatchConstants.clock()); // schedule timer
 
 				updateProgressListener(EProgressState.LOADING_IMAGES, 0.7f);
-				gameTimeProvider = new GameTimeProvider(MatchConstants.clock());
+				Player localPlayer = mainGrid.getPartitionsGrid().getPlayer(initialGameState.getPlayerId());
+				pauseController = new MultiplayerPauseController(MatchConstants.clock(), networkConnector.getTaskScheduler(), networkConnector, multiplayer,
+						initialGameState.getPlayerId(), initialGameState.getPlayerSettings().length, localPlayer);
+				networkConnector.setGameResumeListener(pauseController::resumeRequested);
+				gameTimeProvider = new GameTimeProvider(MatchConstants.clock(), pauseController);
 
 				mainGrid.initForPlayer(initialGameState.getPlayerId(), playerState.getFogOfWar());
 				mainGrid.startThreads();
@@ -228,7 +234,7 @@ public class JSettlersGame {
 
 				final IMapInterfaceConnector connector = startingGameListener.preLoadFinished(this);
 				GuiInterface guiInterface = new GuiInterface(connector, MatchConstants.clock(), networkConnector.getTaskScheduler(),
-						mainGrid.getGuiInputGrid(), this, initialGameState.getPlayerId(), multiplayer);
+						mainGrid.getGuiInputGrid(), this, initialGameState.getPlayerId(), multiplayer, pauseController);
 				connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that
 				// ConstructionMarksThread has it's mapArea variable initialized via the EActionType.SCREEN_CHANGE event.
 
@@ -251,6 +257,7 @@ public class JSettlersGame {
 					}
 				}
 
+				pauseController.shutdown();
 				networkConnector.shutdown();
 				mainGrid.stopThreads();
 				connector.shutdown();

@@ -125,14 +125,17 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private final boolean                 multiplayer;
 	private final ConstructionMarksThread constructionMarksCalculator;
 	private final Timer                   refreshSelectionTimer;
+	private final MultiplayerPauseController pauseController;
 
 	/**
 	 * The current selection. This is updated by game logic.
 	 */
 	private SelectionSet currentSelection = new SelectionSet();
 
-	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid, IGameStoppable gameStoppable, byte playerId, boolean multiplayer) {
+	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid, IGameStoppable gameStoppable, byte playerId, boolean multiplayer,
+			MultiplayerPauseController pauseController) {
 		this.connector = connector;
+		this.pauseController = pauseController;
 		this.clock = clock;
 		this.taskScheduler = taskScheduler;
 		this.grid = grid;
@@ -183,15 +186,31 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				break;
 
 			case SPEED_TOGGLE_PAUSE:
-				clock.invertPausing();
+				if (multiplayer) {
+					if (clock.isPausing()) {
+						pauseController.requestResume();
+					} else {
+						pauseController.requestPause();
+					}
+				} else {
+					clock.invertPausing();
+				}
 				break;
 
 			case SPEED_SET_PAUSE:
-				clock.setPausing(true);
+				if (multiplayer) {
+					pauseController.requestPause();
+				} else {
+					clock.setPausing(true);
+				}
 				break;
 
 			case SPEED_UNSET_PAUSE:
-				clock.setPausing(false);
+				if (multiplayer) {
+					pauseController.requestResume();
+				} else {
+					clock.setPausing(false);
+				}
 				break;
 
 			case SPEED_FASTER:
@@ -779,6 +798,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				setSelection(newSelection);
 			}
 		}
+	}
+
+	@Override
+	public MultiplayerPauseController getPauseController() {
+		return pauseController;
 	}
 
 	@Override

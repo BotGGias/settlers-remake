@@ -38,6 +38,7 @@ import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.PauseGameGuiTask;
 import jsettlers.input.tasks.OrderShipGuiTask;
 import jsettlers.input.tasks.SetAcceptedStockMaterialGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
@@ -110,6 +111,10 @@ class GuiTaskExecutor implements ITaskExecutor {
 
 			case CAST_SPELL:
 				castSpell((CastSpellGuiTask) guiTask);
+				break;
+
+			case PAUSE_GAME:
+				guiInterface.getPauseController().executePause((PauseGameGuiTask) guiTask);
 				break;
 
 			case BUILD: {

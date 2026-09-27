@@ -175,6 +175,7 @@ public final class NetworkConstants {
 		CHANGE_PLAYER_COUNT,
 		CHANGE_START_RESOURCES,
 		CHANGE_PEACE_TIME,
+		RESUME_GAME,
 		;
 
 		private static final ENetworkKey[] values = ENetworkKey.values();

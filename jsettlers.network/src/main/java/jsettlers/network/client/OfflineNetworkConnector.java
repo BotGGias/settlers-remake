@@ -18,6 +18,7 @@ import java.util.Arrays;
 
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.client.interfaces.IGameClock;
+import jsettlers.network.client.interfaces.IGameResumeListener;
 import jsettlers.network.client.interfaces.INetworkConnector;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 import jsettlers.network.client.task.packets.SyncTasksPacket;
@@ -34,6 +35,7 @@ public class OfflineNetworkConnector implements ITaskScheduler, INetworkConnecto
 
 	private final NetworkTimer networkTimer = new NetworkTimer(true);
 	private boolean startFinished;
+	private IGameResumeListener gameResumeListener;
 
 	@Override
 	public void scheduleTask(TaskPacket task) {
@@ -75,6 +77,18 @@ public class OfflineNetworkConnector implements ITaskScheduler, INetworkConnecto
 	@Override
 	public boolean haveAllPlayersStartFinished() {
 		return startFinished;
+	}
+
+	@Override
+	public void requestGameResume(byte playerId, int pauseCount) {
+		if (gameResumeListener != null) {
+			gameResumeListener.resumeRequested(playerId, pauseCount);
+		}
+	}
+
+	@Override
+	public void setGameResumeListener(IGameResumeListener listener) {
+		this.gameResumeListener = listener;
 	}
 
 }
