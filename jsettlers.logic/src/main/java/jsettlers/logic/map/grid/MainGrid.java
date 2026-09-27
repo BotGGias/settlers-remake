@@ -963,6 +963,11 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public int getResourceAmountAt(int x, int y) {
+			return landscapeGrid.getResourceAmountAt(x, y);
+		}
+
+		@Override
 		public byte[][] getVisibleStatusArray() {
 			return fogOfWar.getVisibleStatusArray();
 		}

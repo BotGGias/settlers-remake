@@ -781,8 +781,9 @@ public class MapObjectDrawer {
 							soundNumber = 21;
 						}
 						break;
-					case GEOLOGIST: // TODO: should also check grid.getResourceAmountAt(x, y)
-						if (sound.random.nextInt(256) == 0) {
+					case GEOLOGIST:
+						ShortPoint2D geologistPosition = movable.getPosition();
+						if (sound.random.nextInt(256) == 0 && context.getMap().getResourceAmountAt(geologistPosition.x, geologistPosition.y) > 0) {
 							soundNumber = 24;
 						}
 						break;
