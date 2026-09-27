@@ -28,6 +28,7 @@ public class AndroidPreferences {
 	private static final String PREF_PLAYER_NAME = "playername";
 	private static final String PREF_SERVER = "server";
 	private static final String PREF_PLAYALL_MUSIC = "playall";
+	private static final String PREF_SHOW_MINIMAP = "showminimap";
 
 	private final SharedPreferences preferences;
 
@@ -72,5 +73,13 @@ public class AndroidPreferences {
 
 	public void setPlayAllMusic(boolean playAll) {
 		preferences.edit().putBoolean(PREF_PLAYALL_MUSIC, playAll).apply();
+	}
+
+	public boolean isShowMinimap() {
+		return preferences.getBoolean(PREF_SHOW_MINIMAP, true);
+	}
+
+	public void setShowMinimap(boolean showMinimap) {
+		preferences.edit().putBoolean(PREF_SHOW_MINIMAP, showMinimap).apply();
 	}
 }

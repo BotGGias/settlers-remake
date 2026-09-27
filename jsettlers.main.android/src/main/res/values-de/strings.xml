@@ -82,6 +82,8 @@
 	<string name="game_menu_save">Speichern</string>
 	<string name="game_menu_saved">Spiel gespeichert</string>
 	<string name="game_menu_title">Menü</string>
+	<string name="minimap_show">Minimap einblenden</string>
+	<string name="minimap_hide">Minimap ausblenden</string>
 	<string name="game_menu_unpause">Weiter</string>
 	<string name="halt">Stopp</string>
 	<string name="join_multi_player_game">Multiplayer Spiel beitreten</string>

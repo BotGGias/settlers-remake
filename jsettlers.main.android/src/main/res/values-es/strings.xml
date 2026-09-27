@@ -74,6 +74,8 @@
 	<string name="game_menu_save">Guardar</string>
 	<string name="game_menu_saved">Partida guardada</string>
 	<string name="game_menu_title">Menú Principal</string>
+	<string name="minimap_show">Mostrar minimapa</string>
+	<string name="minimap_hide">Ocultar minimapa</string>
 	<string name="game_menu_unpause">Continuar</string>
 	<string name="halt">Alto</string>
 	<string name="join_multi_player_game">Unirse a partida multijugador</string>

@@ -34,10 +34,11 @@ import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.IControls;
+import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.gameplay.gamemenu.GameSpeedLiveData;
 import jsettlers.network.client.interfaces.IGameClock;
 
-public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls, PositionControls {
+public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls, PositionControls, MinimapControls {
 	private static final int SOUND_THREADS = 6;
 
 	private final IStartedGame game;
@@ -46,6 +47,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	private final MapContent mapContent;
 	private final GameMenu gameMenu;
 	private final IGraphicsGrid graphicsGrid;
+	private final AndroidPreferences preferences;
 
 	private final LinkedList<SelectionListener> selectionListeners = new LinkedList<>();
 	private final LinkedList<ActionListener> actionListeners = new LinkedList<>();
@@ -64,7 +66,8 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 		this.game = game;
 		this.player = game.getInGamePlayer();
 
-		androidControls = new AndroidControls(this);
+		preferences = new AndroidPreferences(context);
+		androidControls = new AndroidControls(this, context.getResources().getDisplayMetrics().density, preferences.isShowMinimap());
 		mapContent = new MapContent(game, SOUND_PLAYER, ETextDrawPosition.MOBILE, androidControls);
 		gameMenu = new GameMenu(context, SOUND_PLAYER, this, new GameSpeedLiveData(gameClock, this), game.isMultiplayerGame());
 		graphicsGrid = game.getMap();
@@ -80,6 +83,17 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 
 	public GameMenu getGameMenu() {
 		return gameMenu;
+	}
+
+	@Override
+	public boolean isMinimapVisible() {
+		return androidControls.isMinimapVisible();
+	}
+
+	@Override
+	public void setMinimapVisible(boolean visible) {
+		androidControls.setMinimapVisible(visible);
+		preferences.setShowMinimap(visible);
 	}
 
 	public IStartedGame getGame() {
