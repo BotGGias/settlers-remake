@@ -55,6 +55,6 @@ public class ServerAddressTest {
 		check("[::1]:47123", "::1", 47123);
 		check("[fe80::1]", "fe80::1", DEFAULT);
 		assertEquals("[::1]:47123", ServerAddress.parse("[::1]:47123").toString());
-		assertEquals("127.0.0.1:10214", ServerAddress.parse("127.0.0.1").toString());
+		assertEquals("127.0.0.1:" + DEFAULT, ServerAddress.parse("127.0.0.1").toString());
 	}
 }
