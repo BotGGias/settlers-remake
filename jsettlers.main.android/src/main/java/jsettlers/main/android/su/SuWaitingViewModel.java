@@ -49,6 +49,7 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.core.events.SingleLiveEvent;
 import jsettlers.main.su.SuMatchDirector;
+import jsettlers.network.client.IClientConnection;
 
 /**
  * Launcher start contract v2: prepares the map, opens (host) or joins (member) the match and lets {@link SuMatchDirector} set it up
@@ -57,6 +58,8 @@ import jsettlers.main.su.SuMatchDirector;
 public class SuWaitingViewModel extends ViewModel implements IJoiningGameListener, SuMatchDirector.Listener {
 	private static final String TAG = "SuWaiting";
 	private static final long MAX_MAP_BYTES = 32L * 1024 * 1024;
+	/** Member: check the connection this often until joined (the host's server may start later than ours). */
+	private static final long RECONNECT_MS = 2000;
 
 	private final Context context;
 	private final GameStarter gameStarter;
@@ -74,6 +77,8 @@ public class SuWaitingViewModel extends ViewModel implements IJoiningGameListene
 	private IJoiningGame joiningGame;
 	private IJoinPhaseMultiplayerGameConnector connector;
 	private SuMatchDirector director;
+	private MapLoader map;
+	private final Runnable reconnect = this::reconnectIfFailed;
 
 	SuWaitingViewModel(Context context, GameStarter gameStarter, SuLaunch launch) {
 		this.context = context;
@@ -108,6 +113,7 @@ public class SuWaitingViewModel extends ViewModel implements IJoiningGameListene
 	protected void onCleared() {
 		super.onCleared();
 		mainHandler.removeCallbacks(timeout);
+		mainHandler.removeCallbacks(reconnect);
 		boolean abort;
 		synchronized (this) {
 			abort = !done;
@@ -217,9 +223,32 @@ public class SuWaitingViewModel extends ViewModel implements IJoiningGameListene
 			});
 			setJoining(joining);
 		} else {
+			this.map = map;
 			ChangingList<IJoinableGame> games = multiplayerConnector.getJoinableMultiplayerGames();
 			games.setListener(list -> checkJoin(list.getItems(), map));
 			checkJoin(games.getItems(), map);
+			mainHandler.removeCallbacks(reconnect);
+			mainHandler.postDelayed(reconnect, RECONNECT_MS);
+		}
+	}
+
+	/**
+	 * Member, main thread: the tunnel only reaches the host's server once it runs – the host's JSettlers may start later
+	 * than ours (seen 2026-09-27: MI 5 host 1 s slower, connection refused, JSettlers never retries). Until joined, replace a
+	 * failed connection.
+	 */
+	private void reconnectIfFailed() {
+		synchronized (this) {
+			if (done || joinRequested) {
+				return;
+			}
+		}
+		if (((IClientConnection) gameStarter.getMultiPlayerConnector()).hasConnectionFailed()) {
+			Log.i(TAG, "connection to the host failed, reconnecting");
+			gameStarter.closeMultiPlayerConnector();
+			connect(map);
+		} else {
+			mainHandler.postDelayed(reconnect, RECONNECT_MS);
 		}
 	}
 
@@ -318,6 +347,7 @@ public class SuWaitingViewModel extends ViewModel implements IJoiningGameListene
 		}
 		Log.w(TAG, "launcher start failed: " + message);
 		mainHandler.removeCallbacks(timeout);
+		mainHandler.removeCallbacks(reconnect);
 		mainHandler.post(this::cleanup);
 		failedEvent.postValue(message);
 	}
