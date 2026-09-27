@@ -25,7 +25,9 @@ import jsettlers.network.infrastructure.channel.reject.RejectPacket;
 import jsettlers.network.server.db.IDBFacade;
 import jsettlers.network.server.exceptions.NotAllPlayersReadyException;
 import jsettlers.network.server.listeners.ChangeCivilisationPacketListener;
+import jsettlers.network.server.listeners.ChangePeaceTimePacketListener;
 import jsettlers.network.server.listeners.ChangePlayerCountPacketListener;
+import jsettlers.network.server.listeners.ChangeStartResourcesPacketListener;
 import jsettlers.network.server.listeners.ChangePlayerTypePacketListener;
 import jsettlers.network.server.listeners.ChangePositionPacketListener;
 import jsettlers.network.server.listeners.ChangeTeamPacketListener;
@@ -97,6 +99,8 @@ public class ServerManager implements IServerManager {
 			channel.registerListener(new ChangePositionPacketListener(this, player));
 			channel.registerListener(new ChangeTeamPacketListener(this, player));
 			channel.registerListener(new ChangePlayerCountPacketListener(this, player));
+			channel.registerListener(new ChangeStartResourcesPacketListener(this, player));
+			channel.registerListener(new ChangePeaceTimePacketListener(this, player));
 
 			return true;
 		} else {
@@ -261,6 +265,30 @@ public class ServerManager implements IServerManager {
 		} catch (IllegalStateException e) {
 			player.sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET,
 					new RejectPacket(NetworkConstants.ENetworkMessage.INVALID_STATE_ERROR, NetworkConstants.ENetworkKey.CHANGE_PLAYER_COUNT));
+		}
+	}
+
+	@Override
+	public void setStartResources(Player player, int startResources) {
+		try {
+			Match match = verifyAndGetMatch(player);
+
+			match.setStartResources(startResources);
+		} catch (IllegalStateException e) {
+			player.sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.ENetworkMessage.INVALID_STATE_ERROR, NetworkConstants.ENetworkKey.CHANGE_START_RESOURCES));
+		}
+	}
+
+	@Override
+	public void setPeaceTime(Player player, int peaceTimeMinutes) {
+		try {
+			Match match = verifyAndGetMatch(player);
+
+			match.setPeaceTime(peaceTimeMinutes);
+		} catch (IllegalStateException e) {
+			player.sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.ENetworkMessage.INVALID_STATE_ERROR, NetworkConstants.ENetworkKey.CHANGE_PEACE_TIME));
 		}
 	}
 

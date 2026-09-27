@@ -24,6 +24,7 @@ import java.util.stream.IntStream;
 
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.menu.ENetworkMessage;
+import jsettlers.common.menu.EPeaceTime;
 import jsettlers.common.menu.IChatMessageListener;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGame;
@@ -35,6 +36,7 @@ import jsettlers.common.menu.IMultiplayerSlot;
 import jsettlers.common.menu.IOpenMultiplayerGameInfo;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.player.InitialGameState;
@@ -70,6 +72,8 @@ public class MultiplayerGame {
 	private IChatMessageListener chatMessageListener;
 	private boolean iAmTheHost = false;
 	private int maxPlayers;
+	private int startResourcesValue = EMapStartResources.HIGH_GOODS.value;
+	private EPeaceTime peaceTime = EPeaceTime.WITHOUT;
 
 	public MultiplayerGame(AsyncNetworkClientConnector networkClientFactory) {
 		this.networkClientFactory = networkClientFactory;
@@ -136,8 +140,8 @@ public class MultiplayerGame {
 			long randomSeed = packet.getRandomSeed();
 			PlayerSetting[] playerSettings = determinePlayerSettings();
 			byte ownPlayerId = calculateOwnPlayerId();
-			// TODO start resources
-			InitialGameState initialGameState = new InitialGameState(ownPlayerId, playerSettings, randomSeed);
+			InitialGameState initialGameState = new InitialGameState(ownPlayerId, playerSettings, randomSeed,
+					EMapStartResources.fromMapValue(startResourcesValue), peaceTime);
 
 			JSettlersGame game = new JSettlersGame(mapLoader, networkClient.getNetworkConnector(), initialGameState);
 
@@ -186,6 +190,9 @@ public class MultiplayerGame {
 
 	void updateLists(MatchInfoPacket matchInfo) {
 		maxPlayers = matchInfo.getMaxPlayers();
+		// must be updated before the lists, because their listeners update the UI
+		startResourcesValue = matchInfo.getStartResources();
+		peaceTime = EPeaceTime.fromMinutes(matchInfo.getPeaceTimeMinutes());
 		List<IMultiplayerPlayer> players = new LinkedList<>();
 		for (PlayerInfoPacket playerInfoPacket : matchInfo.getPlayers()) {
 			players.add(new MultiplayerPlayer(playerInfoPacket));
@@ -281,6 +288,26 @@ public class MultiplayerGame {
 			@Override
 			public void setPlayerCount(int playerCount) {
 				networkClient.setPlayerCount(playerCount);
+			}
+
+			@Override
+			public void setStartResources(int startResourcesValue) {
+				networkClient.setStartResources(startResourcesValue);
+			}
+
+			@Override
+			public int getStartResourcesValue() {
+				return startResourcesValue;
+			}
+
+			@Override
+			public void setPeaceTime(EPeaceTime peaceTime) {
+				networkClient.setPeaceTime(peaceTime.minutes);
+			}
+
+			@Override
+			public EPeaceTime getPeaceTime() {
+				return peaceTime;
 			}
 
 			@Override

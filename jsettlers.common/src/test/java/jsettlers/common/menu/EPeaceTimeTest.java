@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2017
+/*******************************************************************************
+ * Copyright (c) 2026
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,39 +11,31 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- */
+ *******************************************************************************/
+package jsettlers.common.menu;
 
-package jsettlers.main.android.mainmenu.gamesetup;
+import static org.junit.Assert.assertEquals;
 
-import jsettlers.common.menu.EPeaceTime;
-import jsettlers.graphics.localization.Labels;
+import org.junit.Test;
 
-/**
- * Created by tompr on 24/02/2017.
- */
-public class Peacetime {
-	private final EPeaceTime type;
+public class EPeaceTimeTest {
 
-	public Peacetime(EPeaceTime type) {
-		this.type = type;
+	@Test
+	public void testFromMinutes() {
+		for (EPeaceTime peaceTime : EPeaceTime.VALUES) {
+			assertEquals(peaceTime, EPeaceTime.fromMinutes(peaceTime.minutes));
+		}
 	}
 
-	public EPeaceTime getType() {
-		return type;
+	@Test
+	public void testUnknownMinutesFallBackToWithout() {
+		assertEquals(EPeaceTime.WITHOUT, EPeaceTime.fromMinutes(-1));
+		assertEquals(EPeaceTime.WITHOUT, EPeaceTime.fromMinutes(11));
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof Peacetime && ((Peacetime) obj).getType() == type;
-	}
-
-	@Override
-	public int hashCode() {
-		return type.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return Labels.getString("peace-time-" + type.name());
+	@Test
+	public void testDuration() {
+		assertEquals(0, EPeaceTime.WITHOUT.getDurationMs());
+		assertEquals(30 * 60 * 1000, EPeaceTime.MIN_30.getDurationMs());
 	}
 }

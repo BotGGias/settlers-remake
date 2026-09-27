@@ -69,6 +69,10 @@ public interface IServerManager {
 
 	void setPlayerCount(Player player, int playerCount);
 
+	void setStartResources(Player player, int startResources);
+
+	void setPeaceTime(Player player, int peaceTimeMinutes);
+
 	void sendMatchesToPlayer(Player player);
 
 	void setStartFinished(Player player, boolean startFinished);

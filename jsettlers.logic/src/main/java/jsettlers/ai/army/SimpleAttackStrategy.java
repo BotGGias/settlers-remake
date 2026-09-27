@@ -14,7 +14,7 @@ public class SimpleAttackStrategy extends SimpleStrategy {
 
 	@Override
 	public void applyHeavyRules(Set<Integer> soldiersWithOrders) {
-		if (parent.existsAliveEnemy()) {
+		if (parent.existsAliveEnemy() && !parent.getPlayer().isInPeaceTime()) {
 			SoldierPositions soldierPositions = new SoldierPositions(parent.getPlayerId(), soldiersWithOrders);
 			IPlayer weakestEnemy = parent.getWeakestEnemy();
 			SoldierPositions enemySoldierPositions = new SoldierPositions(weakestEnemy.getPlayerId(), Set.of());

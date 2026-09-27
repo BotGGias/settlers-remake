@@ -94,10 +94,6 @@ public abstract class MapSetupFragment extends Fragment {
 	void setupView() {
 		recyclerView.setHasFixedSize(true);
 		FragmentUtil.setActionBar(this, toolbar);
-
-		// Disable these for now, as these features are not implemented yet.
-		startResourcesSpinner.setEnabled(false);
-		peacetimeSpinner.setEnabled(false);
 	}
 
 	@Override

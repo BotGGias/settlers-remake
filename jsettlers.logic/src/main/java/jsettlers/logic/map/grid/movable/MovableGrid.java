@@ -32,6 +32,7 @@ import jsettlers.logic.map.grid.landscape.IWalkableGround;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IAttackableMovable;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
+import jsettlers.logic.player.Player;
 
 /**
  * This grid stores the position of the {@link IGraphicsMovable}s.
@@ -148,7 +149,19 @@ public final class MovableGrid implements Serializable {
 	 * @return
 	 */
 	public static boolean isEnemy(IPlayer player, IAttackable otherAttackable) {
-		return otherAttackable.getPlayer().getTeamId() != player.getTeamId() && otherAttackable.isAttackable();
+		return otherAttackable.getPlayer().getTeamId() != player.getTeamId() && otherAttackable.isAttackable()
+				&& !isPeaceTimeBetween(player, otherAttackable.getPlayer());
+	}
+
+	/**
+	 * @return true if one of the given players is still in the peace time, so they must not fight each other.
+	 */
+	public static boolean isPeaceTimeBetween(IPlayer player, IPlayer otherPlayer) {
+		return isInPeaceTime(player) || isInPeaceTime(otherPlayer);
+	}
+
+	private static boolean isInPeaceTime(IPlayer player) {
+		return player instanceof Player && ((Player) player).isInPeaceTime();
 	}
 
 	public boolean hasNoMovableAt(int x, int y) {

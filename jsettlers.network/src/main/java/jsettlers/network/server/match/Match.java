@@ -59,6 +59,8 @@ public class Match {
 	private TaskCollectingListener taskCollectingListener;
 	private TaskSendingTimerTask taskSendingTimerTask;
 	private int currPlayers;
+	private int startResources = MatchInfoPacket.DEFAULT_START_RESOURCES;
+	private int peaceTimeMinutes = 0;
 
 	public Match(String name, int maxPlayers, MapInfoPacket map, Player host, long randomSeed) {
 		this.maxPlayers = maxPlayers;
@@ -385,6 +387,36 @@ public class Match {
 		}
 
 		sendMatchInfoUpdate(ENetworkMessage.PLAYER_COUNT_CHANGED, null);
+	}
+
+	public void setStartResources(int startResources) {
+		synchronized (slots) {
+			if (this.startResources == startResources) return;
+			this.startResources = startResources;
+		}
+
+		sendMatchInfoUpdate(ENetworkMessage.MATCH_SETTINGS_CHANGED, null);
+	}
+
+	public void setPeaceTime(int peaceTimeMinutes) {
+		if (peaceTimeMinutes < 0) {
+			throw new IllegalStateException("The peace time can't be negative!");
+		}
+
+		synchronized (slots) {
+			if (this.peaceTimeMinutes == peaceTimeMinutes) return;
+			this.peaceTimeMinutes = peaceTimeMinutes;
+		}
+
+		sendMatchInfoUpdate(ENetworkMessage.MATCH_SETTINGS_CHANGED, null);
+	}
+
+	public int getStartResources() {
+		return startResources;
+	}
+
+	public int getPeaceTimeMinutes() {
+		return peaceTimeMinutes;
 	}
 
 	private Slot getSlot(int slotId) {

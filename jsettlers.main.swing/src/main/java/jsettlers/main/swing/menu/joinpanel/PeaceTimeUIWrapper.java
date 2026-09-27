@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2017
+/*******************************************************************************
+ * Copyright (c) 2026
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,39 +11,26 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- */
-
-package jsettlers.main.android.mainmenu.gamesetup;
+ *******************************************************************************/
+package jsettlers.main.swing.menu.joinpanel;
 
 import jsettlers.common.menu.EPeaceTime;
 import jsettlers.graphics.localization.Labels;
 
-/**
- * Created by tompr on 24/02/2017.
- */
-public class Peacetime {
-	private final EPeaceTime type;
+public class PeaceTimeUIWrapper {
 
-	public Peacetime(EPeaceTime type) {
-		this.type = type;
+	private final EPeaceTime peaceTime;
+
+	public PeaceTimeUIWrapper(EPeaceTime peaceTime) {
+		this.peaceTime = peaceTime;
 	}
 
-	public EPeaceTime getType() {
-		return type;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof Peacetime && ((Peacetime) obj).getType() == type;
-	}
-
-	@Override
-	public int hashCode() {
-		return type.hashCode();
+	public EPeaceTime getPeaceTime() {
+		return peaceTime;
 	}
 
 	@Override
 	public String toString() {
-		return Labels.getString("peace-time-" + type.name());
+		return Labels.getString("peace-time-" + peaceTime.name());
 	}
 }
