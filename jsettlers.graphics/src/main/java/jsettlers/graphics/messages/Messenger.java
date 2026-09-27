@@ -71,19 +71,15 @@ public class Messenger {
 	 * Perform perpetual update step, i.e. determine amount of time that has
 	 * passed since last call, let all currently active messages age by that
 	 * interval, then remove all messages whose age exceed the allowed
-	 * time-to-live ({@link IMessage#MESSAGE_TTL}).
+	 * time-to-live ({@link IMessage#getTimeToLive()}).
 	 */
 	public synchronized void doTick() {
 		int millis = (int)System.currentTimeMillis(); 
 		if (!gameTimeProvider.isGamePausing()) {
 			// update message ages
 			int interval = millis - latestTickTime;
-			for (IMessage m : messages) {
-				if (m.ageBy(interval) > IMessage.MESSAGE_TTL)
-					// remove all remaining messages, assuming they in order
-					while (!messages.pollLast().equals(m))
-						;
-			}
+			// messages can have different time-to-live values, so each one is checked
+			messages.removeIf(m -> m.ageBy(interval) > m.getTimeToLive());
 		}
 		latestTickTime = millis;
 	}

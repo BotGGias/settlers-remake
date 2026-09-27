@@ -14,9 +14,13 @@
  *******************************************************************************/
 package jsettlers.network.server.match;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import jsettlers.network.NetworkConstants;
@@ -27,6 +31,8 @@ import jsettlers.network.common.packets.MatchInfoPacket;
 import jsettlers.network.common.packets.MatchInfoUpdatePacket;
 import jsettlers.network.common.packets.MatchStartPacket;
 import jsettlers.network.common.packets.PlayerInfoPacket;
+import jsettlers.network.common.packets.PlayerStatusPacket;
+import jsettlers.network.common.packets.PlayerStatusesPacket;
 import jsettlers.network.common.packets.SlotInfoPacket;
 import jsettlers.network.common.packets.TimeSyncPacket;
 import jsettlers.network.infrastructure.channel.packet.Packet;
@@ -58,6 +64,7 @@ public class Match {
 	private EMatchState state = EMatchState.OPENED;
 	private TaskCollectingListener taskCollectingListener;
 	private TaskSendingTimerTask taskSendingTimerTask;
+	private TimerTask playerStatusTimerTask;
 	private int currPlayers;
 	private int startResources = MatchInfoPacket.DEFAULT_START_RESOURCES;
 	private int peaceTimeMinutes = 0;
@@ -220,6 +227,7 @@ public class Match {
 				synchronized (leftPlayers) {
 					leftPlayers.add(player);
 				}
+				broadcastPlayerStatus(); // let the remaining players know immediately
 			}
 
 			if (players.isEmpty()) {
@@ -248,8 +256,12 @@ public class Match {
 		timer.schedule(taskSendingTimerTask, NetworkConstants.Client.LOCKSTEP_PERIOD, NetworkConstants.Client.LOCKSTEP_PERIOD / 2 - 2);
 
 		synchronized (players) {
+			long now = System.currentTimeMillis();
 			int i = 0;
 			for (Player player : players) {
+				// the clients pair the players with the slots in the same order (see MultiplayerGame.updateLists())
+				player.setInGamePlayerId(i < currPlayers ? getSlot(i).getPosition() : -1);
+				player.timeSyncReceived(0, now);
 				sendMatchStartPacketToPlayer(player);
 
 				// needed so that the sending task can adapt to the ping
@@ -257,6 +269,18 @@ public class Match {
 				i++;
 			}
 		}
+
+		playerStatusTimerTask = new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					broadcastPlayerStatus();
+				} catch (RuntimeException e) { // an exception must not kill the timer shared by all matches
+					logger.error(e);
+				}
+			}
+		};
+		timer.schedule(playerStatusTimerTask, NetworkConstants.Server.PLAYER_STATUS_SEND_INTERVAL_MS, NetworkConstants.Server.PLAYER_STATUS_SEND_INTERVAL_MS);
 	}
 
 	private void sendMatchStartPacketToPlayer(Player player) {
@@ -265,8 +289,44 @@ public class Match {
 	}
 
 	public void distributeTimeSync(Player player, TimeSyncPacket packet) {
+		player.timeSyncReceived(packet.getTime(), System.currentTimeMillis());
 		sendMessage(player, NetworkConstants.ENetworkKey.TIME_SYNC, packet);
 		taskSendingTimerTask.receivedLockstepAcknowledge(packet.getTime() / NetworkConstants.Client.LOCKSTEP_PERIOD);
+	}
+
+	/**
+	 * Sends the network status of all players (including the ones that left) to all players of this match.
+	 */
+	void broadcastPlayerStatus() {
+		PlayerStatusesPacket packet;
+		synchronized (players) {
+			synchronized (leftPlayers) {
+				packet = createPlayerStatuses(players, leftPlayers, System.currentTimeMillis());
+			}
+		}
+		broadcastMessage(ENetworkKey.PLAYER_STATUS, packet);
+	}
+
+	private static PlayerStatusesPacket createPlayerStatuses(Collection<Player> activePlayers, Collection<Player> leftPlayers, long now) {
+		List<PlayerStatusPacket> statuses = new ArrayList<>();
+		for (Player player : activePlayers) {
+			if (player.getInGamePlayerId() >= 0) {
+				int millisSinceLastSync = (int) Math.max(0, Math.min(Integer.MAX_VALUE, now - player.getLastTimeSyncMs()));
+				statuses.add(new PlayerStatusPacket(player.getInGamePlayerId(), getName(player), true, player.getChannel().getRoundTripTime().getRtt(),
+						player.getLastReportedGameTime(), millisSinceLastSync));
+			}
+		}
+		for (Player player : leftPlayers) {
+			if (player.getInGamePlayerId() >= 0) {
+				statuses.add(new PlayerStatusPacket(player.getInGamePlayerId(), getName(player), false, -1, player.getLastReportedGameTime(), 0));
+			}
+		}
+		return new PlayerStatusesPacket(statuses.toArray(new PlayerStatusPacket[0]));
+	}
+
+	private static String getName(Player player) {
+		String name = player.getPlayerInfo().getName();
+		return name != null ? name : "";
 	}
 
 	public Logger getMatchLogger() {
@@ -277,6 +337,8 @@ public class Match {
 		if (state == EMatchState.RUNNING) {
 			taskSendingTimerTask.cancel();
 			taskSendingTimerTask = null;
+			playerStatusTimerTask.cancel();
+			playerStatusTimerTask = null;
 
 			synchronized (players) {
 				if (players.size() > 0) {

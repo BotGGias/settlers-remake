@@ -41,6 +41,10 @@ public class Player {
 	private EPlayerState state = EPlayerState.LOGGED_IN;
 	private Match match;
 
+	private byte inGamePlayerId = -1;
+	private volatile int lastReportedGameTime;
+	private volatile long lastTimeSyncMs;
+
 	public Player(PlayerInfoPacket playerInfo, Channel channel) {
 		this.playerInfo = playerInfo;
 		this.channel = channel;
@@ -125,6 +129,30 @@ public class Player {
 
 	public Match getMatch() {
 		return match;
+	}
+
+	/**
+	 * @return The id of this player in the running game or -1 if it is not known.
+	 */
+	public byte getInGamePlayerId() {
+		return inGamePlayerId;
+	}
+
+	void setInGamePlayerId(byte inGamePlayerId) {
+		this.inGamePlayerId = inGamePlayerId;
+	}
+
+	public int getLastReportedGameTime() {
+		return lastReportedGameTime;
+	}
+
+	public long getLastTimeSyncMs() {
+		return lastTimeSyncMs;
+	}
+
+	void timeSyncReceived(int gameTime, long now) {
+		lastReportedGameTime = gameTime;
+		lastTimeSyncMs = now;
 	}
 
 	public void setStartFinished(boolean value) {

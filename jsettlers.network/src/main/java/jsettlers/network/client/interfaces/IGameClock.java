@@ -79,4 +79,12 @@ public interface IGameClock extends IPausingSupplier {
 	 */
 	void fastForwardTo(int targetGameTime);
 
+	/**
+	 * @return The wall clock milliseconds since the game time advanced the last time while the clock was not paused. A high value means that
+	 *         the clock waits for other players.
+	 */
+	default long getMillisSinceLastProgress() {
+		return 0;
+	}
+
 }
