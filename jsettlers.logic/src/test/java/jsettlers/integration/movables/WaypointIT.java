@@ -39,12 +39,12 @@ import jsettlers.testutils.TestUtils;
 import jsettlers.testutils.map.MapUtils;
 
 /**
- * Tests the waypoints of soldiers ({@link EMoveToType#WAYPOINT}, Shift+click).
+ * Tests the waypoints of player controlled movables ({@link EMoveToType#WAYPOINT}, Shift+click).
  */
 public class WaypointIT {
 	private static final byte PLAYER = 0;
 	private static final int STEP_MS = 100;
-	private static final int TIMEOUT_MS = 60 * 1000;
+	private static final int TIMEOUT_MS = 30 * 1000;
 	private static final int REACHED_DISTANCE = 2;
 
 	static {
@@ -69,36 +69,52 @@ public class WaypointIT {
 			time = 1000;
 			MatchConstants.clock().fastForwardTo(time);
 
-			ILogicMovable soldier = MovableManager.getAllMovables().stream()
-					.filter(movable -> movable.isAlive() && movable.getPlayer().getPlayerId() == PLAYER && movable.getMovableType().isSoldier())
-					.findFirst().orElseThrow(() -> new AssertionError("no soldier on the map"));
-			ShortPoint2D start = soldier.getPosition();
-			ShortPoint2D other = MovableManager.getAllMovables().stream()
+			// the soldiers on the map are all in towers => use a thief (without foreign materials around, it just walks to its targets)
+			ShortPoint2D bearerPosition = MovableManager.getAllMovables().stream()
 					.filter(movable -> movable.isAlive() && movable.getPlayer().getPlayerId() == PLAYER && movable.getMovableType() == EMovableType.BEARER)
-					.map(ILogicMovable::getPosition)
-					.filter(position -> position.getOnGridDistTo(start) >= 6)
-					.findFirst().orElseThrow(() -> new AssertionError("no target position found"));
+					.findFirst().get().getPosition();
+			game.getMainGrid().getGuiInputGrid().convertAtPosition(PLAYER, bearerPosition, EMovableType.BEARER, EMovableType.THIEF, 1);
+			ILogicMovable unit = MovableManager.getAllMovables().stream()
+					.filter(movable -> movable.isAlive() && movable.getPlayer().getPlayerId() == PLAYER && movable.getMovableType() == EMovableType.THIEF)
+					.findFirst().orElseThrow(() -> new AssertionError("no thief created"));
+			ShortPoint2D start = unit.getPosition();
+			ShortPoint2D other = findReachablePosition(unit, start);
 
-			// the soldier walks to the target and then back to the waypoint
-			soldier.moveTo(other, EMoveToType.DEFAULT);
-			soldier.moveTo(start, EMoveToType.WAYPOINT);
-			assertTrue("soldier did not reach the first target", runUntilReached(soldier, other));
-			assertTrue("soldier did not continue to the waypoint", runUntilReached(soldier, start));
+			// the unit walks to the target and then on to the waypoint
+			unit.moveTo(start, EMoveToType.DEFAULT);
+			unit.moveTo(other, EMoveToType.WAYPOINT);
+			assertTrue("unit did not reach the first target", runUntilReached(unit, start));
+			assertTrue("unit did not continue to the waypoint", runUntilReached(unit, other));
 
-			// an idle soldier directly walks to a waypoint
-			soldier.moveTo(other, EMoveToType.WAYPOINT);
-			assertTrue("idle soldier did not walk to the waypoint", runUntilReached(soldier, other));
+			// an idle unit directly walks to a waypoint
+			unit.moveTo(start, EMoveToType.WAYPOINT);
+			assertTrue("idle unit did not walk to the waypoint", runUntilReached(unit, start));
 
 			// a normal move order discards the waypoints
-			soldier.moveTo(start, EMoveToType.DEFAULT);
-			soldier.moveTo(other, EMoveToType.WAYPOINT);
-			soldier.moveTo(start, EMoveToType.DEFAULT);
-			assertTrue("soldier did not reach the new target", runUntilReached(soldier, start));
+			unit.moveTo(other, EMoveToType.DEFAULT);
+			unit.moveTo(start, EMoveToType.WAYPOINT);
+			unit.moveTo(other, EMoveToType.DEFAULT);
+			assertTrue("unit did not reach the new target", runUntilReached(unit, other));
 			runFor(10 * 1000);
-			assertTrue("soldier did not discard its waypoints", soldier.getPosition().getOnGridDistTo(start) <= REACHED_DISTANCE);
+			assertTrue("unit did not discard its waypoints", unit.getPosition().getOnGridDistTo(other) <= REACHED_DISTANCE);
 		} finally {
 			ReplayUtils.awaitShutdown(startedGame);
 		}
+	}
+
+	/**
+	 * Sends the movable to positions around the start until it reaches one of them with a normal move order.
+	 */
+	private ShortPoint2D findReachablePosition(ILogicMovable movable, ShortPoint2D start) {
+		int[][] offsets = { { 8, 0 }, { -8, 0 }, { 0, 8 }, { 0, -8 }, { 8, 8 }, { -8, -8 } };
+		for (int[] offset : offsets) {
+			ShortPoint2D candidate = new ShortPoint2D(start.x + offset[0], start.y + offset[1]);
+			movable.moveTo(candidate, EMoveToType.DEFAULT);
+			if (runUntilReached(movable, candidate)) {
+				return candidate;
+			}
+		}
+		throw new AssertionError("no reachable position found around " + start);
 	}
 
 	private boolean runUntilReached(ILogicMovable movable, ShortPoint2D target) {
