@@ -87,6 +87,11 @@ public final class Constants {
 	public static final float TOWER_DOOR_REGENERATION = 0.01f;
 
 	/**
+	 * Siege weapons never reduce the door health below this value. Only soldiers can break the door and conquer a tower.
+	 */
+	public static final float SIEGE_MIN_DOOR_HEALTH = 0.01f;
+
+	/**
 	 * Defines the percentage used to calculate the payback of materials when a building is destroyed.<br>
 	 * The formula defines that you get back {@value #BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR} of the materials already invested in the building.
 	 */

@@ -21,9 +21,10 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.objects.arrow.IArrowAttackableGrid;
+import jsettlers.logic.objects.siege.ISiegeProjectileGrid;
 import jsettlers.logic.player.Player;
 
-public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGrid {
+public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGrid, ISiegeProjectileGrid {
 	AbstractHexMapObject getMapObject(int x, int y, EMapObjectType mapObjectType);
 
 	void setLandscape(int x, int y, ELandscapeType landscapeType);

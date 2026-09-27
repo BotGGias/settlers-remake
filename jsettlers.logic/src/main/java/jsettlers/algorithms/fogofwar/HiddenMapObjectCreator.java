@@ -20,6 +20,7 @@ public class HiddenMapObjectCreator {
 			case INFORMABLE_MAP_OBJECT:
 			case EYE:
 			case SPELL_EFFECT:
+			case SIEGE_PROJECTILE:
 				return null;
 			case MANNA_BOWL:
 				return new HiddenMapObject.HiddenMannaBowlObject(object);
