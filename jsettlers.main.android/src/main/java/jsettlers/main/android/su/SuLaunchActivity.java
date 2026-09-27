@@ -17,6 +17,8 @@ package jsettlers.main.android.su;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -44,9 +46,14 @@ public class SuLaunchActivity extends Activity {
 			Toast.makeText(this, getString(R.string.su_launch_invalid, result.error), Toast.LENGTH_LONG).show();
 			startActivity(new Intent(this, MainActivity_.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 		} else {
+			Bundle extras = new Bundle(in.getExtras());
+			Uri referrer = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 ? getReferrer() : null;
+			if (!extras.containsKey(SuLaunch.EXTRA_RETURN_TO) && referrer != null && "android-app".equals(referrer.getScheme())) {
+				extras.putString(SuLaunch.EXTRA_RETURN_TO, referrer.getHost()); // the launcher app that sent the intent
+			}
 			Intent out = new Intent(this, MainActivity_.class)
 					.setAction(SuLaunch.ACTION)
-					.putExtras(in.getExtras())
+					.putExtras(extras)
 					.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			startActivity(out);
 		}

@@ -52,6 +52,8 @@ public final class SuLaunch {
 	public static final String EXTRA_START_RESOURCES = "su.startResources";
 	public static final String EXTRA_SLOTS = "su.slots";
 	public static final String EXTRA_START_TIMEOUT = "su.startTimeout";
+	/** Optional: package to return to after the game; SuLaunchActivity fills it from the referrer. */
+	public static final String EXTRA_RETURN_TO = "su.returnTo";
 
 	public static final int DEFAULT_WAIT_SECS = 30;
 	public static final int DEFAULT_START_TIMEOUT = 90;
@@ -79,6 +81,8 @@ public final class SuLaunch {
 	public final EMapStartResources startResources;
 	public final SuSlotPlan slots;
 	public final int startTimeoutSecs;
+	/** App to bring back after the game (package name) or null. */
+	public String returnPackage;
 
 	private SuLaunch(Role role, String server, int port, String playerId, String playerName, String matchName, int waitSecs, int version, String mapId,
 			String mapFile, String mapUri, EMapStartResources startResources, SuSlotPlan slots, int startTimeoutSecs) {
@@ -216,8 +220,13 @@ public final class SuLaunch {
 		if (startTimeout < 10 || startTimeout > MAX_WAIT_SECS) {
 			startTimeout = DEFAULT_START_TIMEOUT;
 		}
-		return new Result(new SuLaunch(role, "127.0.0.1", port, playerId, playerName, matchName, waitSecs, 2, mapId, mapFile, mapUri, startResources,
-				slots, startTimeout), null);
+		SuLaunch launch = new SuLaunch(role, "127.0.0.1", port, playerId, playerName, matchName, waitSecs, 2, mapId, mapFile, mapUri, startResources,
+				slots, startTimeout);
+		String returnTo = text(extras, EXTRA_RETURN_TO);
+		if (returnTo != null && returnTo.matches("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+") && returnTo.length() <= MAX_TEXT) {
+			launch.returnPackage = returnTo;
+		}
+		return new Result(launch, null);
 	}
 
 	/** Plain file name with a map extension JSettlers can load; the id of original maps depends on it, so it is kept as is. */

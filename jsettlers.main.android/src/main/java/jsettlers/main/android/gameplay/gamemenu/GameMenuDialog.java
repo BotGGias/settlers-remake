@@ -16,6 +16,7 @@
 package jsettlers.main.android.gameplay.gamemenu;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,6 +27,7 @@ import android.view.WindowManager;
 import android.widget.SeekBar;
 
 import jsettlers.main.android.R;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.databinding.DialogGameMenuBinding;
 import jsettlers.main.android.mainmenu.MainActivity_;
 
@@ -43,7 +45,22 @@ public class GameMenuDialog extends DialogFragment {
 		GameMenuViewModelFactory gameMenuViewModelFactory = new GameMenuViewModelFactory(requireActivity().getApplication());
 		viewModel = gameMenuViewModelFactory.get(this);
 
-		viewModel.getGameQuitted().observe(this, x -> MainActivity_.intent(this).start());
+		viewModel.getGameQuitted().observe(this, x -> {
+			if (!returnToLauncher()) {
+				MainActivity_.intent(this).start();
+			}
+		});
+	}
+
+	/** Settlers United: a game started by the launcher returns to the launcher instead of the main menu. */
+	private boolean returnToLauncher() {
+		String pkg = ((GameStarter) requireActivity().getApplication()).takeSuReturnPackage();
+		Intent launch = pkg == null ? null : requireActivity().getPackageManager().getLaunchIntentForPackage(pkg);
+		if (launch == null) {
+			return false;
+		}
+		startActivity(launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+		return true;
 	}
 
 	@NonNull

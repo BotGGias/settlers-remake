@@ -133,6 +133,15 @@ public class MainApplication extends MultiDexApplication implements GameStarter,
 	private volatile SuSession suSession;
 	/** Loopback server started for a launcher host session (not the LAN server of the main menu). */
 	private GameServerThread suServer;
+	/** App to return to after a launcher game (outlives the session: it ends with the game, the quit dialog asks afterwards). */
+	private volatile String suReturnPackage;
+
+	@Override
+	public String takeSuReturnPackage() {
+		String pkg = suReturnPackage;
+		suReturnPackage = null;
+		return pkg;
+	}
 
 	@Override
 	public SuSession getSuSession() {
@@ -153,6 +162,7 @@ public class MainApplication extends MultiDexApplication implements GameStarter,
 			}
 		}
 		suSession = new SuSession(launch, SystemClock.uptimeMillis());
+		suReturnPackage = launch.returnPackage;
 		return null;
 	}
 
@@ -202,6 +212,9 @@ public class MainApplication extends MultiDexApplication implements GameStarter,
 
 	@Override
 	public void setStartingGame(IStartingGame startingGame) {
+		if (startingGame != null && suSession == null) {
+			suReturnPackage = null; // a game started in JSettlers itself ends in the main menu
+		}
 		this.startingGame = startingGame;
 	}
 

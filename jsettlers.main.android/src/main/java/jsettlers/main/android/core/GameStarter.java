@@ -59,6 +59,12 @@ public interface GameStarter {
 	/** Name of a new multiplayer match: the lobby id in a launcher session, otherwise the player name. */
 	String getNewMatchName();
 
+	/**
+	 * Package of the app that started the current game via the launcher contract (to return to it after the game), once;
+	 * null for games started in JSettlers itself.
+	 */
+	String takeSuReturnPackage();
+
 	/** Rescans the map folders (e.g. after a map file was added). Blocking. */
 	void refreshMapList();
 
