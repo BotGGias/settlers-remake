@@ -153,4 +153,17 @@ public interface IGraphicsGrid {
 	 * @return Returns true if the given position is covered by the blocked area of any building, false otherwise.
 	 */
 	boolean isBuilding(int x, int y);
+
+	/**
+	 * Gets the amount of resources (coal, iron, gold, ...) in the ground at the given position.
+	 * 
+	 * @param x
+	 *            X coordinate of the position.
+	 * @param y
+	 *            Y coordinate of the position.
+	 * @return Returns the resource amount at the given position, 0 if there are no resources.
+	 */
+	default int getResourceAmountAt(int x, int y) {
+		return 0;
+	}
 }

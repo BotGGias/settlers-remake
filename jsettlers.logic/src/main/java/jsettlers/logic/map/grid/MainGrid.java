@@ -425,7 +425,6 @@ public final class MainGrid implements Serializable {
 	}
 
 	public MapFileHeader generateSaveHeader(Byte playerId) {
-		// TODO: description
 		PreviewImageCreator previewImageCreator = new PreviewImageCreator(width, height, MapFileHeader.PREVIEW_IMAGE_SIZE,
 			landscapeGrid.getPreviewImageDataSupplier()
 		);
@@ -447,7 +446,7 @@ public final class MainGrid implements Serializable {
 			MapType.SAVED_SINGLE,
 			mapName,
 			mapId,
-			"TODO: description",
+			"",
 			width,
 			height,
 			(short) 1,
@@ -961,6 +960,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final byte getVisibleStatus(int x, int y) {
 			return fogOfWar.getVisibleStatus(x, y);
+		}
+
+		@Override
+		public int getResourceAmountAt(int x, int y) {
+			return landscapeGrid.getResourceAmountAt(x, y);
 		}
 
 		@Override
