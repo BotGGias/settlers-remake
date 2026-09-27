@@ -7,19 +7,18 @@ def shaderJavaOutputDir = 'src/generated/java'
 def shaderResOutputDir = 'src/generated/resources'
 
 android {
-    compileSdkVersion rootProject.ext.androidCompileSdkVersion
-    buildToolsVersion rootProject.ext.androidBuildToolsVersion
+    namespace = 'go.graphics.android'
+    compileSdk = rootProject.ext.androidCompileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.androidMinSdkVersion
-        targetSdkVersion rootProject.ext.androidTargetSdkVersion
-        multiDexEnabled true
-
+        minSdk = rootProject.ext.androidMinSdkVersion
+        targetSdk = rootProject.ext.androidTargetSdkVersion
+        multiDexEnabled = true
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
@@ -35,17 +34,17 @@ android {
     }
 
     compileOptions {
-        coreLibraryDesugaringEnabled true
+        coreLibraryDesugaringEnabled = true
 
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
 dependencies {
     implementation project(':go.graphics')
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 }
 
 
@@ -60,8 +59,7 @@ task compileShaders(type: ShaderCompilationTask) {
     generatedResourcesDirectory = file(shaderResOutputDir).toPath()
 }
 
-tasks.whenTaskAdded{ task ->
-    if(task.name == "generateDebugResources" || task.name == "generateReleaseResources" || task.name == "processDebugJavaRes" || task.name == "processReleaseJavaRes") {
-        task.dependsOn(compileShaders)
-    }
+// every task of a variant runs after preBuild, so all of them can use the generated shaders
+tasks.named('preBuild').configure {
+    dependsOn compileShaders
 }

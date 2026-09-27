@@ -75,6 +75,8 @@ All the options above can also be specified as command line options. For this, y
 ## Build instructions and developer's guide
 The [build instructions](https://github.com/paulwedeck/settlers-remake/wiki/Compiling-using-gradle) and the [developer's guide](https://github.com/paulwedeck/settlers-remake/wiki/Developer's%20Guide) can be found in our wiki.
 
+Building JSettlers requires a JDK 17 or newer (JDK 21 is recommended), because the build uses Gradle 8 and the Android Gradle Plugin 8. The built game still runs with Java 11 or newer.
+
 ### Textures
 JSettlers is meant to be used with the original textures from Settlers 3.
 However we are working on replacing these with new textures that have a more permissive license.
