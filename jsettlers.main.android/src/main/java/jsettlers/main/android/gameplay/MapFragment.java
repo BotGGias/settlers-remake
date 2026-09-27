@@ -57,6 +57,7 @@ import jsettlers.main.android.core.controls.SelectionListener;
 import jsettlers.main.android.core.controls.TaskControls;
 import jsettlers.main.android.core.navigation.BackPressedListener;
 import jsettlers.main.android.core.ui.FragmentUtil;
+import jsettlers.main.android.core.ui.dialogs.EditTextDialog;
 import jsettlers.main.android.gameplay.controlsmenu.buildings.BuildingsMenuFragment;
 import jsettlers.main.android.gameplay.controlsmenu.goods.GoodsMenuFragment;
 import jsettlers.main.android.gameplay.controlsmenu.selection.BuildingSelectionFragment;
@@ -72,7 +73,7 @@ import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 @EFragment(R.layout.fragment_map)
 @OptionsMenu(R.menu.game)
-public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, MenuNavigator {
+public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, MenuNavigator, EditTextDialog.Listener {
 	private static final String TAG_GAME_MENU_DIALOG = "com.jsettlers.gamemenufragment";
 	private static final String TAG_FRAGMENT_SELECTION_MENU = "com.jsettlers.selectionmenufragment";
 	private static final String TAG_FRAGMENT_BUILDINGS_MENU = "com.jsettlers.buildingsmenufragment";
@@ -334,6 +335,13 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 
 		if (getChildFragmentManager().findFragmentByTag(TAG_GAME_MENU_DIALOG) == null) {
 			GameMenuDialog.create().show(getChildFragmentManager(), TAG_GAME_MENU_DIALOG);
+		}
+	}
+
+	@Override
+	public void saveEditTextDialog(int requestCode, String text) {
+		if (requestCode == GameMenuDialog.REQUEST_CODE_CHAT) {
+			gameMenu.sendChatMessage(text);
 		}
 	}
 

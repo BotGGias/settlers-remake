@@ -175,6 +175,14 @@
 
 		<Button
 			style="?attr/buttonBarButtonStyle"
+			android:id="@+id/button_chat"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/network_chat"
+			android:visibility="@{viewmodel.getShowChat()}"/>
+
+		<Button
+			style="?attr/buttonBarButtonStyle"
 			android:id="@+id/button_skip_minute"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"

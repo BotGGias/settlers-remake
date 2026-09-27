@@ -68,6 +68,7 @@ import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.UIState;
 import jsettlers.common.action.EMoveToType;
 import jsettlers.common.action.MoveToAction;
+import jsettlers.common.menu.messages.EMessageType;
 import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.movable.IGraphicsMovable;
 import jsettlers.common.player.IPlayer;
@@ -207,6 +208,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private final IStartedGame game;
 
 	private final ETextDrawPosition textDrawPosition;
+
+	private volatile ITextInputProvider textInputProvider;
 
 	/**
 	 * The controls that represent the interface.
@@ -531,7 +534,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				x += width + 10;
 			}
 
-			drawer.drawString(x, y, new Color(1, 1, 1, a), Labels.getString(m.getMessageLabel()));
+			String text = m.getType() == EMessageType.CHAT ? m.getMessageLabel() : Labels.getString(m.getMessageLabel());
+			drawer.drawString(x, y, new Color(1, 1, 1, a), text);
 
 			messageIndex++;
 		}
@@ -850,6 +854,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			return new Action(EActionType.SPEED_SLOWER);
 		} else if (" ".equals(keyCode) || "space".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.SHOW_MESSAGE);
+		} else if ("ENTER".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.WRITE_CHAT_MESSAGE);
 		} else if ("d".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.DEBUG_ACTION);
 		} else if ("s".equalsIgnoreCase(keyCode)) {
@@ -1104,6 +1110,9 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		case SHOW_MESSAGE:
 			scrollTo(messenger.getPosition(), true);
 			break;
+		case WRITE_CHAT_MESSAGE:
+			requestChatInput();
+			break;
 		case SHOW_CONSTRUCTION_MARK:
 			EBuildingType buildingType = ((ShowConstructionMarksAction) action).getBuildingType();
 			BuildingVariant buildingVariant = buildingType == null ? null : buildingType.getVariant(localPlayer.getCivilisation());
@@ -1149,6 +1158,40 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				break;
 			}
 		}
+	}
+
+	/**
+	 * Sets the provider that asks the user for text input, e.g. for chat messages.
+	 *
+	 * @param textInputProvider
+	 *            The provider or null if this platform does not support text input.
+	 */
+	public void setTextInputProvider(ITextInputProvider textInputProvider) {
+		this.textInputProvider = textInputProvider;
+	}
+
+	/**
+	 * @return true if the local player can write chat messages in this game.
+	 */
+	public boolean isChatInputAvailable() {
+		return textInputProvider != null && game.isChatAvailable();
+	}
+
+	/**
+	 * Asks the user for a chat message and sends it to the other players. Does nothing if this is not possible in this game.
+	 */
+	public void requestChatInput() {
+		ITextInputProvider provider = textInputProvider;
+		if (provider != null && game.isChatAvailable()) {
+			provider.requestText(Labels.getString("chat_input_title"), game::sendChatMessage);
+		}
+	}
+
+	/**
+	 * @return The latest chat messages of this game, the oldest one first.
+	 */
+	public IMessage[] getChatHistory() {
+		return messenger.getChatHistory();
 	}
 
 	public void playSound(int soundId, float volume) {

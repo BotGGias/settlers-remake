@@ -102,6 +102,10 @@ public class GameMenuViewModel extends ViewModel {
 		return gameMenu.isMultiplayer() ? View.GONE : View.VISIBLE;
 	}
 
+	public int getShowChat() {
+		return gameMenu.isChatAvailable() ? View.VISIBLE : View.GONE;
+	}
+
 	public void quitClicked() {
 		if (gameMenu.getGameState().getValue() == GameMenu.GameState.CONFIRM_QUIT) {
 			gameMenu.quitConfirm();

@@ -279,6 +279,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			}
 
 			case SHOW_MESSAGE:
+			case WRITE_CHAT_MESSAGE:
 			case TOGGLE_MUSIC: {
 				break;
 			}

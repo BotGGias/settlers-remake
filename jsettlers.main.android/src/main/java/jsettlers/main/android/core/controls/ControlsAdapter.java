@@ -72,7 +72,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 		androidControls = new AndroidControls(this, context.getResources().getDisplayMetrics().density, preferences.isShowMinimap());
 		mapContent = new MapContent(game, SOUND_PLAYER, ETextDrawPosition.MOBILE, androidControls);
 		gameMenu = new GameMenu(context, SOUND_PLAYER, this, new GameSpeedLiveData(gameClock, this), game.isMultiplayerGame(),
-				mapContent.getMusicManager(), preferences);
+				mapContent.getMusicManager(), preferences, game);
 		graphicsGrid = game.getMap();
 	}
 

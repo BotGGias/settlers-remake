@@ -119,6 +119,11 @@ public enum EActionType {
 	SHOW_MESSAGE,
 
 	/**
+	 * Opens the input for a new chat message.
+	 */
+	WRITE_CHAT_MESSAGE,
+
+	/**
 	 * Selects an area of the screen.
 	 *
 	 * @see SelectAreaAction

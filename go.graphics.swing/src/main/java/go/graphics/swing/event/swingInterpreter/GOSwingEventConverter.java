@@ -251,6 +251,9 @@ public class GOSwingEventConverter extends AbstractEventConverter
 			case KeyEvent.VK_TAB:
 				text = "TAB";
 				break;
+			case KeyEvent.VK_ENTER:
+				text = "ENTER";
+				break;
 			default:
 				text = "" + e.getKeyChar();
 			}

@@ -15,6 +15,7 @@
 package jsettlers.main;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,7 +70,7 @@ public class MultiplayerGame {
 
 	private IJoiningGameListener joiningGameListener;
 	private IMultiplayerListener multiplayerListener;
-	private IChatMessageListener chatMessageListener;
+	private volatile IChatMessageListener chatMessageListener;
 	private boolean iAmTheHost = false;
 	private int maxPlayers;
 	private int startResourcesValue = EMapStartResources.HIGH_GOODS.value;
@@ -144,9 +145,46 @@ public class MultiplayerGame {
 					EMapStartResources.fromMapValue(startResourcesValue), peaceTime);
 
 			JSettlersGame game = new JSettlersGame(mapLoader, networkClient.getNetworkConnector(), initialGameState);
+			enableInGameChat(game);
 
 			multiplayerListener.gameIsStarting(game.start());
 		};
+	}
+
+	/**
+	 * Forwards the chat messages of the running game to the given game instead of the lobby.
+	 */
+	private void enableInGameChat(JSettlersGame game) {
+		// The players are mapped to their slots now, because the mapping changes when a player leaves the running game.
+		Map<String, Byte> inGamePlayerIds = getInGamePlayerIds();
+		game.setChatSender(networkClient::sendChatMessage);
+		chatMessageListener = new IChatMessageListener() {
+			@Override
+			public void chatMessageReceived(String authorId, String message) {
+				Byte senderId = inGamePlayerIds.get(authorId);
+				if (senderId != null) {
+					game.receiveChatMessage(senderId, message);
+				}
+			}
+
+			@Override
+			public void systemMessageReceived(IMultiplayerPlayer author, ENetworkMessage message) {
+				// the lobby messages are not shown in the running game
+			}
+		};
+	}
+
+	/**
+	 * @return The in-game player id of every player in the match, mapped by the network id of the player.
+	 */
+	private Map<String, Byte> getInGamePlayerIds() {
+		Map<String, Byte> inGamePlayerIds = new HashMap<>();
+		for (IMultiplayerSlot currSlot : slotList.getItems()) {
+			if (currSlot.getPlayer() != null) {
+				inGamePlayerIds.put(currSlot.getPlayer().getId(), currSlot.getPosition());
+			}
+		}
+		return inGamePlayerIds;
 	}
 
 	private PlayerSetting[] determinePlayerSettings() {
@@ -166,12 +204,11 @@ public class MultiplayerGame {
 
 	private byte calculateOwnPlayerId() {
 		String myId = networkClient.getPlayerInfo().getId();
-		for (IMultiplayerSlot currSlot : slotList.getItems()) {
-			if(currSlot.getPlayer() != null && currSlot.getPlayer().getId().equals(myId)) {
-				return currSlot.getPosition();
-			}
+		Byte ownPlayerId = getInGamePlayerIds().get(myId);
+		if (ownPlayerId == null) {
+			throw new RuntimeException("Wasn't able to find my id!");
 		}
-		throw new RuntimeException("Wasn't able to find my id!");
+		return ownPlayerId;
 	}
 
 	private IPacketReceiver<MatchInfoUpdatePacket> generateMatchInfoUpdatedListener() {
