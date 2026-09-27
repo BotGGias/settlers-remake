@@ -129,6 +129,10 @@
 	<string name="goods_stock_title">Globale Lagereinstellungen</string>
 
 	<string name="game_menu_skip_minute">Eine Minute vorspulen</string>
+	<string name="game_menu_players">Spieler</string>
+	<string name="players_title">Spieler</string>
+	<string name="players_close">Schließen</string>
+	<string name="players_team">Team %d</string>
 	<string name="ask_workarea">Arbeitsbereich auswählen</string>
 	<string name="ask_dock">Stegposition auswählen</string>
 	<string name="ask_spell">Zauberstelle auswählen</string>

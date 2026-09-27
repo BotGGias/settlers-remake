@@ -58,4 +58,17 @@ public interface INetworkConnector {
 	 * Sets the listener that receives the resume requests of all players.
 	 */
 	void setGameResumeListener(IGameResumeListener listener);
+
+	/**
+	 * Sets the listener that receives the network status of all players. Only network games send this status.
+	 */
+	default void setPlayerStatusListener(IPlayerStatusListener listener) {
+	}
+
+	/**
+	 * @return false if the connection to the server has been lost.
+	 */
+	default boolean isConnected() {
+		return true;
+	}
 }

@@ -14,6 +14,7 @@
  */
 package jsettlers.common.menu.messages;
 
+import jsettlers.common.Color;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
@@ -26,10 +27,17 @@ import java.util.Objects;
  * @author Michael Zangl
  */
 public class SimpleMessage implements IMessage {
+	/**
+	 * Status messages are only shown for a short time.
+	 */
+	public static final long PLAYER_STATUS_TTL = 20000;
+
 	private final byte sender;
 	private final ShortPoint2D pos;
 	private final String messageLabel;
 	private final EMessageType type;
+	private final Color indicatorColor;
+	private final long timeToLive;
 	private int age;
 
 	/**
@@ -45,10 +53,16 @@ public class SimpleMessage implements IMessage {
 	 * 		The position the messageLabel was sent from.
 	 */
 	private SimpleMessage(EMessageType type, String messageLabel, byte sender, ShortPoint2D pos) {
+		this(type, messageLabel, sender, pos, null, MESSAGE_TTL);
+	}
+
+	private SimpleMessage(EMessageType type, String messageLabel, byte sender, ShortPoint2D pos, Color indicatorColor, long timeToLive) {
 		this.type = type;
 		this.messageLabel = messageLabel;
 		this.sender = sender;
 		this.pos = pos;
+		this.indicatorColor = indicatorColor;
+		this.timeToLive = timeToLive;
 		this.age = 0;
 	}
 
@@ -84,7 +98,20 @@ public class SimpleMessage implements IMessage {
 	}
 
 	@Override
+	public long getTimeToLive() {
+		return timeToLive;
+	}
+
+	@Override
+	public Color getIndicatorColor() {
+		return indicatorColor;
+	}
+
+	@Override
 	public boolean duplicates(IMessage m) {
+		if (this.type == EMessageType.PLAYER_STATUS) {
+			return false; // status messages are only sent when the status changes
+		}
 		if ((m.getSender() == this.sender)
 				&& m.getMessageLabel().equals(this.messageLabel)
 				&& m.getType() == this.type) {
@@ -175,5 +202,19 @@ public class SimpleMessage implements IMessage {
 	 */
 	public static IMessage playerInfo(String messageLabel, byte player) {
 		return new SimpleMessage(EMessageType.INFO, messageLabel, player, null);
+	}
+
+	/**
+	 * Creates a short message about the state of a player, e.g. a network problem.
+	 *
+	 * @param messageLabel
+	 *            The label of the message text.
+	 * @param player
+	 *            The player the message is about or -1 if it is not about a specific player.
+	 * @param indicatorColor
+	 *            The color of the status dot shown in front of the message.
+	 */
+	public static IMessage playerStatus(String messageLabel, byte player, Color indicatorColor) {
+		return new SimpleMessage(EMessageType.PLAYER_STATUS, messageLabel, player, null, indicatorColor, PLAYER_STATUS_TTL);
 	}
 }

@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.common.menu;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.player.IEndgameStatistic;
@@ -54,4 +56,20 @@ public interface IStartedGame {
 	boolean isShutdownFinished();
 
 	boolean isMultiplayerGame();
+
+	/**
+	 * @return The current state of all players of the game, sorted by team and player id.
+	 */
+	default List<InGamePlayerStatus> getPlayerStatuses() {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * @param playerId
+	 *            The id of the player in the game.
+	 * @return The name of the player or null if it is not known.
+	 */
+	default String getPlayerName(byte playerId) {
+		return null;
+	}
 }
