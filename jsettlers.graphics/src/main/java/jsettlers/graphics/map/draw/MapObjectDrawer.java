@@ -31,6 +31,7 @@ import jsettlers.common.buildings.OccupierPlace;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.mapobject.EDecorationType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
@@ -610,6 +611,10 @@ public class MapObjectDrawer {
 				drawSwampDecoration(x, y, color);
 				break;
 
+			case LANDSCAPE_DECORATION:
+				drawLandscapeDecoration(x, y, (int) progress, color);
+				break;
+
 			case PIG:
 				drawPig(x, y, color);
 				break;
@@ -667,6 +672,15 @@ public class MapObjectDrawer {
 		int step = (x * 13 + y * 233) % 6 + 27;
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(1, 27);
 		draw(seq.getImageSafe(step, () -> "swamp-decoration"), x, y, 0, color);
+	}
+
+	private void drawLandscapeDecoration(int x, int y, int decorationIndex, float color) {
+		if (decorationIndex < 0 || decorationIndex >= EDecorationType.VALUES.length) {
+			return;
+		}
+		EDecorationType decoration = EDecorationType.VALUES[decorationIndex];
+		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, decoration.sequence);
+		draw(seq.getImageSafe(decoration.imageIndex, () -> "decoration-" + decoration), x, y, 0, color);
 	}
 
 	private void drawPig(int x, int y, float color) {

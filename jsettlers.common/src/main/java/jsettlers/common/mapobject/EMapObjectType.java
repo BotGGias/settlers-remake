@@ -179,6 +179,11 @@ public enum EMapObjectType {
 	HIVE_HARVESTABLE,
 
 	SWAMP_DECORATION,
+
+	/**
+	 * A decorative landscape object from an original map. The state progress is the ordinal of its {@link EDecorationType}.
+	 */
+	LANDSCAPE_DECORATION,
 	;
 
 	public static final EMapObjectType[] VALUES = EMapObjectType.values();
@@ -200,6 +205,7 @@ public enum EMapObjectType {
 			EMapObjectType.DESERT_DECORATION,
 			EMapObjectType.PLANT_DECORATION,
 			EMapObjectType.SWAMP_DECORATION,
+			EMapObjectType.LANDSCAPE_DECORATION,
 			EMapObjectType.TREE_DEAD);
 
 	EMapObjectType() {
