@@ -17,6 +17,11 @@ task unitTest(type: Test) {
 	exclude 'jsettlers/integration/**'
 }
 
+tasks.withType(Test).configureEach {
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+}
+
 
 dependencies {
 	implementation project(':go.graphics')

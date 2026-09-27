@@ -1,5 +1,5 @@
 plugins {
-	id 'com.github.johnrengelman.shadow' version '7.1.2'
+	id 'com.gradleup.shadow' version '8.3.9'
 	id 'application'
 }
 
@@ -28,7 +28,9 @@ startScripts {
 	applicationName = "jsettlers.main.swing"
 }
 
-mainClassName = 'jsettlers.main.swing.SwingManagedJSettlers'
+application {
+	mainClass = 'jsettlers.main.swing.SwingManagedJSettlers'
+}
 
 dependencies {
 	implementation project(':go.graphics')
@@ -47,12 +49,12 @@ dependencies {
 
 task copyDependencies(type: Copy) {
 	from configurations.lgplDeps
-	into new File(buildDir, 'libs/dependencies')
+	into layout.buildDirectory.dir('libs/dependencies')
 }
 
 jar {
 	manifest {
-		attributes 'Main-Class': mainClassName
+		attributes 'Main-Class': application.mainClass
 		attributes 'Class-Path' : configurations.lgplDeps.collect() {"dependencies/" + it.getName()}.join(' ');
 
 	}
@@ -60,7 +62,7 @@ jar {
 
 shadowJar {
 	archiveBaseName = 'JSettlers'
-	classifier = ''
+	archiveClassifier = ''
 
 	dependsOn copyDependencies
 }
