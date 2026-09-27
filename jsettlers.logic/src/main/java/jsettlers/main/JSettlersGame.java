@@ -203,8 +203,7 @@ public class JSettlersGame {
 				try {
 					MatchConstants.clock().setReplayLogStream(createReplayFileStream());
 				} catch (IOException e) {
-					// TODO: log that we do not have write access to resources.
-					System.out.println("Cannot write jsettlers.integration.replay file.");
+					System.err.println("Cannot write replay file: " + e.getMessage());
 				}
 
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
