@@ -62,6 +62,10 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	 * Not final to be able to create it for old savegames.
 	 */
 	private ProductionStatistic productionStatistic = new ProductionStatistic();
+	/**
+	 * Not final to be able to create it for old savegames.
+	 */
+	private StatisticsHistory statisticsHistory = new StatisticsHistory();
 
 	private transient EPlayerType               playerType;
 	private transient CombatStrengthInformation combatStrengthInfo = new CombatStrengthInformation();
@@ -83,6 +87,9 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 		ois.defaultReadObject();
 		if (productionStatistic == null) {
 			productionStatistic = new ProductionStatistic();
+		}
+		if (statisticsHistory == null) {
+			statisticsHistory = new StatisticsHistory();
 		}
 		combatStrengthInfo = new CombatStrengthInformation();
 		updateCombatStrengths();
@@ -127,6 +134,11 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	@Override
 	public ProductionStatistic getProductionStatistic() {
 		return productionStatistic;
+	}
+
+	@Override
+	public StatisticsHistory getStatisticsHistory() {
+		return statisticsHistory;
 	}
 
 	public TradeManager getLandTradeManager() {

@@ -138,6 +138,14 @@
 	<string name="players_title">Spieler</string>
 	<string name="players_close">Schließen</string>
 	<string name="players_team">Team %d</string>
+	<string name="game_menu_statistics">Statistik</string>
+	<string name="statistics_title">Statistik</string>
+	<string name="statistics_endgame_title">Spielergebnis</string>
+	<string name="statistics_continue">Weiter</string>
+	<string name="statistics_no_data">Noch keine Statistik aufgezeichnet</string>
+	<string name="statistics_time_axis">Spielzeit (h:mm), jede Spielminute aufgezeichnet</string>
+	<string name="statistics_game_ended">Spiel nach %s beendet</string>
+	<string name="statistics_game_ended_no_time">Spiel beendet</string>
 	<string name="ask_workarea">Arbeitsbereich auswählen</string>
 	<string name="ask_dock">Stegposition auswählen</string>
 	<string name="ask_spell">Zauberstelle auswählen</string>

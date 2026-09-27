@@ -17,6 +17,8 @@ package jsettlers.common.player;
 
 import java.util.HashMap;
 
+import jsettlers.common.statistics.IStatisticsHistory;
+
 /**
  * Created by Andreas Eberle on 27.06.2017.
  */
@@ -69,6 +71,11 @@ public interface IPlayer {
 
 		@Override
 		public IEndgameStatistic getEndgameStatistic() {
+			return null;
+		}
+
+		@Override
+		public IStatisticsHistory getStatisticsHistory() {
 			return null;
 		}
 

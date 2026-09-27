@@ -151,6 +151,15 @@
 	<string name="players_title">Players</string>
 	<string name="players_close">Close</string>
 	<string name="players_team">Team %d</string>
+	<string name="game_menu_statistics">Statistics</string>
+	<string name="statistics_title">Statistics</string>
+	<string name="statistics_endgame_title">Game result</string>
+	<string name="statistics_continue">Continue</string>
+	<string name="statistics_no_data">No statistics recorded yet</string>
+	<string name="statistics_time_axis">Game time (h:mm), recorded every game minute</string>
+	<string name="statistics_rank" translatable="false">%d.</string>
+	<string name="statistics_game_ended">Game ended after %s</string>
+	<string name="statistics_game_ended_no_time">Game ended</string>
 
 	<string name="no_saved_games">No saved games available</string>
 	<string name="resource_selection_dialog_title">Locate GFX and SND folders</string>

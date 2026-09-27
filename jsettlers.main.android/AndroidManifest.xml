@@ -37,6 +37,10 @@
 			android:description="@string/service_description"/>
 
 		<activity
+			android:name=".gameplay.statistics.EndgameStatisticsActivity_"
+			android:label="@string/statistics_endgame_title"/>
+
+		<activity
 			android:name=".mainmenu.settings.SettingsActivity_"
 			android:label="@string/settings"/>
 	</application>

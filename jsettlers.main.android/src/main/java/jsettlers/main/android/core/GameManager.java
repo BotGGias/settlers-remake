@@ -15,6 +15,9 @@
 
 package jsettlers.main.android.core;
 
+import android.arch.lifecycle.LiveData;
+
+import jsettlers.common.statistics.GameStatistics;
 import jsettlers.main.android.core.controls.ControlsAdapter;
 import jsettlers.main.android.core.controls.GameMenu;
 
@@ -27,4 +30,12 @@ public interface GameManager {
 	GameMenu getGameMenu();
 
 	boolean isGameInProgress();
+
+	/**
+	 * @return The statistics of the last game. They are set as soon as the game has been shut down and stay until
+	 *         {@link #clearEndgameStatistics()} is called or a new game is started.
+	 */
+	LiveData<GameStatistics> getEndgameStatistics();
+
+	void clearEndgameStatistics();
 }

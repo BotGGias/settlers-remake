@@ -241,6 +241,7 @@ public class JSettlersGame {
 
 				MainGridWithUiSettings gridWithUiState = mapCreator.loadMainGrid(initialGameState.getPlayerSettings(), initialGameState.getStartResources());
 				mainGrid = gridWithUiState.getMainGrid();
+				mainGrid.startStatisticsRecording();
 				PlayerState playerState = gridWithUiState.getPlayerState(initialGameState.getPlayerId());
 				startPeaceTime(initialGameState.getPeaceTime());
 
@@ -303,6 +304,7 @@ public class JSettlersGame {
 				mainGrid.stopThreads();
 				connector.shutdown();
 				guiInterface.stop();
+				mainGrid.recordFinalStatistics(); // the movables and buildings are removed by clearState()
 				clearState();
 
 				System.setErr(systemErrorStream);

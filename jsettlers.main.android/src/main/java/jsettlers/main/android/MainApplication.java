@@ -19,6 +19,8 @@ import jsettlers.network.infrastructure.log.ConsoleLogger;
 import org.androidannotations.annotations.EApplication;
 
 import android.app.Application;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.support.multidex.MultiDexApplication;
 
@@ -30,6 +32,7 @@ import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
+import jsettlers.common.statistics.GameStatistics;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.loading.list.MapList;
@@ -57,6 +60,7 @@ public class MainApplication extends MultiDexApplication implements GameStarter,
 	private IJoiningGame joiningGame;
 
 	private ControlsAdapter controlsAdapter;
+	private final MutableLiveData<GameStatistics> endgameStatistics = new MutableLiveData<>();
 
 	@Override
 	public void onCreate() {
@@ -152,7 +156,13 @@ public class MainApplication extends MultiDexApplication implements GameStarter,
 	@Override
 	public IMapInterfaceConnector gameStarted(IStartedGame game) {
 		controlsAdapter = new ControlsAdapter(getApplicationContext(), game, MatchConstants.clock());
-		game.setGameExitListener(controlsAdapter.getGameMenu());
+		endgameStatistics.postValue(null);
+		GameMenu gameMenu = controlsAdapter.getGameMenu();
+		game.setGameExitListener(exitedGame -> {
+			// the statistics are posted before the game menu reports the quit, so they are available when the game is gone
+			endgameStatistics.postValue(createStatistics(exitedGame));
+			gameMenu.accept(exitedGame);
+		});
 		controlsAdapter.getGameMenu().getGameState().observeForever(gameStateObserver);
 
 		GameService_.intent(this).start();
@@ -180,6 +190,25 @@ public class MainApplication extends MultiDexApplication implements GameStarter,
 	@Override
 	public boolean isGameInProgress() {
 		return controlsAdapter != null;
+	}
+
+	@Override
+	public LiveData<GameStatistics> getEndgameStatistics() {
+		return endgameStatistics;
+	}
+
+	@Override
+	public void clearEndgameStatistics() {
+		endgameStatistics.setValue(null);
+	}
+
+	private static GameStatistics createStatistics(IStartedGame game) {
+		try {
+			return GameStatistics.create(game);
+		} catch (RuntimeException e) {
+			e.printStackTrace(); // the game must be quit even if the statistics are not available
+			return null;
+		}
 	}
 
 	private Observer<GameMenu.GameState> gameStateObserver = gameState -> {

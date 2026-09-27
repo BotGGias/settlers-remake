@@ -142,6 +142,7 @@ import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
+import jsettlers.logic.statistics.StatisticsRecorder;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -171,6 +172,11 @@ public final class MainGrid implements Serializable {
 	final MovablePathfinderGrid movablePathfinderGrid;
 	final MapObjectsManager     mapObjectsManager;
 	final BuildingsGrid         buildingsGrid;
+
+	/**
+	 * Null for new games until {@link #startStatisticsRecording()} is called and for savegames of older versions.
+	 */
+	private StatisticsRecorder statisticsRecorder;
 
 	transient         FogOfWar                       fogOfWar;
 	transient         GraphicsGrid                   graphicsGrid;
@@ -264,6 +270,26 @@ public final class MainGrid implements Serializable {
 		bordersThread.start();
 		if (fogOfWar != null) {
 			fogOfWar.start();
+		}
+	}
+
+	/**
+	 * Starts recording the statistics of all players once every game minute. This does nothing if the recording has already been started, e.g.
+	 * before this game was saved.
+	 */
+	public void startStatisticsRecording() {
+		if (statisticsRecorder == null) {
+			statisticsRecorder = new StatisticsRecorder(partitionsGrid);
+			statisticsRecorder.start();
+		}
+	}
+
+	/**
+	 * Records the current statistics of all players. This has to be called when the game ends, while the game state is still available.
+	 */
+	public void recordFinalStatistics() {
+		if (statisticsRecorder != null) {
+			statisticsRecorder.recordSample(true);
 		}
 	}
 

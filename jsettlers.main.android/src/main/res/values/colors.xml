@@ -10,4 +10,5 @@
 
 	<color name="paused_mask">#aa000000</color>
 	<color name="menu_translucent_background">#bb000000</color>
+	<color name="statistics_tab_text">#b3ffffff</color>
 </resources>
