@@ -85,6 +85,13 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	}
 
 	@Override
+	public EMaterialType[] getMaterialTypesForPriorities() {
+		synchronized (materialTypeForPriorities) {
+			return materialTypeForPriorities.clone();
+		}
+	}
+
+	@Override
 	public MaterialDistributionSettings getDistributionSettings(final EMaterialType materialType) {
 		return settingsOfMaterials[materialType.ordinal];
 	}
@@ -98,8 +105,8 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	public void setMaterialPriorities(EMaterialType[] materialTypeForPriority) {
 		assert this.materialTypeForPriorities.length == materialTypeForPriority.length;
 
-		for (int i = 0; i < materialTypeForPriority.length; i++) {
-			this.materialTypeForPriorities[i] = materialTypeForPriority[i];
+		synchronized (materialTypeForPriorities) {
+			System.arraycopy(materialTypeForPriority, 0, materialTypeForPriorities, 0, materialTypeForPriority.length);
 		}
 	}
 
