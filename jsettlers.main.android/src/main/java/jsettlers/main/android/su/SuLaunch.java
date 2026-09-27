@@ -18,6 +18,7 @@ package jsettlers.main.android.su;
 import android.content.Intent;
 import android.os.Bundle;
 
+import jsettlers.common.menu.EPeaceTime;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.su.SuSlotPlan;
@@ -31,7 +32,8 @@ import jsettlers.main.su.SuSlotPlan;
  * Contract v2 (PROTOKOLLE §16.9): the launcher lobby decided everything, JSettlers goes straight into the game. Additionally
  * {@code su.map} (map id of a map JSettlers ships) or {@code su.mapFile} + {@code su.mapUri} (map file shared by the launcher,
  * copied to the own maps folder), {@code su.startResources} (LOW|MEDIUM|HIGH), {@code su.slots} ({@link SuSlotPlan}) and
- * {@code su.startTimeout} (seconds until the match must be running).
+ * {@code su.startTimeout} (seconds until the match must be running), optionally {@code su.peaceTime} (minutes, one of
+ * {@link EPeaceTime}; missing = none).
  */
 public final class SuLaunch {
 	public static final String ACTION = "jsettlers.main.android.action.SU_LAUNCH";
@@ -52,6 +54,7 @@ public final class SuLaunch {
 	public static final String EXTRA_START_RESOURCES = "su.startResources";
 	public static final String EXTRA_SLOTS = "su.slots";
 	public static final String EXTRA_START_TIMEOUT = "su.startTimeout";
+	public static final String EXTRA_PEACE_TIME = "su.peaceTime";
 	/** Optional: package to return to after the game; SuLaunchActivity fills it from the referrer. */
 	public static final String EXTRA_RETURN_TO = "su.returnTo";
 
@@ -81,11 +84,13 @@ public final class SuLaunch {
 	public final EMapStartResources startResources;
 	public final SuSlotPlan slots;
 	public final int startTimeoutSecs;
+	/** Peace time for every player (the launcher passes the same value to everyone). */
+	public final EPeaceTime peaceTime;
 	/** App to bring back after the game (package name) or null. */
 	public String returnPackage;
 
 	private SuLaunch(Role role, String server, int port, String playerId, String playerName, String matchName, int waitSecs, int version, String mapId,
-			String mapFile, String mapUri, EMapStartResources startResources, SuSlotPlan slots, int startTimeoutSecs) {
+			String mapFile, String mapUri, EMapStartResources startResources, SuSlotPlan slots, int startTimeoutSecs, EPeaceTime peaceTime) {
 		this.role = role;
 		this.server = server;
 		this.port = port;
@@ -100,6 +105,7 @@ public final class SuLaunch {
 		this.startResources = startResources;
 		this.slots = slots;
 		this.startTimeoutSecs = startTimeoutSecs;
+		this.peaceTime = peaceTime;
 	}
 
 	/** v2: the launcher lobby decided everything; no JSettlers setup screens. */
@@ -174,7 +180,7 @@ public final class SuLaunch {
 		}
 		if (version == 1) {
 			return new Result(new SuLaunch(role, "127.0.0.1", port, playerId, playerName, matchName, waitSecs, 1, null, null, null,
-					EMapStartResources.HIGH_GOODS, null, 0), null);
+					EMapStartResources.HIGH_GOODS, null, 0, EPeaceTime.WITHOUT), null);
 		}
 
 		String mapId = text(extras, EXTRA_MAP);
@@ -220,8 +226,13 @@ public final class SuLaunch {
 		if (startTimeout < 10 || startTimeout > MAX_WAIT_SECS) {
 			startTimeout = DEFAULT_START_TIMEOUT;
 		}
+		int peaceMinutes = number(extras, EXTRA_PEACE_TIME, 0);
+		EPeaceTime peaceTime = EPeaceTime.fromMinutes(peaceMinutes);
+		if (peaceTime.minutes != peaceMinutes) {
+			return error("invalid su.peaceTime " + peaceMinutes);
+		}
 		SuLaunch launch = new SuLaunch(role, "127.0.0.1", port, playerId, playerName, matchName, waitSecs, 2, mapId, mapFile, mapUri, startResources,
-				slots, startTimeout);
+				slots, startTimeout, peaceTime);
 		String returnTo = text(extras, EXTRA_RETURN_TO);
 		if (returnTo != null && returnTo.matches("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+") && returnTo.length() <= MAX_TEXT) {
 			launch.returnPackage = returnTo;

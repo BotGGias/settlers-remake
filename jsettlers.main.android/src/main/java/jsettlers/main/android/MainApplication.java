@@ -120,7 +120,8 @@ public class MainApplication extends MultiDexApplication implements GameStarter,
 			}
 			MultiplayerConnector connector = new MultiplayerConnector(server, playerId, playerName, new ConsoleLogger("jsettlers.main.android-network"));
 			if (session != null) {
-				connector.setStartResources(session.launch.startResources); // v2: same value for everyone, from the launcher lobby
+				connector.setStartResources(session.launch.startResources); // v2: same values for everyone, from the launcher lobby
+				connector.setPeaceTime(session.launch.peaceTime);
 			}
 			multiplayerConnector = connector;
 		}
