@@ -63,7 +63,7 @@ public enum EOriginalMapBuildingType {
 	GEMSMINE(EBuildingType.GEMSMINE),
 	Brauerei(EBuildingType.BREWERY),
 	CHARCOAL_BURNER(EBuildingType.CHARCOAL_BURNER),
-	Pulvermacherei(null),
+	Pulvermacherei(EBuildingType.POWDER_MAKER),
 	Pyramide(EBuildingType.BIG_TEMPLE),
 	Sphinx(EBuildingType.TEMPLE),
 	BIG_TEMPLE(EBuildingType.BIG_TEMPLE), // TODO : does not work?!

@@ -83,6 +83,7 @@ public enum EMovableType {
 	DISTILLER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
 	ALCHEMIST(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
 	MEAD_BREWER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	POWDER_MAKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
 	;
 
 	/**
