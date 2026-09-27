@@ -19,6 +19,7 @@ import java.util.Timer;
 
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.NetworkConstants.ENetworkKey;
+import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.IGameResumeListener;
 import jsettlers.network.client.interfaces.INetworkClient;
 import jsettlers.network.client.interfaces.INetworkConnector;
