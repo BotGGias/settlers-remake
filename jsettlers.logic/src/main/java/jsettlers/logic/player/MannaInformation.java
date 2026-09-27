@@ -50,12 +50,14 @@ public class MannaInformation implements Serializable, IMannaInformation {
 	}
 
 	public void increaseManna() {
-		totalManna = ++manna;
+		manna++;
+		totalManna++;
 	}
 
 	public void increaseMannaByBigTemple() {
 		if (isMannaIncreasableByBigTemples) {
-			totalManna = manna += 8;
+			manna += 8;
+			totalManna += 8;
 		}
 	}
 

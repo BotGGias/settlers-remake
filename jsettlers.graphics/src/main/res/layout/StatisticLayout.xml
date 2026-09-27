@@ -31,7 +31,7 @@
     </element>
 
     <element class="jsettlers.graphics.ui.Button" height="18" width="18" x="102" y="236">
-        <image file="44" image="0" sequence="120" type="GUI"/>
+        <mappedImage type="STATISTIC_SOLDIERS" movableType="SWORDSMAN_L1"/>
         <localized label="settler_stats_soldier"/>
     </element>
     <element class="jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel.NamedLabel" maxx="120" maxy="262" x="102" y="254">
@@ -40,16 +40,15 @@
 
     <!-- Row 1 -->
     <element class="jsettlers.graphics.ui.Button" height="36" width="22" x="13" y="276">
-        <image file="44" image="0" sequence="135" type="GUI"/>
+        <mappedImage type="SETTLER_GUI" movableType="BEARER"/>
         <localized label="movable_BEARER"/>
     </element>
     <element class="jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel.NamedLabel" maxx="35" maxy="320" x="13" y="312">
         <localized label="stat_bearer"/>
     </element>
 
-    <element class="jsettlers.graphics.ui.Button" height="36" width="22" x="42"
-             y="276">
-        <image file="44" image="0" sequence="138" type="GUI"/>
+    <element class="jsettlers.graphics.ui.Button" height="36" width="22" x="42" y="276">
+        <mappedImage type="SETTLER_GUI" movableType="DIGGER"/>
         <localized label="movable_DIGGER"/>
     </element>
     <element class="jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel.NamedLabel" maxx="64" maxy="320" x="42" y="312">
@@ -57,7 +56,7 @@
     </element>
 
     <element class="jsettlers.graphics.ui.Button" height="36" width="22" x="71" y="276">
-        <image file="44" image="0" sequence="141" type="GUI"/>
+        <mappedImage type="SETTLER_GUI" movableType="BRICKLAYER"/>
         <localized label="movable_BRICKLAYER"/>
     </element>
     <element class="jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel.NamedLabel" maxx="93" maxy="320" x="71" y="312">
@@ -65,7 +64,7 @@
     </element>
 
     <element class="jsettlers.graphics.ui.Button" height="36" width="22" x="100" y="276">
-        <image file="44" image="0" sequence="153" type="GUI"/>
+        <mappedImage type="SETTLER_GUI" movableType="SMITH"/>
         <localized label="settler_stats_worker"/>
     </element>
     <element class="jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel.NamedLabel" maxx="122" maxy="320" x="100" y="312">
@@ -74,7 +73,7 @@
 
     <!-- Row 2 -->
     <element class="jsettlers.graphics.ui.Button" height="36" width="22" x="13" y="330">
-        <image file="44" image="0" sequence="210" type="GUI"/>
+        <mappedImage type="SETTLER_GUI" movableType="SWORDSMAN_L1"/>
         <localized label="soldier_SWORDSMAN"/>
     </element>
     <element class="jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel.NamedLabel" maxx="35" maxy="374" x="13" y="366">
@@ -82,7 +81,7 @@
     </element>
 
     <element class="jsettlers.graphics.ui.Button" height="36" width="22" x="42" y="330">
-        <image file="44" image="0" sequence="216" type="GUI"/>
+        <mappedImage type="SETTLER_GUI" movableType="BOWMAN_L1"/>
         <localized label="soldier_BOWMAN"/>
     </element>
     <element class="jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel.NamedLabel" maxx="64" maxy="374" x="41" y="366">
@@ -90,7 +89,7 @@
     </element>
 
     <element class="jsettlers.graphics.ui.Button" height="36" width="22" x="71" y="330">
-        <image file="44" image="0" sequence="213" type="GUI"/>
+        <mappedImage type="SETTLER_GUI" movableType="PIKEMAN_L1"/>
         <localized label="soldier_PIKEMAN"/>
     </element>
     <element class="jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel.NamedLabel" maxx="93" maxy="374" x="71" y="366">
@@ -98,7 +97,7 @@
     </element>
 
     <element class="jsettlers.graphics.ui.Button" height="36" width="22" x="100" y="330">
-        <image file="44" image="0" sequence="204" type="GUI"/>
+        <mappedImage type="SETTLER_GUI" movableType="MAGE"/>
         <localized label="movable_MAGE"/>
     </element>
     <element class="jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel.NamedLabel" maxx="122" maxy="374" x="100" y="366">
@@ -107,7 +106,7 @@
 
     <!-- Row 3 -->
     <element class="jsettlers.graphics.ui.Button" height="36" width="22" x="13" y="384">
-        <image file="44" image="0" sequence="189" type="GUI"/>
+        <mappedImage type="SETTLER_GUI" movableType="GEOLOGIST"/>
         <localized label="movable_GEOLOGIST"/>
     </element>
     <element class="jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel.NamedLabel" maxx="35" maxy="428" x="13" y="420">
@@ -115,7 +114,7 @@
     </element>
 
     <element class="jsettlers.graphics.ui.Button" height="36" width="22" x="42" y="384">
-        <image file="44" image="0" sequence="186" type="GUI"/>
+        <mappedImage type="SETTLER_GUI" movableType="THIEF"/>
         <localized label="movable_THIEF"/>
     </element>
     <element class="jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel.NamedLabel" maxx="64" maxy="428" x="42" y="420">
@@ -123,7 +122,7 @@
     </element>
 
     <element class="jsettlers.graphics.ui.Button" height="36" width="22" x="71" y="384">
-        <image file="44" image="0" sequence="207" type="GUI"/>
+        <mappedImage type="SETTLER_GUI" movableType="PIONEER"/>
         <localized label="movable_PIONEER"/>
     </element>
     <element class="jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel.NamedLabel" maxx="93" maxy="428" x="71" y="420">

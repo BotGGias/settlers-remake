@@ -26,7 +26,7 @@ import jsettlers.graphics.map.controls.original.panel.content.updaters.UiPlayerD
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIElement;
 import jsettlers.graphics.ui.UIPanel;
-import jsettlers.graphics.ui.layout.StatisticLayoutRomans;
+import jsettlers.graphics.ui.layout.StatisticLayout;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -49,7 +49,7 @@ public class SettlersStatisticsPanel extends AbstractContentProvider implements 
 	}
 
 	public void setPlayer(IInGamePlayer player) {
-		panel = new StatisticLayoutRomans(null, player.getCivilisation())._root;
+		panel = new StatisticLayout(null, player.getCivilisation())._root;
 		this.player = player;
 		uiContentUpdater.updatePlayer(player);
 	}
