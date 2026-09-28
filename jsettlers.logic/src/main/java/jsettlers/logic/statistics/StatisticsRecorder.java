@@ -37,8 +37,14 @@ public class StatisticsRecorder implements IScheduledTimerable, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	static final int SAMPLE_INTERVAL_MS = 60 * 1000;
+	/**
+	 * The {@link RescheduleTimer} can't schedule more than 32 seconds ahead, so the interval is split into steps.
+	 */
+	private static final int SCHEDULE_STEPS_PER_SAMPLE = 2;
+	private static final int SCHEDULE_STEP_MS = SAMPLE_INTERVAL_MS / SCHEDULE_STEPS_PER_SAMPLE;
 
 	private final PartitionsGrid partitionsGrid;
+	private int stepsUntilNextSample = SCHEDULE_STEPS_PER_SAMPLE;
 
 	public StatisticsRecorder(PartitionsGrid partitionsGrid) {
 		this.partitionsGrid = partitionsGrid;
@@ -49,13 +55,18 @@ public class StatisticsRecorder implements IScheduledTimerable, Serializable {
 	 */
 	public void start() {
 		recordSample(false);
-		RescheduleTimer.add(this, SAMPLE_INTERVAL_MS);
+		stepsUntilNextSample = SCHEDULE_STEPS_PER_SAMPLE;
+		RescheduleTimer.add(this, SCHEDULE_STEP_MS);
 	}
 
 	@Override
 	public int timerEvent() {
-		recordSample(false);
-		return SAMPLE_INTERVAL_MS;
+		stepsUntilNextSample--;
+		if (stepsUntilNextSample <= 0) {
+			recordSample(false);
+			stepsUntilNextSample = SCHEDULE_STEPS_PER_SAMPLE;
+		}
+		return SCHEDULE_STEP_MS;
 	}
 
 	@Override
@@ -114,7 +125,8 @@ public class StatisticsRecorder implements IScheduledTimerable, Serializable {
 	}
 
 	private static boolean isSettler(EMovableType type) {
-		return type.selectionType != ESelectionType.SHIPS && type != EMovableType.DONKEY && type != EMovableType.WHITEFLAGGED_DONKEY;
+		return type.selectionType != ESelectionType.SHIPS && type != EMovableType.DONKEY && type != EMovableType.WHITEFLAGGED_DONKEY
+				&& !type.isSiegeWeapon();
 	}
 
 	/**
@@ -135,6 +147,11 @@ public class StatisticsRecorder implements IScheduledTimerable, Serializable {
 		case PIKEMAN_L3:
 		case BOWMAN_L3:
 			return 3;
+		case CATAPULT:
+		case BALLISTA:
+		case CANNON:
+		case GONG:
+			return 4;
 		default:
 			return 0;
 		}
