@@ -162,7 +162,9 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 									EMovableType.RICE_FARMER,
 									EMovableType.DISTILLER,
 									EMovableType.ALCHEMIST,
-									EMovableType.MEAD_BREWER
+									EMovableType.MEAD_BREWER,
+									EMovableType.POWDER_MAKER,
+									EMovableType.SIEGE_ENGINEER
 									)
 					),
 					new ToolBox(EditorLabels.getLabel("tools.category.specialist"),
@@ -176,6 +178,9 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							PlaceMovableTool.createArray(this, EMovableType.SHIPS)),
 					new ToolBox(EditorLabels.getLabel("tools.category.soldier"),
 							PlaceMovableTool.createArray(this, EMovableType.SOLDIERS)
+					),
+					new ToolBox(EditorLabels.getLabel("tools.category.siege"),
+							PlaceMovableTool.createArray(this, EMovableType.SIEGE_WEAPONS)
 					)
 			}),
 			new ToolBox(EditorLabels.getLabel("tools.category.materials"), new ToolNode[]{

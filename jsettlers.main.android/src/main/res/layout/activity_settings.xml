@@ -8,92 +8,190 @@
 
 	<include layout="@layout/include_app_bar"/>
 
-	<LinearLayout
-		android:id="@+id/layout_player_name"
-		android:orientation="horizontal"
+	<ScrollView
 		android:layout_width="match_parent"
-		android:layout_height="@dimen/settings_item_height"
-		android:padding="16dp"
-		android:gravity="center_vertical"
-		android:background="?android:attr/selectableItemBackground">
+		android:layout_height="0dp"
+		android:layout_weight="1">
 
-		<TextView
-			style="@style/TextAppearance.AppCompat.Subhead"
-			android:textColor="?android:textColorPrimary"
-			android:text="@string/settings_player_name"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"/>
-
-		<android.support.v4.widget.Space
-			android:layout_width="24dp"
-			android:layout_height="1dp"/>
-
-		<TextView
-			style="@style/TextAppearance.AppCompat.Subhead"
-			android:textColor="?android:textColorSecondary"
-			android:id="@+id/text_view_player_name"
-			android:layout_weight="1"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:gravity="end"/>
-	</LinearLayout>
-
-	<View
-		android:layout_width="match_parent"
-		android:layout_height="1dp"
-		android:background="?android:attr/listDivider"/>
-
-
-	<LinearLayout
-		android:id="@+id/layout_server_address"
-		android:orientation="horizontal"
-		android:layout_width="match_parent"
-		android:layout_height="@dimen/settings_item_height"
-		android:padding="16dp"
-		android:gravity="center_vertical"
-		android:background="?android:attr/selectableItemBackground">
-
-		<TextView
-			style="@style/TextAppearance.AppCompat.Subhead"
-			android:textColor="?android:textColorPrimary"
-			android:text="@string/settings_server_address"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"/>
-
-		<android.support.v4.widget.Space
-			android:layout_width="24dp"
-			android:layout_height="1dp"/>
-
-		<TextView
-			style="@style/TextAppearance.AppCompat.Subhead"
-			android:textColor="?android:textColorSecondary"
-			android:id="@+id/text_view_server_address"
-			android:layout_weight="1"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:gravity="end"/>
-	</LinearLayout>
-
-	<View
+		<LinearLayout
+			android:orientation="vertical"
 			android:layout_width="match_parent"
-			android:layout_height="1dp"
-			android:background="?android:attr/listDivider"/>
+			android:layout_height="wrap_content">
+
+			<LinearLayout
+				android:id="@+id/layout_player_name"
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/settings_item_height"
+				android:padding="16dp"
+				android:gravity="center_vertical"
+				android:background="?android:attr/selectableItemBackground">
+
+				<TextView
+					style="@style/TextAppearance.AppCompat.Subhead"
+					android:textColor="?android:textColorPrimary"
+					android:text="@string/settings_player_name"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
+
+				<android.support.v4.widget.Space
+					android:layout_width="24dp"
+					android:layout_height="1dp"/>
+
+				<TextView
+					style="@style/TextAppearance.AppCompat.Subhead"
+					android:textColor="?android:textColorSecondary"
+					android:id="@+id/text_view_player_name"
+					android:layout_weight="1"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:gravity="end"/>
+			</LinearLayout>
+
+			<View
+				android:layout_width="match_parent"
+				android:layout_height="1dp"
+				android:background="?android:attr/listDivider"/>
 
 
-	<LinearLayout
-			android:id="@+id/layout_play_all_music"
-			android:orientation="horizontal"
-			android:layout_width="match_parent"
-			android:layout_height="@dimen/settings_item_height"
-			android:padding="16dp"
-			android:gravity="center_vertical"
-			android:background="?android:attr/selectableItemBackground">
+			<LinearLayout
+				android:id="@+id/layout_server_address"
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/settings_item_height"
+				android:padding="16dp"
+				android:gravity="center_vertical"
+				android:background="?android:attr/selectableItemBackground">
 
-		<Switch
-				android:layout_width="261dp"
-				android:layout_height="match_parent"
-				android:id="@+id/switch_play_all_music"
-				android:text="@string/settings_play_all_music"
-		/>
-	</LinearLayout>
+				<TextView
+					style="@style/TextAppearance.AppCompat.Subhead"
+					android:textColor="?android:textColorPrimary"
+					android:text="@string/settings_server_address"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
+
+				<android.support.v4.widget.Space
+					android:layout_width="24dp"
+					android:layout_height="1dp"/>
+
+				<TextView
+					style="@style/TextAppearance.AppCompat.Subhead"
+					android:textColor="?android:textColorSecondary"
+					android:id="@+id/text_view_server_address"
+					android:layout_weight="1"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:gravity="end"/>
+			</LinearLayout>
+
+			<View
+					android:layout_width="match_parent"
+					android:layout_height="1dp"
+					android:background="?android:attr/listDivider"/>
+
+			<TextView
+				style="@style/TextAppearance.AppCompat.Body2"
+				android:textColor="?attr/colorAccent"
+				android:text="@string/settings_audio"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingLeft="16dp"
+				android:paddingRight="16dp"
+				android:paddingTop="16dp"/>
+
+			<LinearLayout
+				android:id="@+id/layout_music_enabled"
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/settings_item_height"
+				android:padding="16dp"
+				android:gravity="center_vertical">
+
+				<Switch
+					android:id="@+id/switch_music_enabled"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:text="@string/settings_music_enabled"/>
+			</LinearLayout>
+
+			<LinearLayout
+				android:id="@+id/layout_music_volume"
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/settings_item_height"
+				android:paddingLeft="16dp"
+				android:paddingRight="16dp"
+				android:gravity="center_vertical">
+
+				<TextView
+					style="@style/TextAppearance.AppCompat.Subhead"
+					android:textColor="?android:textColorPrimary"
+					android:text="@string/settings_music_volume"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
+
+				<SeekBar
+					android:id="@+id/seek_bar_music_volume"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:max="100"/>
+
+				<TextView
+					android:id="@+id/text_view_music_volume"
+					style="@style/TextAppearance.AppCompat.Body1"
+					android:textColor="?android:textColorSecondary"
+					android:layout_width="48dp"
+					android:layout_height="wrap_content"
+					android:gravity="end"/>
+			</LinearLayout>
+
+			<LinearLayout
+				android:id="@+id/layout_play_all_music"
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/settings_item_height"
+				android:padding="16dp"
+				android:gravity="center_vertical">
+
+				<Switch
+					android:id="@+id/switch_play_all_music"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:text="@string/settings_play_all_music"/>
+			</LinearLayout>
+
+			<LinearLayout
+				android:id="@+id/layout_sound_volume"
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/settings_item_height"
+				android:paddingLeft="16dp"
+				android:paddingRight="16dp"
+				android:gravity="center_vertical">
+
+				<TextView
+					style="@style/TextAppearance.AppCompat.Subhead"
+					android:textColor="?android:textColorPrimary"
+					android:text="@string/settings_sound_volume"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
+
+				<SeekBar
+					android:id="@+id/seek_bar_sound_volume"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:max="100"/>
+
+				<TextView
+					android:id="@+id/text_view_sound_volume"
+					style="@style/TextAppearance.AppCompat.Body1"
+					android:textColor="?android:textColorSecondary"
+					android:layout_width="48dp"
+					android:layout_height="wrap_content"
+					android:gravity="end"/>
+			</LinearLayout>
+		</LinearLayout>
+	</ScrollView>
 </LinearLayout>

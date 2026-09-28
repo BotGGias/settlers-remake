@@ -55,6 +55,7 @@ import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.buildings.trading.HarborBuilding;
 import jsettlers.logic.buildings.trading.MarketBuilding;
 import jsettlers.logic.buildings.workers.DockyardBuilding;
+import jsettlers.logic.buildings.workers.SiegeWorkshopBuilding;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.buildings.workers.ResourceBuilding;
@@ -745,7 +746,14 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case DISTILLERY:
 		case LABORATORY:
 		case MEAD_BREWERY:
+		case POWDER_MAKER:
 			return new WorkerBuilding(type, player, position, buildingsGrid);
+
+		case CATAPULT_WORKSHOP:
+		case BALLISTA_WORKSHOP:
+		case CANNON_WORKSHOP:
+		case GONG_WORKSHOP:
+			return new SiegeWorkshopBuilding(type, player, position, buildingsGrid);
 
 		case DOCKYARD:
 			return new DockyardBuilding(player, position, buildingsGrid);

@@ -36,6 +36,8 @@ public class GameMenuViewModel extends ViewModel {
 	private final LiveData<String> pauseTextLiveData;
 	private final LiveData<String> gameSpeedTextLiveData;
 	private final LiveData<Integer> gameSpeedLiveData;
+	private final LiveData<String> musicVolumeTextLiveData;
+	private final LiveData<String> soundVolumeTextLiveData;
 	private final SingleLiveEvent<Void> gameQuittedLiveData = new SingleLiveEvent<>();
 
 	public GameMenuViewModel(
@@ -48,6 +50,8 @@ public class GameMenuViewModel extends ViewModel {
 		pauseTextLiveData = Transformations.map(gameMenu.isPausedState(), this::mapPausedText);
 		gameSpeedTextLiveData = Transformations.map(gameMenu.getGameSpeed(), this::mapGameSpeedText);
 		gameSpeedLiveData = Transformations.map(gameMenu.getGameSpeed(), this::mapGameSpeed);
+		musicVolumeTextLiveData = Transformations.map(gameMenu.getMusicVolume(), this::mapVolumeText);
+		soundVolumeTextLiveData = Transformations.map(gameMenu.getSoundVolume(), this::mapVolumeText);
 	}
 
 	public LiveData<String> getQuitText() {
@@ -66,6 +70,26 @@ public class GameMenuViewModel extends ViewModel {
 		return gameSpeedLiveData;
 	}
 
+	public LiveData<Boolean> getMusicEnabled() {
+		return gameMenu.isMusicEnabled();
+	}
+
+	public LiveData<Integer> getMusicVolume() {
+		return gameMenu.getMusicVolume();
+	}
+
+	public LiveData<String> getMusicVolumeText() {
+		return musicVolumeTextLiveData;
+	}
+
+	public LiveData<Integer> getSoundVolume() {
+		return gameMenu.getSoundVolume();
+	}
+
+	public LiveData<String> getSoundVolumeText() {
+		return soundVolumeTextLiveData;
+	}
+
 	public SingleLiveEvent<Void> getGameQuitted() {
 		return gameQuittedLiveData;
 	}
@@ -76,6 +100,10 @@ public class GameMenuViewModel extends ViewModel {
 
 	public int getShowSkipMinute() {
 		return gameMenu.isMultiplayer() ? View.GONE : View.VISIBLE;
+	}
+
+	public int getShowChat() {
+		return gameMenu.isChatAvailable() ? View.VISIBLE : View.GONE;
 	}
 
 	public void quitClicked() {
@@ -103,6 +131,21 @@ public class GameMenuViewModel extends ViewModel {
 		gameMenu.skipMinute();
 	}
 
+	public void musicEnabledChanged(boolean enabled) {
+		Boolean current = gameMenu.isMusicEnabled().getValue();
+		if (current != null && current != enabled) { // ignore the changes done by the data binding
+			gameMenu.setMusicEnabled(enabled);
+		}
+	}
+
+	public void musicVolumeMoved(int percent) {
+		gameMenu.setMusicVolume(percent);
+	}
+
+	public void soundVolumeMoved(int percent) {
+		gameMenu.setSoundVolume(percent);
+	}
+
 	public void gameSpeedMoved(int progress) {
 		float speed = (progress + 1f) / 2f;
 		gameMenu.setGameSpeed(speed);
@@ -118,6 +161,10 @@ public class GameMenuViewModel extends ViewModel {
 
 	private String mapGameSpeedText(float gameSpeed) {
 		return application.getString(R.string.game_menu_speed_title, gameSpeed);
+	}
+
+	private String mapVolumeText(int percent) {
+		return application.getString(R.string.settings_volume_percent, percent);
 	}
 
 	private int mapGameSpeed(float gameSpeed) {

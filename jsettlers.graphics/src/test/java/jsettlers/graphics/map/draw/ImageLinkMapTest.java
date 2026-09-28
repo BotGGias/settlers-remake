@@ -29,4 +29,13 @@ public class ImageLinkMapTest {
 			assertNotNull(civilisation.toString(), ImageLinkMap.get(civilisation, ECommonLinkType.STATISTIC_SOLDIERS, EMovableType.SWORDSMAN_L1));
 		}
 	}
+
+	@Test
+	public void testSiegeWeaponIconsExistForAllCivilisations() {
+		for (EMovableType weapon : EMovableType.SIEGE_WEAPONS) {
+			for (ECivilisation civilisation : ECivilisation.VALUES) {
+				assertNotNull(weapon + " " + civilisation, ImageLinkMap.get(civilisation, ECommonLinkType.SETTLER_GUI, weapon));
+			}
+		}
+	}
 }

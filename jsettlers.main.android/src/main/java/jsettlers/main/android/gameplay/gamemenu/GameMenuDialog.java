@@ -26,13 +26,23 @@ import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.widget.SeekBar;
 
+import java.util.function.IntConsumer;
+
 import jsettlers.main.android.R;
-import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.core.ui.dialogs.EditTextDialog;
 import jsettlers.main.android.databinding.DialogGameMenuBinding;
-import jsettlers.main.android.mainmenu.MainActivity_;
+import jsettlers.main.android.gameplay.statistics.EndgameStatisticsActivity_;
+import jsettlers.main.android.gameplay.statistics.StatisticsDialog;
 
 public class GameMenuDialog extends DialogFragment {
+	/**
+	 * The request code of the {@link EditTextDialog} for chat messages. The parent of this dialog receives the entered text.
+	 */
+	public static final int REQUEST_CODE_CHAT = 1;
+
 	private static final String TAG_PLAYERS_DIALOG = "players_dialog";
+	private static final String TAG_CHAT_DIALOG = "chat_dialog";
+	private static final String TAG_STATISTICS_DIALOG = "statistics_dialog";
 
 	private GameMenuViewModel viewModel;
 
@@ -46,22 +56,7 @@ public class GameMenuDialog extends DialogFragment {
 		GameMenuViewModelFactory gameMenuViewModelFactory = new GameMenuViewModelFactory(requireActivity().getApplication());
 		viewModel = gameMenuViewModelFactory.get(this);
 
-		viewModel.getGameQuitted().observe(this, x -> {
-			if (!returnToLauncher()) {
-				MainActivity_.intent(this).start();
-			}
-		});
-	}
-
-	/** Settlers United: a game started by the launcher returns to the launcher instead of the main menu. */
-	private boolean returnToLauncher() {
-		String pkg = ((GameStarter) requireActivity().getApplication()).takeSuReturnPackage();
-		Intent launch = pkg == null ? null : requireActivity().getPackageManager().getLaunchIntentForPackage(pkg);
-		if (launch == null) {
-			return false;
-		}
-		startActivity(launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-		return true;
+		viewModel.getGameQuitted().observe(this, x -> EndgameStatisticsActivity_.intent(this).start());
 	}
 
 	@NonNull
@@ -72,7 +67,12 @@ public class GameMenuDialog extends DialogFragment {
 		binding.setLifecycleOwner(this);
 		binding.setViewmodel(viewModel);
 		binding.seekBar.setOnSeekBarChangeListener(gameSpeedSeekBarListener);
+		binding.switchMusic.setOnCheckedChangeListener((button, checked) -> viewModel.musicEnabledChanged(checked));
+		binding.seekBarMusicVolume.setOnSeekBarChangeListener(new VolumeSeekBarListener(viewModel::musicVolumeMoved));
+		binding.seekBarSoundVolume.setOnSeekBarChangeListener(new VolumeSeekBarListener(viewModel::soundVolumeMoved));
 		binding.buttonPlayers.setOnClickListener(view -> showPlayers());
+		binding.buttonChat.setOnClickListener(view -> showChat());
+		binding.buttonStatistics.setOnClickListener(view -> showStatistics());
 
 		AlertDialog dialog = new AlertDialog.Builder(requireActivity(), R.style.GameMenuDialogTheme)
 				.setView(binding.getRoot())
@@ -87,6 +87,16 @@ public class GameMenuDialog extends DialogFragment {
 
 	private void showPlayers() {
 		PlayersDialog.create().show(requireFragmentManager(), TAG_PLAYERS_DIALOG);
+		dismiss();
+	}
+
+	private void showStatistics() {
+		StatisticsDialog.create().show(requireFragmentManager(), TAG_STATISTICS_DIALOG);
+		dismiss();
+	}
+
+	private void showChat() {
+		EditTextDialog.create(REQUEST_CODE_CHAT, R.string.network_chat, R.string.chat_hint, "").show(requireFragmentManager(), TAG_CHAT_DIALOG);
 		dismiss();
 	}
 
@@ -106,6 +116,29 @@ public class GameMenuDialog extends DialogFragment {
 		public void onStopTrackingTouch(SeekBar seekBar) {
 		}
 	};
+
+	private static class VolumeSeekBarListener implements SeekBar.OnSeekBarChangeListener {
+		private final IntConsumer volumeConsumer;
+
+		VolumeSeekBarListener(IntConsumer volumeConsumer) {
+			this.volumeConsumer = volumeConsumer;
+		}
+
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+			if (fromUser) {
+				volumeConsumer.accept(progress);
+			}
+		}
+
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {
+		}
+
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {
+		}
+	}
 
 	/**
 	 * Stops the system bars from showing when this dialog appears.

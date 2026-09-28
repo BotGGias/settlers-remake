@@ -21,7 +21,9 @@ import java.util.PriorityQueue;
 
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.mapobject.EDecorationType;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.movable.ESiegeWeaponType;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
@@ -43,6 +45,7 @@ import jsettlers.logic.objects.SoundableSelfDeletingObject;
 import jsettlers.logic.objects.StandardMapObject;
 import jsettlers.logic.objects.MannaBowlMapObject;
 import jsettlers.logic.objects.arrow.ArrowObject;
+import jsettlers.logic.objects.siege.SiegeProjectileObject;
 import jsettlers.logic.objects.building.BuildingWorkAreaMarkObject;
 import jsettlers.logic.objects.building.ConstructionMarkObject;
 import jsettlers.logic.objects.building.InformableMapObject;
@@ -66,6 +69,7 @@ import java.util.Optional;
  */
 public final class MapObjectsManager implements IScheduledTimerable, Serializable {
 	private static final long serialVersionUID = 1833055351956872224L;
+	private static final float SIEGE_PROJECTILE_REMOVE_DELAY = 0.1f;
 
 	private final IMapObjectsManagerGrid grid;
 	private final PriorityQueue<TimeEvent> timingQueue = new PriorityQueue<>();
@@ -370,6 +374,17 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		schedule(arrow, arrow.getEndTime() + ArrowObject.MIN_DECOMPOSE_DELAY * (1 + MatchConstants.random().nextFloat()), true);
 	}
 
+	/**
+	 * Adds a projectile of a siege weapon flying from the shooter to the attacked position.
+	 */
+	public void addSiegeProjectile(ShortPoint2D attackedPos, ShortPoint2D shooterPos, IPlayer shooterPlayer, ESiegeWeaponType weaponType,
+			float hitStrength) {
+		SiegeProjectileObject projectile = new SiegeProjectileObject(grid, attackedPos, shooterPos, shooterPlayer, weaponType, hitStrength);
+		addMapObject(attackedPos, projectile);
+		schedule(projectile, projectile.getEndTime(), false);
+		schedule(projectile, projectile.getEndTime() + SIEGE_PROJECTILE_REMOVE_DELAY, true);
+	}
+
 	public void addSimpleMapObject(ShortPoint2D pos, EMapObjectType objectType, boolean blocking, Player player) {
 		addMapObject(pos, new StandardMapObject(objectType, blocking, player));
 	}
@@ -657,6 +672,21 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 
 	public void addFish(short x, short y) {
 		grid.addMapObject(x, y, new DecorationMapObject(EMapObjectType.FISH_DECORATION));
+	}
+
+	/**
+	 * Adds a decorative landscape object. A blocking decoration blocks its tile, unless the tile is already blocked or protected (e.g. by
+	 * water or a stone).
+	 */
+	public void addLandscapeDecoration(int x, int y, EDecorationType decorationType) {
+		if (!grid.isInBounds(x, y)) {
+			return;
+		}
+
+		LandscapeDecorationMapObject decoration = new LandscapeDecorationMapObject(decorationType);
+		if (!decorationType.blocking || !addMapObject(x, y, decoration)) {
+			grid.addMapObject(x, y, decoration);
+		}
 	}
 
 	private static class TimeEvent implements Comparable<TimeEvent>, Serializable {

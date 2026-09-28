@@ -60,6 +60,7 @@
 	<string name="preferences_server">Network server address</string>
 	<string name="preferences_ok">Save</string>
 	<string name="network_chat">Chat…</string>
+	<string name="chat_hint">Message to all players</string>
 	<string name="filechoser_ok">Use this directory</string>
 	<string name="filechoser_message">Where are the GFX and SND folders?</string>
 
@@ -133,6 +134,8 @@
 	<string name="start_game">Start game</string>
 
 	<string name="game_menu_title">Menu</string>
+	<string name="minimap_show">Show minimap</string>
+	<string name="minimap_hide">Hide minimap</string>
 	<string name="game_menu_quit">Quit</string>
 	<string name="game_menu_quit_confirm">Sure?</string>
 	<string name="game_menu_save">Save</string>
@@ -148,6 +151,15 @@
 	<string name="players_title">Players</string>
 	<string name="players_close">Close</string>
 	<string name="players_team">Team %d</string>
+	<string name="game_menu_statistics">Statistics</string>
+	<string name="statistics_title">Statistics</string>
+	<string name="statistics_endgame_title">Game result</string>
+	<string name="statistics_continue">Continue</string>
+	<string name="statistics_no_data">No statistics recorded yet</string>
+	<string name="statistics_time_axis">Game time (h:mm), recorded every game minute</string>
+	<string name="statistics_rank" translatable="false">%d.</string>
+	<string name="statistics_game_ended">Game ended after %s</string>
+	<string name="statistics_game_ended_no_time">Game ended</string>
 
 	<string name="no_saved_games">No saved games available</string>
 	<string name="resource_selection_dialog_title">Locate GFX and SND folders</string>
@@ -167,6 +179,8 @@
 	<string name="destination">Dest.</string>
 	<string name="goods_stock_title">Global storage</string>
 	<string name="global_stock_message">Global storage settings must be set in one of your own settlements.</string>
+	<string name="own_territory_message">Move the view over one of your own settlements to change these settings.</string>
+	<string name="settlers_statistics_total">Total</string>
 	<string name="goods_inventory_title">Inventory</string>
 	<string name="good_distribution_title">Distribution</string>
 	<string name="confirm_destory_ships">Destroy ships?</string>
@@ -174,7 +188,6 @@
 	<string name="ask_workarea">Choose work area</string>
 	<string name="ask_dock">Choose dock position</string>
 	<string name="ask_spell">Choose spell position</string>
-	<string name="force_move">Force moving to location</string>
 	<string name="menu_multi_player_start_server">Start server</string>
 	<string name="settings_server_address">Server address</string>
 	<string name="settings_address">Address</string>
@@ -198,4 +211,14 @@
 	<string name="connection_waiting_for">Waiting for %1$s – reconnecting …</string>
 	<string name="connection_restored">Connection restored</string>
 	<string name="connection_lost">Connection to the game lost</string>
+	<string name="settings_audio">Audio</string>
+	<string name="settings_music_enabled">Play music</string>
+	<string name="settings_music_volume">Music volume</string>
+	<string name="settings_sound_volume">Sound effects volume</string>
+	<string name="settings_volume_percent">%d %%</string>
+	<string name="move_to_title">Move</string>
+	<string name="move_to_normal">Normal</string>
+	<string name="move_to_forced">Forced</string>
+	<string name="move_to_waypoint">Waypoint</string>
+	<string name="move_to_patrol">Patrol</string>
 </resources>

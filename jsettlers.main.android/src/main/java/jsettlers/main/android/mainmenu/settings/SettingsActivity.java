@@ -15,12 +15,14 @@
 
 package jsettlers.main.android.mainmenu.settings;
 
+import android.widget.SeekBar;
 import android.widget.Switch;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.CheckedChange;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.SeekBarProgressChange;
 import org.androidannotations.annotations.ViewById;
 
 import android.os.Bundle;
@@ -45,6 +47,21 @@ public class SettingsActivity extends AppCompatActivity implements SettingsView,
 
 	@ViewById(R.id.switch_play_all_music)
 	Switch switchPlayAllMusic;
+
+	@ViewById(R.id.switch_music_enabled)
+	Switch switchMusicEnabled;
+
+	@ViewById(R.id.seek_bar_music_volume)
+	SeekBar seekBarMusicVolume;
+
+	@ViewById(R.id.text_view_music_volume)
+	TextView textViewMusicVolume;
+
+	@ViewById(R.id.seek_bar_sound_volume)
+	SeekBar seekBarSoundVolume;
+
+	@ViewById(R.id.text_view_sound_volume)
+	TextView textViewSoundVolume;
 
 	@ViewById(R.id.toolbar)
 	Toolbar toolbar;
@@ -86,6 +103,25 @@ public class SettingsActivity extends AppCompatActivity implements SettingsView,
 		presenter.playAllMusicEdited(switchPlayAllMusic.isChecked());
 	}
 
+	@CheckedChange(R.id.switch_music_enabled)
+	void onCheckedChangedMusicEnabled() {
+		presenter.musicEnabledEdited(switchMusicEnabled.isChecked());
+	}
+
+	@SeekBarProgressChange(R.id.seek_bar_music_volume)
+	void onMusicVolumeChanged(SeekBar seekBar, int progress, boolean fromUser) {
+		if (fromUser) {
+			presenter.musicVolumeEdited(progress);
+		}
+	}
+
+	@SeekBarProgressChange(R.id.seek_bar_sound_volume)
+	void onSoundVolumeChanged(SeekBar seekBar, int progress, boolean fromUser) {
+		if (fromUser) {
+			presenter.soundVolumeEdited(progress);
+		}
+	}
+
 	@OptionsItem(android.R.id.home)
 	void homeSelected() {
 		finish();
@@ -104,6 +140,25 @@ public class SettingsActivity extends AppCompatActivity implements SettingsView,
 	@Override
 	public void setPlayAllMusic(boolean playAll) {
 		switchPlayAllMusic.setChecked(playAll);
+	}
+
+	@Override
+	public void setMusicEnabled(boolean musicEnabled) {
+		switchMusicEnabled.setChecked(musicEnabled);
+		seekBarMusicVolume.setEnabled(musicEnabled);
+		switchPlayAllMusic.setEnabled(musicEnabled);
+	}
+
+	@Override
+	public void setMusicVolume(int percent) {
+		seekBarMusicVolume.setProgress(percent);
+		textViewMusicVolume.setText(getString(R.string.settings_volume_percent, percent));
+	}
+
+	@Override
+	public void setSoundVolume(int percent) {
+		seekBarSoundVolume.setProgress(percent);
+		textViewSoundVolume.setText(getString(R.string.settings_volume_percent, percent));
 	}
 
 	@Override

@@ -74,6 +74,8 @@
 	<string name="game_menu_save">Guardar</string>
 	<string name="game_menu_saved">Partida guardada</string>
 	<string name="game_menu_title">Menú Principal</string>
+	<string name="minimap_show">Mostrar minimapa</string>
+	<string name="minimap_hide">Ocultar minimapa</string>
 	<string name="game_menu_unpause">Continuar</string>
 	<string name="halt">Alto</string>
 	<string name="join_multi_player_game">Unirse a partida multijugador</string>
@@ -116,6 +118,8 @@
 
 	<string name="service_description">Servicio de ejecución de JSettlers.</string>
 	<string name="global_stock_message">La configuración global de almacenamiento solo puede aplicarse al propio asentamiento.</string>
+	<string name="own_territory_message">Mueve la vista sobre uno de tus propios asentamientos para cambiar estos ajustes.</string>
+	<string name="settlers_statistics_total">Total</string>
 	<string name="goods_stock_title">Configuración Global de Almacenamiento</string>
 
 	<string name="game_menu_skip_minute">Avanzar un minuto</string>

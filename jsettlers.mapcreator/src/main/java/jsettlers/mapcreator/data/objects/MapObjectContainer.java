@@ -16,6 +16,7 @@ package jsettlers.mapcreator.data.objects;
 
 import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
 import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.common.mapobject.EDecorationType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.RelativePoint;
@@ -47,7 +48,8 @@ public class MapObjectContainer implements ObjectContainer, IMapObject {
 
 	@Override
 	public float getStateProgress() {
-		return 0;
+		EDecorationType decorationType = object.getDecorationType();
+		return decorationType != null ? decorationType.ordinal() : 0;
 	}
 
 	@Override

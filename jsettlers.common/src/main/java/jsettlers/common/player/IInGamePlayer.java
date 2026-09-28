@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.common.player;
 
+import jsettlers.common.statistics.IStatisticsHistory;
+
 /**
  * @author codingberlin
  */
@@ -31,6 +33,12 @@ public interface IInGamePlayer extends IPlayer {
 	ICombatStrengthInformation getCombatStrengthInformation();
 
 	IEndgameStatistic getEndgameStatistic();
+
+	/**
+	 * Gets the values recorded for this player over the course of the game.
+	 * @return The statistics history
+	 */
+	IStatisticsHistory getStatisticsHistory();
 
 	/**
 	 * Gets the statistic about the materials this player has produced.

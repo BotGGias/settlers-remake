@@ -23,6 +23,7 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EShipType;
+import jsettlers.common.movable.ESiegeWeaponType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.player.IPlayerable;
@@ -187,5 +188,17 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 
 	interface IShipConstruction extends IBuilding {
 		EShipType getOrderedShipType();
+	}
+
+	interface ISiegeWorkshop extends IBuilding {
+		/**
+		 * @return The weapon this workshop builds.
+		 */
+		ESiegeWeaponType getSiegeWeaponType();
+
+		/**
+		 * @return The number of weapons that were ordered but are not finished yet.
+		 */
+		int getOrderedSiegeWeapons();
 	}
 }

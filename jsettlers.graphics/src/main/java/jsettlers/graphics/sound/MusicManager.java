@@ -37,7 +37,7 @@ public final class MusicManager implements Runnable {
 	private final ECivilisation civilisation;
 	private boolean paused = true;
 	private SoundHandle activeTrack = null;
-	private float volume;
+	private volatile float volume;
 
 	private final Semaphore waitMutex = new Semaphore(1);
 
@@ -45,16 +45,18 @@ public final class MusicManager implements Runnable {
 		this.soundPlayer = soundPlayer;
 		this.civilisation = civilisation;
 
-		volume = CommonConstants.MUSIC_VOLUME.get();
+		volume = clampVolume(CommonConstants.MUSIC_VOLUME.get());
 	}
 
 	public boolean isRunning() {
 		return !paused;
 	}
 
-	public void startMusic() {
+	public synchronized void startMusic() {
 		if(!isRunning()) {
 			paused = false;
+			// a permit left over from the last stop would end the first track immediately
+			waitMutex.drainPermits();
 			musicThread = new Thread(this);
 			musicThread.setName("MusicThread");
 			musicThread.setDaemon(true);
@@ -62,7 +64,7 @@ public final class MusicManager implements Runnable {
 		}
 	}
 
-	public void stopMusic() {
+	public synchronized void stopMusic() {
 		if (isRunning()) {
 			if(activeTrack != null) activeTrack.pause();
 			paused = true;
@@ -77,16 +79,25 @@ public final class MusicManager implements Runnable {
 		}
 	}
 
+	/**
+	 * @param volume
+	 *            The new volume (0..1) or the change of the volume if relative is true. The result is limited to 0..1.
+	 */
 	public void setMusicVolume(float volume, boolean relative) {
-		if(relative) {
-			this.volume += volume;
-		} else {
-			this.volume = volume;
-		}
+		this.volume = clampVolume(relative ? this.volume + volume : volume);
 
-		if (isRunning() && activeTrack != null) {
-			activeTrack.setVolume(this.volume);
+		SoundHandle track = activeTrack;
+		if (isRunning() && track != null) {
+			track.setVolume(this.volume);
 		}
+	}
+
+	public float getMusicVolume() {
+		return volume;
+	}
+
+	private static float clampVolume(float volume) {
+		return Math.max(0, Math.min(1, volume));
 	}
 
 	private List<File> assembleMusicSet(final ECivilisation civilisation, final boolean playAll) {

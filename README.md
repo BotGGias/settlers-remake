@@ -1,3 +1,9 @@
+# Disclaimer
+This fork exists for fun only. 
+The Code in this fork is heavily vibe coded. In case you cant deal with that look another way please.
+
+
+
 # JSettlers
 
 This project intends to create a remake of the famous strategy game "The Settlers 3" published by Blue Byte in 1998. The project is developed in Java and runs on PC (Windows/Linux) and Android.
@@ -7,25 +13,10 @@ MacOS support is broken regardless of CPU architecture.
 The game is currently in an **alpha** status! Therefore bugs, frequent changes making saved games invalid and server abortions need to be expected. Nevertheless we will try to minimize trouble.
 
 ### Found a Bug? Report it!
-If you experience troubles / find a bug, help us fix it.
-Please either report your bug as an issue or post it on the JSettlers Discord in the #support channel.
-
-The JSettlers game creates log files of your games that are essential for debugging.
-Therefore, always include the following information in a bug report:
-1. What OS and JRE are you using? If it is Android, please state your Android version.
-2. Revision of your build:
-  1. In the PC version this can be found in the head of the window as "JSettlers - commit: XXXXXXX".
-  2. In the Android version, the info is displayed on the start screen in the lower right corner as "build: XXXXXXX".
-3. In the game's folder, there is a subfolder ```resources/logs/``` containing a folder of log files for every game you played. Please package the folder belonging to your game where you experienced the bug (identifiable by date and map name). This folder contains the following files:
-  1. *_out.log: This is the console / debugging output of the game.
-  2. *_replay.log: This file contains all game relevant actions you and other players did in the game (e.g. place a building, send soldiers somewhere). With this game, we can recalculate your game and debug it to find the exact source of your trouble.
-4. Specify the game time when you first experienced the bug (the game time can be found in the upper right corner while playing). 
-5. If you were playing a custom map, please attach the map. Without it, replaying the game won't be possible.
-6. Describe what problem you experienced so that we can easily understand it.
-
-Many thanks in advance for helping to improve this game!
-
-
+If you experience troubles / find a bug ... welp good luck.
+Submit your fix if you want or have one, In case i think its legit and i understand what your goal ist i might merge it.
+Im not your personal tech support :)
+ 
 ## Playing JSettlers
 
 In order to play the game, you need to have the folders "GFX", "SND" and "MAP" (optional) of the original version of "The Settlers 3" as obtained by installing the original "The Settlers 3" game (DEMO version also works).

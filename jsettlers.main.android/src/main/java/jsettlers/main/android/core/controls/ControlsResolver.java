@@ -62,6 +62,14 @@ public class ControlsResolver {
 		return controlsAdapter;
 	}
 
+	public MinimapControls getMinimapControls() {
+		return controlsAdapter;
+	}
+
+	public MoveToControls getMoveToControls() {
+		return controlsAdapter;
+	}
+
 	public IInGamePlayer getPlayer() {
 		return controlsAdapter.getPlayer();
 	}

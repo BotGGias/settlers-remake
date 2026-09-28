@@ -40,4 +40,15 @@ public class ProductionStatistic implements IProductionStatistic, Serializable {
 		}
 		return produced[materialType.ordinal];
 	}
+
+	/**
+	 * @return The number of all materials produced since the start of the game.
+	 */
+	public int getTotalAmountProduced() {
+		int total = 0;
+		for (int amount : produced) {
+			total += amount;
+		}
+		return total;
+	}
 }

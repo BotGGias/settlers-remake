@@ -179,6 +179,16 @@ public enum EMapObjectType {
 	HIVE_HARVESTABLE,
 
 	SWAMP_DECORATION,
+
+	/**
+	 * A decorative landscape object from an original map. The state progress is the ordinal of its {@link EDecorationType}.
+	 */
+	LANDSCAPE_DECORATION,
+
+	/**
+	 * {@link IMapObject}s of this type must implement {@link ISiegeProjectileMapObject}
+	 */
+	SIEGE_PROJECTILE,
 	;
 
 	public static final EMapObjectType[] VALUES = EMapObjectType.values();
@@ -190,6 +200,7 @@ public enum EMapObjectType {
 
 	public static final Set<EMapObjectType> TO_BE_REMOVED_WHEN_FLATTENED = EnumSet.of(
 			EMapObjectType.ARROW,
+			EMapObjectType.SIEGE_PROJECTILE,
 			EMapObjectType.CORN_GROWING,
 			EMapObjectType.CORN_ADULT,
 			EMapObjectType.CORN_DEAD,
@@ -200,6 +211,7 @@ public enum EMapObjectType {
 			EMapObjectType.DESERT_DECORATION,
 			EMapObjectType.PLANT_DECORATION,
 			EMapObjectType.SWAMP_DECORATION,
+			EMapObjectType.LANDSCAPE_DECORATION,
 			EMapObjectType.TREE_DEAD);
 
 	EMapObjectType() {

@@ -83,6 +83,14 @@ public enum EMovableType {
 	DISTILLER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
 	ALCHEMIST(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
 	MEAD_BREWER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	POWDER_MAKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+
+	SIEGE_ENGINEER(EMaterialType.HAMMER, ESelectionType.PEOPLE, true, false),
+
+	CATAPULT(EMaterialType.NO_MATERIAL, ESelectionType.SOLDIERS, false, true, 1.2, 300f, 45f),
+	BALLISTA(EMaterialType.NO_MATERIAL, ESelectionType.SOLDIERS, false, true, 1.0, 250f, 35f),
+	CANNON(EMaterialType.NO_MATERIAL, ESelectionType.SOLDIERS, false, true, 1.3, 350f, 60f),
+	GONG(EMaterialType.NO_MATERIAL, ESelectionType.SOLDIERS, false, true, 1.0, 250f, 20f),
 	;
 
 	/**
@@ -123,6 +131,11 @@ public enum EMovableType {
 			PIONEER, GEOLOGIST, THIEF, MAGE);
 
 	public static final Set<EMovableType> SHIPS = EnumSet.of(FERRY, CARGO_SHIP);
+
+	/**
+	 * Player controlled war machines. They are selected together with soldiers but are no soldiers: they can't occupy towers.
+	 */
+	public static final Set<EMovableType> SIEGE_WEAPONS = EnumSet.of(CATAPULT, BALLISTA, CANNON, GONG);
 
 	public final EMaterialType  tool;
 	public final ESelectionType selectionType;
@@ -214,6 +227,10 @@ public enum EMovableType {
 		return SHIPS.contains(this);
 	}
 
+	public boolean isSiegeWeapon() {
+		return SIEGE_WEAPONS.contains(this);
+	}
+
 	public ESoldierType getSoldierType() {
 		if (isBowman()) {
 			return ESoldierType.BOWMAN;
@@ -242,6 +259,10 @@ public enum EMovableType {
 				return 0; // only padding view
 			case THIEF:
 				return 14;
+			case CATAPULT:
+			case BALLISTA:
+			case CANNON:
+				return 12;
 			default:
 				return 8;
 		}

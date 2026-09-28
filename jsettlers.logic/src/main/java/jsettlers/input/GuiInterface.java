@@ -101,6 +101,7 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IDockBuilding;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.DockyardBuilding;
+import jsettlers.logic.buildings.workers.SiegeWorkshopBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
@@ -279,6 +280,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			}
 
 			case SHOW_MESSAGE:
+			case WRITE_CHAT_MESSAGE:
 			case TOGGLE_MUSIC: {
 				break;
 			}
@@ -426,6 +428,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 			case UNLOAD_FERRIES:
 				unloadFerries();
+				break;
+
+			case ORDER_SIEGE_WEAPON:
+				orderSiegeWeapon();
 				break;
 				
 			case CHANGE_MOVABLE_SETTINGS:
@@ -634,6 +640,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void orderShip(EShipType shipType) {
 		DockyardBuilding dockyard = (DockyardBuilding) currentSelection.get(0);
 		taskScheduler.scheduleTask(new OrderShipGuiTask(playerId, dockyard, shipType));
+	}
+
+	private void orderSiegeWeapon() {
+		ISelectable selected = currentSelection.getSingle();
+		if (selected instanceof SiegeWorkshopBuilding) {
+			taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.ORDER_SIEGE_WEAPON, playerId, (SiegeWorkshopBuilding) selected));
+		}
 	}
 
 	private void unloadFerries() {

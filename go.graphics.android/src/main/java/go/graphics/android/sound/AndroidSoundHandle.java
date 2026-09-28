@@ -10,10 +10,10 @@ import java.io.IOException;
 
 public class AndroidSoundHandle implements SoundHandle {
 
-	private MediaPlayer player;
+	private volatile MediaPlayer player;
 	private final File source;
 	private final int length;
-	private float volume = 1;
+	private volatile float volume = 1;
 
 	public AndroidSoundHandle(File source) {
 		this.source = source;
@@ -46,27 +46,50 @@ public class AndroidSoundHandle implements SoundHandle {
 	}
 
 	private void release() {
-		if(player == null) return;
+		MediaPlayer currentPlayer = player;
+		if(currentPlayer == null) return;
 
-		player.release();
 		player = null;
+		currentPlayer.release();
 	}
 
 	@Override
 	public void start() {
 		create();
-		player.start();
+		MediaPlayer currentPlayer = player;
+		if (currentPlayer == null) {
+			return; // the file could not be opened
+		}
+		currentPlayer.start();
 		setVolume(volume);
 	}
 
+	/**
+	 * Can be called from another thread than {@link #start()}, e.g. while the track is being started.
+	 */
 	@Override
 	public void pause() {
-		player.pause();
+		MediaPlayer currentPlayer = player;
+		if (currentPlayer == null) {
+			return;
+		}
+		try {
+			currentPlayer.pause();
+		} catch (IllegalStateException e) {
+			// the player is not started yet or already released
+		}
 	}
 
 	@Override
 	public void stop() {
-		player.stop();
+		MediaPlayer currentPlayer = player;
+		if (currentPlayer != null) {
+			try {
+				currentPlayer.stop();
+			} catch (IllegalStateException e) {
+				// the player is already released
+			}
+		}
 		release();
 	}
 
@@ -79,8 +102,14 @@ public class AndroidSoundHandle implements SoundHandle {
 	public void setVolume(float volume) {
 		this.volume = volume;
 
-		if(player != null) {
-			player.setVolume(volume, volume);
+		MediaPlayer currentPlayer = player;
+		if(currentPlayer != null) {
+			float perceivedVolume = AndroidSoundPlayer.toPerceivedVolume(volume);
+			try {
+				currentPlayer.setVolume(perceivedVolume, perceivedVolume);
+			} catch (IllegalStateException e) {
+				// the player is already released
+			}
 		}
 	}
 

@@ -64,6 +64,7 @@ import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapLine;
 import jsettlers.common.map.shapes.MapNeighboursArea;
+import jsettlers.common.mapobject.EDecorationType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -73,6 +74,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EEffectType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IGraphicsMovable;
+import jsettlers.common.movable.ESiegeWeaponType;
 import jsettlers.common.movable.IGraphicsThief;
 import jsettlers.common.player.EWinState;
 import jsettlers.common.player.IPlayer;
@@ -98,6 +100,7 @@ import jsettlers.logic.map.grid.flags.FlagsGrid;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
 import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
+import jsettlers.logic.map.grid.objects.DecorationMapObject;
 import jsettlers.logic.map.grid.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 import jsettlers.logic.map.grid.objects.ObjectsGrid;
@@ -119,6 +122,7 @@ import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSet
 import jsettlers.logic.map.grid.partition.manager.settings.ProfessionSettings;
 import jsettlers.logic.map.loading.data.IMapData;
 import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
 import jsettlers.logic.map.loading.data.objects.IPlayerIdProvider;
 import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.logic.map.loading.data.objects.MapTreeObject;
@@ -136,12 +140,15 @@ import jsettlers.logic.movable.interfaces.IAttackableMovable;
 import jsettlers.logic.movable.interfaces.IBearerMovable;
 import jsettlers.logic.movable.interfaces.IFerryMovable;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
+import jsettlers.logic.movable.interfaces.ISiegeAttackable;
 import jsettlers.logic.movable.interfaces.ISpecialistMovable;
 import jsettlers.logic.movable.interfaces.ISoldierMovable;
 import jsettlers.logic.objects.arrow.ArrowObject;
+import jsettlers.logic.objects.siege.SiegeProjectileObject;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
+import jsettlers.logic.statistics.StatisticsRecorder;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -155,6 +162,7 @@ public final class MainGrid implements Serializable {
 	 * The specialists bearers can be converted to and back.
 	 */
 	private static final Set<EMovableType> CONVERTIBLE_SPECIALISTS = EnumSet.of(EMovableType.PIONEER, EMovableType.GEOLOGIST, EMovableType.THIEF);
+	private static final Set<EMapObjectType> LANDSCAPE_DECORATION_TYPES = EnumSet.of(EMapObjectType.LANDSCAPE_DECORATION);
 
 	final String mapId;
 	final String mapName;
@@ -171,6 +179,11 @@ public final class MainGrid implements Serializable {
 	final MovablePathfinderGrid movablePathfinderGrid;
 	final MapObjectsManager     mapObjectsManager;
 	final BuildingsGrid         buildingsGrid;
+
+	/**
+	 * Null for new games until {@link #startStatisticsRecording()} is called and for savegames of older versions.
+	 */
+	private StatisticsRecorder statisticsRecorder;
 
 	transient         FogOfWar                       fogOfWar;
 	transient         GraphicsGrid                   graphicsGrid;
@@ -267,6 +280,26 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
+	/**
+	 * Starts recording the statistics of all players once every game minute. This does nothing if the recording has already been started, e.g.
+	 * before this game was saved.
+	 */
+	public void startStatisticsRecording() {
+		if (statisticsRecorder == null) {
+			statisticsRecorder = new StatisticsRecorder(partitionsGrid);
+			statisticsRecorder.start();
+		}
+	}
+
+	/**
+	 * Records the current statistics of all players. This has to be called when the game ends, while the game state is still available.
+	 */
+	public void recordFinalStatistics() {
+		if (statisticsRecorder != null) {
+			statisticsRecorder.recordSample(true);
+		}
+	}
+
 	public void stopThreads() {
 		bordersThread.cancel();
 		if (fogOfWar != null) {
@@ -308,12 +341,22 @@ public final class MainGrid implements Serializable {
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				MapDataObject object = mapGrid.getMapObject(x, y);
-				if (object != null && !isOccupyableBuilding(object) && isActivePlayer(object, playerSettings)) {
+				if (object != null && !isOccupyableBuilding(object) && !(object instanceof DecorationMapDataObject) && isActivePlayer(object, playerSettings)) {
 					try {
 						addMapObject(x, y, object);
 					} catch (Throwable t) {
 						t.printStackTrace();
 					}
+				}
+			}
+		}
+
+		// decorations are placed last, so they never block tiles of buildings, trees, stones or settlers
+		for (short y = 0; y < height; y++) {
+			for (short x = 0; x < width; x++) {
+				MapDataObject object = mapGrid.getMapObject(x, y);
+				if (object instanceof DecorationMapDataObject) {
+					addDecoration(x, y, (DecorationMapDataObject) object);
 				}
 			}
 		}
@@ -367,13 +410,34 @@ public final class MainGrid implements Serializable {
 			}
 		} else if (object instanceof MovableObject) {
 			MovableObject movableObject = (MovableObject) object;
-			Movable.createMovable(movableObject.getType(), partitionsGrid.getPlayer(movableObject.getPlayerId()), pos, movablePathfinderGrid);
+			Player player = partitionsGrid.getPlayer(movableObject.getPlayerId());
+			EMovableType movableType = movableObject.getType();
+			if (movableType.isSiegeWeapon() && player != null) { // original maps don't know the civilisation of the siege weapons
+				movableType = ESiegeWeaponType.forCivilisation(player.getCivilisation()).movableType;
+			}
+			Movable.createMovable(movableType, player, pos, movablePathfinderGrid);
+		}
+	}
+
+	private void addDecoration(int x, int y, DecorationMapDataObject object) {
+		if (!isInBounds(x, y) || objectsGrid.isBuildingAt(x, y)) {
+			return;
+		}
+
+		EDecorationType decorationType = object.getDecorationType();
+		if (decorationType != null) {
+			if (!decorationType.blocking || movableGrid.hasNoMovableAt(x, y)) {
+				mapObjectsManager.addLandscapeDecoration(x, y, decorationType);
+			}
+		} else {
+			objectsGrid.addMapObjectAt(x, y, new DecorationMapObject(object.getType()));
 		}
 	}
 
 	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {
 		for (int i = 0; i < count; i++) {
-			movablePathfinderGrid.dropMaterial(pos, materialType, true, false);
+			// materials that can't be carried (e.g. siege weapon ammunition) are not offered to the bearers
+			movablePathfinderGrid.dropMaterial(pos, materialType, materialType.isDroppable(), false);
 		}
 	}
 
@@ -425,7 +489,6 @@ public final class MainGrid implements Serializable {
 	}
 
 	public MapFileHeader generateSaveHeader(Byte playerId) {
-		// TODO: description
 		PreviewImageCreator previewImageCreator = new PreviewImageCreator(width, height, MapFileHeader.PREVIEW_IMAGE_SIZE,
 			landscapeGrid.getPreviewImageDataSupplier()
 		);
@@ -447,7 +510,7 @@ public final class MainGrid implements Serializable {
 			MapType.SAVED_SINGLE,
 			mapName,
 			mapId,
-			"TODO: description",
+			"",
 			width,
 			height,
 			(short) 1,
@@ -964,6 +1027,11 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public int getResourceAmountAt(int x, int y) {
+			return landscapeGrid.getResourceAmountAt(x, y);
+		}
+
+		@Override
 		public byte[][] getVisibleStatusArray() {
 			return fogOfWar.getVisibleStatusArray();
 		}
@@ -988,6 +1056,25 @@ public final class MainGrid implements Serializable {
 		public boolean isBuilding(int x, int y) {
 			return flagsGrid.isBlocked(x, y) && objectsGrid.isBuildingAt(x, y);
 		}
+	}
+
+	/**
+	 * Damages all enemy movables and military buildings around the given center. The damage decreases with the distance to the center.
+	 */
+	private void applySiegeDamage(ShortPoint2D center, short radius, float hitStrength, IPlayer attackingPlayer, ShortPoint2D attackerPos) {
+		HexGridArea.stream(center.x, center.y, 0, radius).filterBounds(width, height).forEach((x, y) -> {
+			float strength = hitStrength * (1 - ShortPoint2D.getOnGridDist(x - center.x, y - center.y) / (float) (radius + 1));
+
+			ILogicMovable movable = movableGrid.getMovableAt(x, y);
+			if (movable instanceof IAttackableMovable && MovableGrid.isEnemy(attackingPlayer, (IAttackableMovable) movable)) {
+				((IAttackableMovable) movable).receiveHit(strength, attackerPos, attackingPlayer);
+			}
+
+			AbstractHexMapObject tower = objectsGrid.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
+			if (tower instanceof ISiegeAttackable && MovableGrid.isEnemy(attackingPlayer, (ISiegeAttackable) tower)) {
+				((ISiegeAttackable) tower).receiveSiegeHit(strength, attackerPos, attackingPlayer);
+			}
+		});
 	}
 
 	final class MapObjectsManagerGrid implements IMapObjectsManagerGrid {
@@ -1056,6 +1143,12 @@ public final class MainGrid implements Serializable {
 		@Override
 		public byte getResourceAmountAt(int x, int y) {
 			return landscapeGrid.getResourceAmountAt(x, y);
+		}
+
+		@Override
+		public void hitWithSiegeProjectile(SiegeProjectileObject projectile) {
+			applySiegeDamage(projectile.getTargetPos(), projectile.getWeaponType().splashRadius, projectile.getHitStrength(), projectile.getShooterPlayer(),
+					projectile.getSourcePos());
 		}
 
 		@Override
@@ -1655,6 +1748,60 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public IAttackable getSiegeTarget(ShortPoint2D position, IPlayer searchingPlayer, short minSearchRadius, short maxSearchRadius) {
+			int minDistance = Integer.MAX_VALUE;
+			IAttackable result = null;
+
+			HexGridArea.HexGridAreaIterator area = new HexGridArea(position.x, position.y, minSearchRadius, maxSearchRadius).iterator();
+			for (; area.hasNext(); area.nextPoint()) {
+				short x = area.currX();
+				short y = area.currY();
+
+				if (x == position.x && y == position.y || !isInBounds(x, y)) {
+					continue;
+				}
+
+				ILogicMovable currMovable = movableGrid.getMovableAt(x, y);
+				IAttackable attackable = null;
+
+				if (currMovable instanceof IAttackableMovable) {
+					if (currMovable instanceof IGraphicsThief && !((IGraphicsThief) currMovable).isUncoveredBy(searchingPlayer.getTeamId())) {
+						continue;
+					}
+					attackable = (IAttackable) currMovable;
+				} else if (currMovable == null) {
+					AbstractHexMapObject tower = objectsGrid.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
+					if (tower instanceof ISiegeAttackable && ((ISiegeAttackable) tower).canReceiveSiegeDamage()) {
+						attackable = (IAttackable) tower;
+					}
+				}
+
+				if (attackable == null || !MovableGrid.isEnemy(searchingPlayer, attackable)) {
+					continue;
+				}
+
+				int attackDistance = attackable.getPosition().getOnGridDistTo(position);
+				if (attackDistance < minDistance) {
+					minDistance = attackDistance;
+					result = attackable;
+				}
+			}
+
+			return result;
+		}
+
+		@Override
+		public void addSiegeProjectile(ShortPoint2D shooterPos, IPlayer shooterPlayer, ESiegeWeaponType weaponType, float hitStrength,
+				ShortPoint2D attackedPos) {
+			mapObjectsManager.addSiegeProjectile(attackedPos, shooterPos, shooterPlayer, weaponType, hitStrength);
+		}
+
+		@Override
+		public void applySiegeDamage(ShortPoint2D center, short radius, float hitStrength, IPlayer attackingPlayer, ShortPoint2D attackerPos) {
+			MainGrid.this.applySiegeDamage(center, radius, hitStrength, attackingPlayer, attackerPos);
+		}
+
+		@Override
 		public final ShortPoint2D calcDecentralizeVector(short x, short y) {
 			MutablePoint2D vector = new MutablePoint2D();
 
@@ -1834,6 +1981,8 @@ public final class MainGrid implements Serializable {
 
 				if (canConstructAt(protectedArea)) {
 					setProtectedState(protectedArea, true);
+					// non blocking decorations below the building (e.g. mines are not flattened)
+					protectedArea.stream().filterBounds(width, height).forEach((x, y) -> objectsGrid.removeMapObjectTypes(x, y, LANDSCAPE_DECORATION_TYPES));
 					mapObjectsManager.addBuildingTo(position, newBuilding);
 					objectsGrid.setBuildingArea(protectedArea, newBuilding);
 					return true;

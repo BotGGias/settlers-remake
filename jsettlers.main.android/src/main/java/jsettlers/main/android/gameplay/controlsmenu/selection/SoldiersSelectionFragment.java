@@ -15,7 +15,6 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.selection;
 
-import org.androidannotations.annotations.CheckedChange;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
@@ -28,13 +27,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import java.util.EnumSet;
-import java.util.Set;
-
-import go.graphics.event.command.EModifier;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.ECivilisation;
@@ -60,6 +54,10 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 			EMovableType.BOWMAN_L1,
 			EMovableType.BOWMAN_L2,
 			EMovableType.BOWMAN_L3,
+			EMovableType.CATAPULT,
+			EMovableType.BALLISTA,
+			EMovableType.CANNON,
+			EMovableType.GONG,
 	};
 
 	public static SoldiersSelectionFragment newInstance() {
@@ -72,9 +70,6 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 	LinearLayout soldiers2Layout;
 	@ViewById(R.id.layout_soldiers_level_3)
 	LinearLayout soldiers3Layout;
-
-	@ViewById(R.id.force_move)
-	Switch forceMove;
 
 	private ActionControls actionControls;
 
@@ -128,17 +123,14 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 		case SWORDSMAN_L3:
 		case BOWMAN_L3:
 		case PIKEMAN_L3:
+		case CATAPULT: // siege weapons are shown behind the strongest soldiers
+		case BALLISTA:
+		case CANNON:
+		case GONG:
 			return soldiers3Layout;
 		default:
 			throw new RuntimeException("SoldiersSelectionFragment can't display movable: " + movableType.name());
 		}
-	}
-
-	@Override
-	public Set<EModifier> getModifiers() {
-		Set<EModifier> mods = EnumSet.noneOf(EModifier.class);
-		if(forceMove.isChecked()) mods.add(EModifier.CTRL);
-		return mods;
 	}
 
 	@Click(R.id.button_halt)

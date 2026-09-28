@@ -39,6 +39,10 @@ public class SoldierSelectionContent extends AbstractSelectionContent {
 			EMovableType.BOWMAN_L1,
 			EMovableType.BOWMAN_L2,
 			EMovableType.BOWMAN_L3,
+			EMovableType.CATAPULT,
+			EMovableType.BALLISTA,
+			EMovableType.CANNON,
+			EMovableType.GONG,
 	};
 
 	/**

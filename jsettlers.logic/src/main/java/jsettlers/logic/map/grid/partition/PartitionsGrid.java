@@ -179,6 +179,20 @@ public final class PartitionsGrid implements Serializable, IScheduledTimerable {
 		return getPartitionAt(x, y).playerId;
 	}
 
+	/**
+	 * @return For each player id the number of positions that belong to the player.
+	 */
+	public int[] countPositionsPerPlayer() {
+		int[] counts = new int[players.length];
+		for (int i = 0; i < partitions.length; i++) {
+			byte playerId = partitionObjects[partitions[i]].playerId;
+			if (playerId >= 0 && playerId < counts.length) {
+				counts[playerId]++;
+			}
+		}
+		return counts;
+	}
+
 	public Player[] getPlayers() {
 		return players;
 	}

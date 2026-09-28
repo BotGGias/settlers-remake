@@ -119,6 +119,11 @@ public enum EActionType {
 	SHOW_MESSAGE,
 
 	/**
+	 * Opens the input for a new chat message.
+	 */
+	WRITE_CHAT_MESSAGE,
+
+	/**
 	 * Selects an area of the screen.
 	 *
 	 * @see SelectAreaAction
@@ -392,5 +397,10 @@ public enum EActionType {
 
 	TOGGLE_MUSIC,
 	MUSIC_VOLUME_UP,
-	MUSIC_VOLUME_DOWN;
+	MUSIC_VOLUME_DOWN,
+
+	/**
+	 * Orders a siege weapon in the currently selected siege workshop.
+	 */
+	ORDER_SIEGE_WEAPON;
 }
