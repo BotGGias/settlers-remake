@@ -12,43 +12,56 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.player;
-
-import java.io.Serializable;
-
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.player.IProductionStatistic;
+package jsettlers.common.statistics;
 
 /**
- * Counts the materials produced by the workers of a player.
+ * The values that are recorded for every player over the course of a game.
  */
-public class ProductionStatistic implements IProductionStatistic, Serializable {
-	private static final long serialVersionUID = 1L;
+public enum EStatisticType {
+	/**
+	 * All settlers of the player, including the soldiers.
+	 */
+	SETTLERS,
+	/**
+	 * The soldiers the player currently has.
+	 */
+	SOLDIERS,
+	/**
+	 * The soldiers the player has recruited since the start of the game.
+	 */
+	RECRUITED_SOLDIERS,
+	/**
+	 * The finished buildings of the player.
+	 */
+	BUILDINGS,
+	/**
+	 * The number of map positions the player owns.
+	 */
+	LAND,
+	/**
+	 * The goods the player has produced since the start of the game.
+	 */
+	PRODUCED_GOODS,
+	/**
+	 * The gold the player has produced since the start of the game.
+	 */
+	GOLD,
+	/**
+	 * The manna the player has produced since the start of the game.
+	 */
+	MANNA,
+	/**
+	 * The soldiers of the player weighted by their level.
+	 */
+	MILITARY_STRENGTH;
 
-	private final int[] produced = new int[EMaterialType.NUMBER_OF_MATERIALS];
-
-	public void materialProduced(EMaterialType materialType) {
-		if (materialType != null && materialType.isDroppable() && materialType.ordinal < produced.length) {
-			produced[materialType.ordinal]++;
-		}
-	}
-
-	@Override
-	public int getAmountProduced(EMaterialType materialType) {
-		if (materialType == null || materialType.ordinal >= produced.length) {
-			return 0;
-		}
-		return produced[materialType.ordinal];
-	}
+	public static final EStatisticType[] VALUES = values();
+	public static final int NUMBER_OF_TYPES = VALUES.length;
 
 	/**
-	 * @return The number of all materials produced since the start of the game.
+	 * @return The key of the label with the name of this value.
 	 */
-	public int getTotalAmountProduced() {
-		int total = 0;
-		for (int amount : produced) {
-			total += amount;
-		}
-		return total;
+	public String getLabelKey() {
+		return "statistic-type-" + name();
 	}
 }

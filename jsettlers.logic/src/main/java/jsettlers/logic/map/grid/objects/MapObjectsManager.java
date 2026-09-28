@@ -21,6 +21,7 @@ import java.util.PriorityQueue;
 
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.mapobject.EDecorationType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.ESiegeWeaponType;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
@@ -671,6 +672,21 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 
 	public void addFish(short x, short y) {
 		grid.addMapObject(x, y, new DecorationMapObject(EMapObjectType.FISH_DECORATION));
+	}
+
+	/**
+	 * Adds a decorative landscape object. A blocking decoration blocks its tile, unless the tile is already blocked or protected (e.g. by
+	 * water or a stone).
+	 */
+	public void addLandscapeDecoration(int x, int y, EDecorationType decorationType) {
+		if (!grid.isInBounds(x, y)) {
+			return;
+		}
+
+		LandscapeDecorationMapObject decoration = new LandscapeDecorationMapObject(decorationType);
+		if (!decorationType.blocking || !addMapObject(x, y, decoration)) {
+			grid.addMapObject(x, y, decoration);
+		}
 	}
 
 	private static class TimeEvent implements Comparable<TimeEvent>, Serializable {

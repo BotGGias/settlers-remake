@@ -30,7 +30,8 @@ import java.util.function.IntConsumer;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.dialogs.EditTextDialog;
 import jsettlers.main.android.databinding.DialogGameMenuBinding;
-import jsettlers.main.android.mainmenu.MainActivity_;
+import jsettlers.main.android.gameplay.statistics.EndgameStatisticsActivity_;
+import jsettlers.main.android.gameplay.statistics.StatisticsDialog;
 
 public class GameMenuDialog extends DialogFragment {
 	/**
@@ -40,6 +41,7 @@ public class GameMenuDialog extends DialogFragment {
 
 	private static final String TAG_PLAYERS_DIALOG = "players_dialog";
 	private static final String TAG_CHAT_DIALOG = "chat_dialog";
+	private static final String TAG_STATISTICS_DIALOG = "statistics_dialog";
 
 	private GameMenuViewModel viewModel;
 
@@ -53,7 +55,7 @@ public class GameMenuDialog extends DialogFragment {
 		GameMenuViewModelFactory gameMenuViewModelFactory = new GameMenuViewModelFactory(requireActivity().getApplication());
 		viewModel = gameMenuViewModelFactory.get(this);
 
-		viewModel.getGameQuitted().observe(this, x -> MainActivity_.intent(this).start());
+		viewModel.getGameQuitted().observe(this, x -> EndgameStatisticsActivity_.intent(this).start());
 	}
 
 	@NonNull
@@ -69,6 +71,7 @@ public class GameMenuDialog extends DialogFragment {
 		binding.seekBarSoundVolume.setOnSeekBarChangeListener(new VolumeSeekBarListener(viewModel::soundVolumeMoved));
 		binding.buttonPlayers.setOnClickListener(view -> showPlayers());
 		binding.buttonChat.setOnClickListener(view -> showChat());
+		binding.buttonStatistics.setOnClickListener(view -> showStatistics());
 
 		AlertDialog dialog = new AlertDialog.Builder(requireActivity(), R.style.GameMenuDialogTheme)
 				.setView(binding.getRoot())
@@ -83,6 +86,11 @@ public class GameMenuDialog extends DialogFragment {
 
 	private void showPlayers() {
 		PlayersDialog.create().show(requireFragmentManager(), TAG_PLAYERS_DIALOG);
+		dismiss();
+	}
+
+	private void showStatistics() {
+		StatisticsDialog.create().show(requireFragmentManager(), TAG_STATISTICS_DIALOG);
 		dismiss();
 	}
 

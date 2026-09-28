@@ -181,6 +181,11 @@ public enum EMapObjectType {
 	SWAMP_DECORATION,
 
 	/**
+	 * A decorative landscape object from an original map. The state progress is the ordinal of its {@link EDecorationType}.
+	 */
+	LANDSCAPE_DECORATION,
+
+	/**
 	 * {@link IMapObject}s of this type must implement {@link ISiegeProjectileMapObject}
 	 */
 	SIEGE_PROJECTILE,
@@ -206,6 +211,7 @@ public enum EMapObjectType {
 			EMapObjectType.DESERT_DECORATION,
 			EMapObjectType.PLANT_DECORATION,
 			EMapObjectType.SWAMP_DECORATION,
+			EMapObjectType.LANDSCAPE_DECORATION,
 			EMapObjectType.TREE_DEAD);
 
 	EMapObjectType() {

@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map.loading.original.data;
 
-import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.mapobject.EDecorationType;
 import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
 import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.logic.map.loading.data.objects.MapTreeObject;
@@ -29,74 +29,73 @@ public enum EOriginalMapObjectType {
 
 	NO_OBJECT(null, 0), // - 0
 
-	// TODO: EOriginalMapObjectClass.DECORATION does not work!
-	UNKNOWN_01(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_1 = 1,
-	UNKNOWN_02(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_2 = 2,
-	UNKNOWN_03(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_3 = 3,
-	UNKNOWN_04(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_4 = 4,
-	UNKNOWN_05(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_5 = 5,
-	UNKNOWN_06(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_6 = 6,
-	UNKNOWN_07(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_7 = 7,
-	UNKNOWN_08(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_8 = 8,
-	UNKNOWN_09(null, 0), // - GAME_OBJECT_STONE_1 = 9,
-	UNKNOWN_0A(null, 0), // - GAME_OBJECT_STONE_2 = 10,
-	UNKNOWN_0B(null, 0), // - GAME_OBJECT_STONE_3 = 11,
-	UNKNOWN_0C(null, 0), // - GAME_OBJECT_STONE_4 = 12,
-	UNKNOWN_0D(null, 0), // - GAME_OBJECT_BOUNDERY_STONE_1 = 13,
-	UNKNOWN_0E(null, 0), // - GAME_OBJECT_BOUNDERY_STONE_2 = 14,
-	UNKNOWN_0F(null, 0), // - GAME_OBJECT_BOUNDERY_STONE_3 = 15,
-	UNKNOWN_10(null, 0), // - GAME_OBJECT_BOUNDERY_STONE_4 = 16,
-	UNKNOWN_11(null, 0), // - GAME_OBJECT_BOUNDERY_STONE_5 = 17,
-	UNKNOWN_12(null, 0), // - GAME_OBJECT_BOUNDERY_STONE_6 = 18,
-	UNKNOWN_13(null, 0), // - GAME_OBJECT_BOUNDERY_STONE_7 = 19,
-	UNKNOWN_14(null, 0), // - GAME_OBJECT_BOUNDERY_STONE_8 = 20,
-	UNKNOWN_15(null, 0), // - GAME_OBJECT_SMALL_STONE_1 = 21,
-	UNKNOWN_16(null, 0), // - GAME_OBJECT_SMALL_STONE_2 = 22,
-	UNKNOWN_17(null, 0), // - GAME_OBJECT_SMALL_STONE_3 = 23,
-	UNKNOWN_18(null, 0), // - GAME_OBJECT_SMALL_STONE_4 = 24,
-	UNKNOWN_19(null, 0), // - GAME_OBJECT_SMALL_STONE_5 = 25,
-	UNKNOWN_1A(null, 0), // - GAME_OBJECT_SMALL_STONE_6 = 26,
-	UNKNOWN_1B(null, 0), // - GAME_OBJECT_SMALL_STONE_7 = 27,
-	UNKNOWN_1C(null, 0), // - GAME_OBJECT_SMALL_STONE_8 = 28,
-	UNKNOWN_1D(null, 0), // - GAME_OBJECT_WRECK_1 = 29,
-	UNKNOWN_1E(null, 0), // - GAME_OBJECT_WRECK_2 = 30,
-	UNKNOWN_1F(null, 0), // - GAME_OBJECT_WRECK_3 = 31,
-	UNKNOWN_20(null, 0), // - GAME_OBJECT_WRECK_4 = 32,
-	UNKNOWN_21(null, 0), // - GAME_OBJECT_WRECK_5 = 33,
-	UNKNOWN_22(null, 0), // - GAME_OBJECT_GRAVE = 34,
-	UNKNOWN_23(null, 0), // - GAME_OBJECT_PLANT_SMALL_1 = 35,
-	UNKNOWN_24(null, 0), // - GAME_OBJECT_PLANT_SMALL_2 = 36,
-	UNKNOWN_25(null, 0), // - GAME_OBJECT_PLANT_SMALL_3 = 37,
-	UNKNOWN_26(null, 0), // - GAME_OBJECT_MUSHROOM_1 = 38,
-	UNKNOWN_27(null, 0), // - GAME_OBJECT_MUSHROOM_2 = 39,
-	UNKNOWN_28(null, 0), // - GAME_OBJECT_MUSHROOM_3 = 40,
-	UNKNOWN_29(null, 0), // - GAME_OBJECT_TREE_STUMP_1 = 41,
-	UNKNOWN_2A(null, 0), // - GAME_OBJECT_TREE_STUMP_2 = 42,
-	UNKNOWN_2B(null, 0), // - GAME_OBJECT_TREE_DEAD_1 = 43,
-	UNKNOWN_2C(null, 0), // - GAME_OBJECT_TREE_DEAD_2 = 44,
-	UNKNOWN_2D(null, 0), // - GAME_OBJECT_CACTUS_1 = 45,
-	UNKNOWN_2E(null, 0), // - GAME_OBJECT_CACTUS_2 = 46,
-	UNKNOWN_2F(null, 0), // - GAME_OBJECT_CACTUS_3 = 47,
-	UNKNOWN_30(null, 0), // - GAME_OBJECT_CACTUS_4 = 48,
-	UNKNOWN_31(null, 0), // - GAME_OBJECT_BONES = 49,
-	UNKNOWN_32(null, 0), // - GAME_OBJECT_FLOWER_1 = 50,
-	UNKNOWN_33(null, 0), // - GAME_OBJECT_FLOWER_2 = 51,
-	UNKNOWN_34(null, 0), // - GAME_OBJECT_FLOWER_3 = 52,
-	UNKNOWN_35(null, 0), // - GAME_OBJECT_STRUB_SMALL_1 = 53,
-	UNKNOWN_36(null, 0), // - GAME_OBJECT_STRUB_SMALL_2 = 54,
-	UNKNOWN_37(null, 0), // - GAME_OBJECT_STRUB_SMALL_3 = 55,
-	UNKNOWN_38(null, 0), // - GAME_OBJECT_STRUB_SMALL_4 = 56,
-	UNKNOWN_39(null, 0), // - GAME_OBJECT_STRUB_1 = 57,
-	UNKNOWN_3A(null, 0), // - GAME_OBJECT_STRUB_2 = 58,
-	UNKNOWN_3B(null, 0), // - GAME_OBJECT_STRUB_3 = 59,
-	UNKNOWN_3C(null, 0), // - GAME_OBJECT_STRUB_4 = 60,
-	UNKNOWN_3D(null, 0), // - GAME_OBJECT_STRUB_5 = 61,
-	UNKNOWN_3E(null, 0), // - GAME_OBJECT_REED_BEDS_1 = 62,
-	UNKNOWN_3F(null, 0), // - GAME_OBJECT_REED_BEDS_2 = 63,
-	UNKNOWN_40(null, 0), // - GAME_OBJECT_REED_BEDS_3 = 64,
-	UNKNOWN_41(null, 0), // - GAME_OBJECT_REED_BEDS_4 = 65,
-	UNKNOWN_42(null, 0), // - GAME_OBJECT_REED_BEDS_5 = 66,
-	UNKNOWN_43(null, 0), // - GAME_OBJEC()T_REED_BEDS_6 = 67,
+	BIG_STONE_1(EDecorationType.BIG_STONE_1), // - GAME_OBJECT_BIG_STONE_1 = 1,
+	BIG_STONE_2(EDecorationType.BIG_STONE_2), // - GAME_OBJECT_BIG_STONE_2 = 2,
+	BIG_STONE_3(EDecorationType.BIG_STONE_3), // - GAME_OBJECT_BIG_STONE_3 = 3,
+	BIG_STONE_4(EDecorationType.BIG_STONE_4), // - GAME_OBJECT_BIG_STONE_4 = 4,
+	BIG_STONE_5(EDecorationType.BIG_STONE_5), // - GAME_OBJECT_BIG_STONE_5 = 5,
+	BIG_STONE_6(EDecorationType.BIG_STONE_6), // - GAME_OBJECT_BIG_STONE_6 = 6,
+	BIG_STONE_7(EDecorationType.BIG_STONE_7), // - GAME_OBJECT_BIG_STONE_7 = 7,
+	BIG_STONE_8(EDecorationType.BIG_STONE_8), // - GAME_OBJECT_BIG_STONE_8 = 8,
+	STONE_1(EDecorationType.STONE_1), // - GAME_OBJECT_STONE_1 = 9,
+	STONE_2(EDecorationType.STONE_2), // - GAME_OBJECT_STONE_2 = 10,
+	STONE_3(EDecorationType.STONE_3), // - GAME_OBJECT_STONE_3 = 11,
+	STONE_4(EDecorationType.STONE_4), // - GAME_OBJECT_STONE_4 = 12,
+	BOUNDARY_STONE_1(EDecorationType.BOUNDARY_STONE_1), // - GAME_OBJECT_BOUNDERY_STONE_1 = 13,
+	BOUNDARY_STONE_2(EDecorationType.BOUNDARY_STONE_2), // - GAME_OBJECT_BOUNDERY_STONE_2 = 14,
+	BOUNDARY_STONE_3(EDecorationType.BOUNDARY_STONE_3), // - GAME_OBJECT_BOUNDERY_STONE_3 = 15,
+	BOUNDARY_STONE_4(EDecorationType.BOUNDARY_STONE_4), // - GAME_OBJECT_BOUNDERY_STONE_4 = 16,
+	BOUNDARY_STONE_5(EDecorationType.BOUNDARY_STONE_5), // - GAME_OBJECT_BOUNDERY_STONE_5 = 17,
+	BOUNDARY_STONE_6(EDecorationType.BOUNDARY_STONE_6), // - GAME_OBJECT_BOUNDERY_STONE_6 = 18,
+	BOUNDARY_STONE_7(EDecorationType.BOUNDARY_STONE_7), // - GAME_OBJECT_BOUNDERY_STONE_7 = 19,
+	BOUNDARY_STONE_8(EDecorationType.BOUNDARY_STONE_8), // - GAME_OBJECT_BOUNDERY_STONE_8 = 20,
+	SMALL_STONE_1(EDecorationType.SMALL_STONE_1), // - GAME_OBJECT_SMALL_STONE_1 = 21,
+	SMALL_STONE_2(EDecorationType.SMALL_STONE_2), // - GAME_OBJECT_SMALL_STONE_2 = 22,
+	SMALL_STONE_3(EDecorationType.SMALL_STONE_3), // - GAME_OBJECT_SMALL_STONE_3 = 23,
+	SMALL_STONE_4(EDecorationType.SMALL_STONE_4), // - GAME_OBJECT_SMALL_STONE_4 = 24,
+	SMALL_STONE_5(EDecorationType.SMALL_STONE_5), // - GAME_OBJECT_SMALL_STONE_5 = 25,
+	SMALL_STONE_6(EDecorationType.SMALL_STONE_6), // - GAME_OBJECT_SMALL_STONE_6 = 26,
+	SMALL_STONE_7(EDecorationType.SMALL_STONE_7), // - GAME_OBJECT_SMALL_STONE_7 = 27,
+	SMALL_STONE_8(EDecorationType.SMALL_STONE_8), // - GAME_OBJECT_SMALL_STONE_8 = 28,
+	WRECK_1(EDecorationType.WRECK_1), // - GAME_OBJECT_WRECK_1 = 29,
+	WRECK_2(EDecorationType.WRECK_2), // - GAME_OBJECT_WRECK_2 = 30,
+	WRECK_3(EDecorationType.WRECK_3), // - GAME_OBJECT_WRECK_3 = 31,
+	WRECK_4(EDecorationType.WRECK_4), // - GAME_OBJECT_WRECK_4 = 32,
+	WRECK_5(EDecorationType.WRECK_5), // - GAME_OBJECT_WRECK_5 = 33,
+	GRAVE(EDecorationType.GRAVE), // - GAME_OBJECT_GRAVE = 34,
+	PLANT_SMALL_1(EDecorationType.PLANT_SMALL_1), // - GAME_OBJECT_PLANT_SMALL_1 = 35,
+	PLANT_SMALL_2(EDecorationType.PLANT_SMALL_2), // - GAME_OBJECT_PLANT_SMALL_2 = 36,
+	PLANT_SMALL_3(EDecorationType.PLANT_SMALL_3), // - GAME_OBJECT_PLANT_SMALL_3 = 37,
+	MUSHROOM_1(EDecorationType.MUSHROOM_1), // - GAME_OBJECT_MUSHROOM_1 = 38,
+	MUSHROOM_2(EDecorationType.MUSHROOM_2), // - GAME_OBJECT_MUSHROOM_2 = 39,
+	MUSHROOM_3(EDecorationType.MUSHROOM_3), // - GAME_OBJECT_MUSHROOM_3 = 40,
+	TREE_STUMP_1(EDecorationType.TREE_STUMP_1), // - GAME_OBJECT_TREE_STUMP_1 = 41,
+	TREE_STUMP_2(EDecorationType.TREE_STUMP_2), // - GAME_OBJECT_TREE_STUMP_2 = 42,
+	TREE_DEAD_1(EDecorationType.TREE_DEAD_1), // - GAME_OBJECT_TREE_DEAD_1 = 43,
+	TREE_DEAD_2(EDecorationType.TREE_DEAD_2), // - GAME_OBJECT_TREE_DEAD_2 = 44,
+	CACTUS_1(EDecorationType.CACTUS_1), // - GAME_OBJECT_CACTUS_1 = 45,
+	CACTUS_2(EDecorationType.CACTUS_2), // - GAME_OBJECT_CACTUS_2 = 46,
+	CACTUS_3(EDecorationType.CACTUS_3), // - GAME_OBJECT_CACTUS_3 = 47,
+	CACTUS_4(EDecorationType.CACTUS_4), // - GAME_OBJECT_CACTUS_4 = 48,
+	BONES(EDecorationType.BONES), // - GAME_OBJECT_BONES = 49,
+	FLOWER_1(EDecorationType.FLOWER_1), // - GAME_OBJECT_FLOWER_1 = 50,
+	FLOWER_2(EDecorationType.FLOWER_2), // - GAME_OBJECT_FLOWER_2 = 51,
+	FLOWER_3(EDecorationType.FLOWER_3), // - GAME_OBJECT_FLOWER_3 = 52,
+	SHRUB_SMALL_1(EDecorationType.SHRUB_SMALL_1), // - GAME_OBJECT_STRUB_SMALL_1 = 53,
+	SHRUB_SMALL_2(EDecorationType.SHRUB_SMALL_2), // - GAME_OBJECT_STRUB_SMALL_2 = 54,
+	SHRUB_SMALL_3(EDecorationType.SHRUB_SMALL_3), // - GAME_OBJECT_STRUB_SMALL_3 = 55,
+	SHRUB_SMALL_4(EDecorationType.SHRUB_SMALL_4), // - GAME_OBJECT_STRUB_SMALL_4 = 56,
+	SHRUB_1(EDecorationType.SHRUB_1), // - GAME_OBJECT_STRUB_1 = 57,
+	SHRUB_2(EDecorationType.SHRUB_2), // - GAME_OBJECT_STRUB_2 = 58,
+	SHRUB_3(EDecorationType.SHRUB_3), // - GAME_OBJECT_STRUB_3 = 59,
+	SHRUB_4(EDecorationType.SHRUB_4), // - GAME_OBJECT_STRUB_4 = 60,
+	SHRUB_5(EDecorationType.SHRUB_5), // - GAME_OBJECT_STRUB_5 = 61,
+	REED_BEDS_1(EDecorationType.REED_BEDS_1), // - GAME_OBJECT_REED_BEDS_1 = 62,
+	REED_BEDS_2(EDecorationType.REED_BEDS_2), // - GAME_OBJECT_REED_BEDS_2 = 63,
+	REED_BEDS_3(EDecorationType.REED_BEDS_3), // - GAME_OBJECT_REED_BEDS_3 = 64,
+	REED_BEDS_4(EDecorationType.REED_BEDS_4), // - GAME_OBJECT_REED_BEDS_4 = 65,
+	REED_BEDS_5(EDecorationType.REED_BEDS_5), // - GAME_OBJECT_REED_BEDS_5 = 66,
+	REED_BEDS_6(EDecorationType.REED_BEDS_6), // - GAME_OBJECT_REED_BEDS_6 = 67,
 	TREE_BIRCH_1(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_BIRCH_1 = 68,
 	TREE_BIRCH_2(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_BIRCH_2 = 69,
 	TREE_ELM_1(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_ELM_1 = 70,
@@ -140,10 +139,10 @@ public enum EOriginalMapObjectType {
 	UNKNOWN_6C(null, 0), // - //-- unknown...
 	UNKNOWN_6D(null, 0), // - //-- unknown...
 	UNKNOWN_6E(null, 0), // - //-- unknown...
-	UNKNOWN_6F(null, 0), // - GAME_OBJECT_REEF_SMALL = 111,
-	UNKNOWN_70(null, 0), // - GAME_OBJECT_REEF_MEDIUM = 112,
-	UNKNOWN_71(null, 0), // - GAME_OBJECT_REEF_LARGE = 113,
-	UNKNOWN_72(null, 0), // - GAME_OBJECT_REEF_XLARGE = 114,
+	REEF_SMALL(EDecorationType.REEF_SMALL), // - GAME_OBJECT_REEF_SMALL = 111,
+	REEF_MEDIUM(EDecorationType.REEF_MEDIUM), // - GAME_OBJECT_REEF_MEDIUM = 112,
+	REEF_LARGE(EDecorationType.REEF_LARGE), // - GAME_OBJECT_REEF_LARGE = 113,
+	REEF_XLARGE(EDecorationType.REEF_XLARGE), // - GAME_OBJECT_REEF_XLARGE = 114,
 	RES_STONE_01(EOriginalMapObjectClass.STONE, 12), // - GAME_OBJECT_RES_STONE_01 = 115,
 	RES_STONE_02(EOriginalMapObjectClass.STONE, 11), // - GAME_OBJECT_RES_STONE_02 = 116,
 	RES_STONE_03(EOriginalMapObjectClass.STONE, 10), // - GAME_OBJECT_RES_STONE_03 = 117,
@@ -162,15 +161,18 @@ public enum EOriginalMapObjectType {
 
 	public final EOriginalMapObjectClass type;
 	public final int style;
+	public final EDecorationType decoration;
 
 	EOriginalMapObjectType(EOriginalMapObjectClass type, int style) {
 		this.type = type;
 		this.style = style;
+		this.decoration = null;
 	}
 
-	EOriginalMapObjectType(EOriginalMapObjectClass type, EMapObjectType style) {
-		this.type = type;
-		this.style = style.ordinal();
+	EOriginalMapObjectType(EDecorationType decoration) {
+		this.type = EOriginalMapObjectClass.DECORATION;
+		this.style = 0;
+		this.decoration = decoration;
 	}
 
 	public static EOriginalMapObjectType getTypeByInt(int type) {
@@ -188,12 +190,7 @@ public enum EOriginalMapObjectType {
 
 		switch (type) {
 		case DECORATION:
-			if (style < 0 || style >= EMapObjectType.VALUES.length) {
-				return null;
-			} else {
-				// - TODO: does not work?!
-				return new DecorationMapDataObject(EMapObjectType.VALUES[style]);
-			}
+			return new DecorationMapDataObject(decoration);
 
 		case STONE:
 			return StoneMapDataObject.getInstance(style);

@@ -23,8 +23,11 @@ import java.io.OutputStream;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.mapobject.EDecorationType;
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.logic.map.loading.data.IMapData;
 import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
 import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
 import jsettlers.logic.map.loading.data.objects.MapTreeObject;
@@ -67,6 +70,7 @@ public class FreshMapSerializer {
 	private static final int TYPE_BUILDING = 3;
 	private static final int TYPE_MOVABLE = 4;
 	private static final int TYPE_STACK = 5;
+	private static final int TYPE_DECORATION = 6;
 
 	/**
 	 * Serializes the given data to the output stream.
@@ -136,6 +140,10 @@ public class FreshMapSerializer {
 				} else if (object instanceof StackMapDataObject) {
 					int capacity = ((StackMapDataObject) object).getCount();
 					writeObject(stream, x, y, TYPE_STACK, ((StackMapDataObject) object).getType() + "," + capacity);
+				} else if (object instanceof DecorationMapDataObject) {
+					DecorationMapDataObject decoration = (DecorationMapDataObject) object;
+					String decorationType = decoration.getDecorationType() != null ? "," + decoration.getDecorationType() : "";
+					writeObject(stream, x, y, TYPE_DECORATION, decoration.getType() + decorationType);
 				}
 			}
 		}
@@ -246,6 +254,15 @@ public class FreshMapSerializer {
 		case TYPE_BUILDING: {
 			String[] parts = string.split(",");
 			return new BuildingMapDataObject(EBuildingType.valueOf(parts[0]), Byte.valueOf(parts[1]));
+		}
+
+		case TYPE_DECORATION: {
+			String[] parts = string.split(",");
+			if (parts.length > 1) {
+				return new DecorationMapDataObject(EDecorationType.valueOf(parts[1]));
+			} else {
+				return new DecorationMapDataObject(EMapObjectType.valueOf(parts[0]));
+			}
 		}
 
 		default:
