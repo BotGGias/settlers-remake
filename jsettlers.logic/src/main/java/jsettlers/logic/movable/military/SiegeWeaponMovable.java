@@ -51,7 +51,10 @@ public class SiegeWeaponMovable extends AttackableHumanMovable {
 	 */
 	public static final short RELOAD_RADIUS = 3;
 	private static final int RELOAD_DURATION = 1000;
-	private static final int TARGET_SCAN_INTERVAL = 2000;
+	/**
+	 * Minimum time between two searches for a target. The search area is big, so it is not done on every tick.
+	 */
+	private static final int TARGET_SCAN_INTERVAL = 1000;
 
 	private final ESiegeWeaponType weaponType;
 	private int ammo = 0;
@@ -187,7 +190,8 @@ public class SiegeWeaponMovable extends AttackableHumanMovable {
 	}
 
 	private boolean isReadyToFire() {
-		return enemyNearby && hasAmmo() && MatchConstants.clock().getTime() >= nextShotTime;
+		int now = MatchConstants.clock().getTime();
+		return enemyNearby && hasAmmo() && now >= nextShotTime && now >= nextScanTime;
 	}
 
 	private boolean findTarget() {

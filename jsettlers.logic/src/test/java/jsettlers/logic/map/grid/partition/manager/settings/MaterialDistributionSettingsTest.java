@@ -32,6 +32,7 @@ public class MaterialDistributionSettingsTest {
         settings.setUserConfiguredDistributionValue(TEST_BUILDING_TYPE, 1f);
         settings.setUserConfiguredDistributionValue(EBuildingType.TOOLSMITH, 0.7f);
         settings.setUserConfiguredDistributionValue(EBuildingType.DOCKYARD, 0.3f);
+        settings.setUserConfiguredDistributionValue(EBuildingType.BALLISTA_WORKSHOP, 0f);
 
         float result = settings.getDistributionProbability(TEST_BUILDING_TYPE);
 
