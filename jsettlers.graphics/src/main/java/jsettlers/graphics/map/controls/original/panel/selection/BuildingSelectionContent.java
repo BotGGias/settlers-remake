@@ -23,6 +23,7 @@ import jsettlers.common.buildings.BuildingVariant;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
@@ -52,7 +53,9 @@ import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIElement;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.BuildingSelectionLayout;
+import jsettlers.graphics.ui.SimpleActionButton;
 import jsettlers.graphics.ui.layout.DockyardSelectionLayout;
+import jsettlers.graphics.ui.layout.SiegeWorkshopSelectionLayout;
 import jsettlers.graphics.ui.layout.OccupiableSelectionLayout;
 import jsettlers.graphics.ui.layout.StockSelectionLayout;
 import jsettlers.graphics.ui.layout.TradingSelectionLayout;
@@ -357,6 +360,8 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			root = createTradingBuildingContent(state);
 		} else if (state.isDockyard()) {
 			root = createDockyardBuildingContent(state);
+		} else if (state.isSiegeWorkshop()) {
+			root = createSiegeWorkshopContent(state);
 		} else {
 			root = createNormalBuildingContent(state);
 		}
@@ -629,6 +634,24 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			layout.materialText.setText(Labels.getString("materials_required"));
 			addRequestAndOfferStacks(layout.materialArea, state);
 		}
+		return layout._root;
+	}
+
+	private BuildingBackgroundPanel createSiegeWorkshopContent(BuildingState state) {
+		SiegeWorkshopSelectionLayout layout = new SiegeWorkshopSelectionLayout();
+		loadPriorityButton(layout.background, layout.priority, state);
+		layout.nameText.setType(building.getBuildingVariant(), state.isConstruction());
+
+		EMovableType weaponType = ((IBuilding.ISiegeWorkshop) building).getSiegeWeaponType().movableType;
+		ImageLink weaponIcon = ImageLinkMap.get(building.getPlayer().getCivilisation(), ECommonLinkType.SETTLER_GUI, weaponType);
+		if (weaponIcon == null) {
+			weaponIcon = building.getBuildingVariant().getGuiImage();
+		}
+		layout.orderWeaponArea.addChild(new SimpleActionButton(EActionType.ORDER_SIEGE_WEAPON, weaponIcon), 0, 0, 1, 1);
+		layout.orderedText.setText(Labels.getString("siege_weapons_ordered", state.getOrderedSiegeWeapons()));
+
+		layout.materialText.setText(Labels.getString("materials_required"));
+		addRequestAndOfferStacks(layout.materialArea, state);
 		return layout._root;
 	}
 

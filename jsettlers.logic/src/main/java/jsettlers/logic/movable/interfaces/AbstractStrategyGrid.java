@@ -23,6 +23,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.ESiegeWeaponType;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
@@ -238,6 +239,25 @@ public abstract class AbstractStrategyGrid implements Serializable {
 *            Attacked position.
 	 */
 	public abstract void addArrowObject(ShortPoint2D shooterPos, IPlayer shooterPlayer, float hitStrength, ShortPoint2D attackedPos);
+
+	/**
+	 * Searches the nearest enemy a siege weapon can attack: enemy movables and military buildings that still have defenders.
+	 *
+	 * @return The nearest target in the given distance range or null if there is none.
+	 */
+	public abstract IAttackable getSiegeTarget(ShortPoint2D position, IPlayer searchingPlayer, short minSearchRadius, short maxSearchRadius);
+
+	/**
+	 * Adds a projectile of a siege weapon flying from the shooter to the attacked position. It damages the area around the attacked position
+	 * when it arrives.
+	 */
+	public abstract void addSiegeProjectile(ShortPoint2D shooterPos, IPlayer shooterPlayer, ESiegeWeaponType weaponType, float hitStrength,
+			ShortPoint2D attackedPos);
+
+	/**
+	 * Immediately damages all enemies in the given radius around the center.
+	 */
+	public abstract void applySiegeDamage(ShortPoint2D center, short radius, float hitStrength, IPlayer attackingPlayer, ShortPoint2D attackerPos);
 
 	public abstract boolean hasNoMovableAt(int x, int y);
 

@@ -43,7 +43,7 @@ public final class SettlerStatistics {
 			EMovableType.STONECUTTER, EMovableType.BREWER,
 			EMovableType.RICE_FARMER, EMovableType.DISTILLER,
 			EMovableType.ALCHEMIST, EMovableType.MEAD_BREWER,
-			EMovableType.POWDER_MAKER
+			EMovableType.POWDER_MAKER, EMovableType.SIEGE_ENGINEER
 	};
 
 	private final int beds;

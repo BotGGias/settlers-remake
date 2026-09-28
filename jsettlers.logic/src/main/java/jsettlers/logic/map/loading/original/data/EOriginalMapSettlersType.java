@@ -65,7 +65,7 @@ public enum EOriginalMapSettlersType {
 	Reisbauer(EMovableType.RICE_FARMER),
 	DONKEY(EMovableType.DONKEY),
 	PIONEER(EMovableType.PIONEER),
-	Katapult(null),
+	Katapult(EMovableType.CATAPULT),
 	UNKNOWN_42(null),
 	CARGO_SHIP(EMovableType.CARGO_SHIP),
 	FERRY(EMovableType.FERRY),

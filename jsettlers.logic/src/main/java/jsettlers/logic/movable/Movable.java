@@ -54,12 +54,14 @@ import jsettlers.logic.movable.civilian.MinerMovable;
 import jsettlers.logic.movable.civilian.PigFarmerMovable;
 import jsettlers.logic.movable.civilian.SawMillerMovable;
 import jsettlers.logic.movable.civilian.SimpleBuildingWorkerMovable;
+import jsettlers.logic.movable.civilian.SiegeEngineerMovable;
 import jsettlers.logic.movable.civilian.SmithMovable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.military.BowmanMovable;
 import jsettlers.logic.movable.military.InfantryMovable;
 import jsettlers.logic.movable.military.MageMovable;
+import jsettlers.logic.movable.military.SiegeWeaponMovable;
 import jsettlers.logic.movable.other.FerryMovable;
 import jsettlers.logic.movable.specialist.GeologistMovable;
 import jsettlers.logic.movable.specialist.PioneerMovable;
@@ -1050,6 +1052,12 @@ public abstract class Movable implements ILogicMovable, FoWTask {
 			case MAGE:
 				return new MageMovable(grid, position, player, movable);
 
+			case CATAPULT:
+			case BALLISTA:
+			case CANNON:
+			case GONG:
+				return new SiegeWeaponMovable(grid, movableType, position, player, movable);
+
 
 			case BEARER:
 				return new BearerMovable(grid, position, player, movable);
@@ -1100,6 +1108,9 @@ public abstract class Movable implements ILogicMovable, FoWTask {
 
 			case SMITH:
 				return new SmithMovable(grid, position, player, movable);
+
+			case SIEGE_ENGINEER:
+				return new SiegeEngineerMovable(grid, position, player, movable);
 
 			case MELTER:
 				return new MelterMovable(grid, position, player, movable);

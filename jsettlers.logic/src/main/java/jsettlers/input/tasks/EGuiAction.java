@@ -59,6 +59,7 @@ public enum EGuiAction {
 	SET_MOVABLE_LIMIT_TYPE,
 	PAUSE_GAME,
 	CONVERT_AT_POSITION,
+	ORDER_SIEGE_WEAPON,
 	;
 
 	public static final EGuiAction[] VALUES = values();

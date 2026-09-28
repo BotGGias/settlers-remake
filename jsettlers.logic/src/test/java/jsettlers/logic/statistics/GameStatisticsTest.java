@@ -121,6 +121,7 @@ public class GameStatisticsTest {
 		assertEquals(3, StatisticsRecorder.getMilitaryStrength(EMovableType.PIKEMAN_L3));
 		assertEquals(2, StatisticsRecorder.getMilitaryStrength(EMovableType.MAGE));
 		assertEquals(0, StatisticsRecorder.getMilitaryStrength(EMovableType.BEARER));
+		assertEquals(4, StatisticsRecorder.getMilitaryStrength(EMovableType.CATAPULT));
 		for (EMovableType soldier : EMovableType.SOLDIERS) {
 			assertTrue(StatisticsRecorder.getMilitaryStrength(soldier) > 0);
 		}

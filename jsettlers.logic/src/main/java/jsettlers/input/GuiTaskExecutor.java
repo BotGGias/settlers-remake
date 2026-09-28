@@ -61,6 +61,7 @@ import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.buildings.workers.DockyardBuilding;
+import jsettlers.logic.buildings.workers.SiegeWorkshopBuilding;
 import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableManager;
@@ -235,6 +236,10 @@ class GuiTaskExecutor implements ITaskExecutor {
 
 			case ORDER_SHIP:
 				orderShip((OrderShipGuiTask) guiTask);
+				break;
+
+			case ORDER_SIEGE_WEAPON:
+				orderSiegeWeapon((SimpleBuildingGuiTask) guiTask);
 				break;
 
 			case UNLOAD_FERRY:
@@ -448,6 +453,15 @@ class GuiTaskExecutor implements ITaskExecutor {
 
 	private void orderShip(OrderShipGuiTask task) {
 		this.<DockyardBuilding>forBuilding(task, building -> building.orderShipType(task.getShipType()));
+	}
+
+	private void orderSiegeWeapon(SimpleBuildingGuiTask task) {
+		ShortPoint2D buildingPos = task.getBuildingPos();
+		IBuilding building = grid.getBuildingAt(buildingPos.x, buildingPos.y);
+
+		if (building instanceof SiegeWorkshopBuilding && building.getPlayer().getPlayerId() == task.getPlayerId()) {
+			((SiegeWorkshopBuilding) building).orderSiegeWeapon();
+		}
 	}
 
 	private void unloadFerry(MovableGuiTask task) {

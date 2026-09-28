@@ -36,6 +36,7 @@ import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.TaskControls;
 import jsettlers.main.android.gameplay.controlsmenu.selection.features.DestroyFeature;
 import jsettlers.main.android.gameplay.controlsmenu.selection.features.DockFeature;
+import jsettlers.main.android.gameplay.controlsmenu.selection.features.SiegeWorkshopFeature;
 import jsettlers.main.android.gameplay.controlsmenu.selection.features.MaterialsFeature;
 import jsettlers.main.android.gameplay.controlsmenu.selection.features.OccupiedFeature;
 import jsettlers.main.android.gameplay.controlsmenu.selection.features.PriorityFeature;
@@ -105,6 +106,10 @@ public class BuildingSelectionFragment extends SelectionFragment {
 		} else if (building.getBuildingVariant().isVariantOf(EBuildingType.DOCKYARD)) {
 			layoutInflater.inflate(R.layout.menu_selection_building_dock, rootView, true);
 			features.add(new DockFeature(getView(), building, menuNavigator, drawControls, actionControls, taskControls));
+
+		} else if (building instanceof IBuilding.ISiegeWorkshop) {
+			layoutInflater.inflate(R.layout.menu_selection_building_siege_workshop, rootView, true);
+			features.add(new SiegeWorkshopFeature(getView(), building, menuNavigator, drawControls, actionControls));
 
 		} else {
 			layoutInflater.inflate(R.layout.menu_selection_building_normal, rootView, true);

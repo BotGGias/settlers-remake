@@ -54,6 +54,10 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 			EMovableType.BOWMAN_L1,
 			EMovableType.BOWMAN_L2,
 			EMovableType.BOWMAN_L3,
+			EMovableType.CATAPULT,
+			EMovableType.BALLISTA,
+			EMovableType.CANNON,
+			EMovableType.GONG,
 	};
 
 	public static SoldiersSelectionFragment newInstance() {
@@ -119,6 +123,10 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 		case SWORDSMAN_L3:
 		case BOWMAN_L3:
 		case PIKEMAN_L3:
+		case CATAPULT: // siege weapons are shown behind the strongest soldiers
+		case BALLISTA:
+		case CANNON:
+		case GONG:
 			return soldiers3Layout;
 		default:
 			throw new RuntimeException("SoldiersSelectionFragment can't display movable: " + movableType.name());

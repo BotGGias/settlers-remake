@@ -61,6 +61,10 @@ public enum EBuildingsCategory {
 			EBuildingType.LOOKOUT_TOWER,
 			EBuildingType.WEAPONSMITH,
 			EBuildingType.BARRACK,
+			EBuildingType.CATAPULT_WORKSHOP,
+			EBuildingType.BALLISTA_WORKSHOP,
+			EBuildingType.CANNON_WORKSHOP,
+			EBuildingType.GONG_WORKSHOP,
 			EBuildingType.DOCKYARD,
 			EBuildingType.HOSPITAL),
 	BUILDINGS_CATEGORY_SOCIAL(
