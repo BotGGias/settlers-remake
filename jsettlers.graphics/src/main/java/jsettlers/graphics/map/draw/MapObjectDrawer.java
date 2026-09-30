@@ -244,8 +244,8 @@ public class MapObjectDrawer {
 		this.context = context;
 		this.sound = sound;
 
-		// the rows use the depth range 0 to .5, so a 16 bit depth buffer can still separate quarter rows. The fixed depths above lie in front of all rows.
-		z_per_y = 1f/(context.getMap().getHeight()*2);
+		// the rows use the depth range 0 to .01: the fixed depths above are added to the depth of the row and must stay below 1
+		z_per_y = 1f/(context.getMap().getHeight()*100);
 		shadow_offset = 20 * z_per_y;
 		construction_offset = z_per_y;
 		molten_metal_offset = z_per_y;
