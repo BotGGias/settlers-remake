@@ -200,5 +200,15 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		 * @return The number of weapons that were ordered but are not finished yet.
 		 */
 		int getOrderedSiegeWeapons();
+
+		/**
+		 * @return If the workshop produces ammunition while no weapon is ordered.
+		 */
+		boolean isAmmoProductionEnabled();
+
+		/**
+		 * @return The number of ammunition items on the ammunition stack.
+		 */
+		int getAmmoStackSize();
 	}
 }

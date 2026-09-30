@@ -69,6 +69,19 @@
 				android:layout_height="wrap_content"
 				android:layout_marginTop="8dp"
 				android:visibility="gone"/>
+
+			<TextView
+				android:id="@+id/text_view_siege_ammo"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="4dp"
+				android:visibility="gone"/>
+
+			<CheckBox
+				android:id="@+id/checkbox_ammo_production"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:visibility="gone"/>
 		</LinearLayout>
 
 		<Space

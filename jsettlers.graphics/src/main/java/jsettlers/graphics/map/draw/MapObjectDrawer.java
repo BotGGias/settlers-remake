@@ -210,6 +210,7 @@ public class MapObjectDrawer {
 	private final float construction_offset;
 	private final float molten_metal_offset;
 	private final float tower_front_offset;
+	private final BuildingOcclusion buildingOcclusion;
 
 	private static final int SMOKE_HEIGHT = 30;
 
@@ -243,11 +244,13 @@ public class MapObjectDrawer {
 		this.context = context;
 		this.sound = sound;
 
-		z_per_y = 1f/(context.getMap().getHeight()*100);
+		// the rows use the depth range 0 to .5, so a 16 bit depth buffer can still separate quarter rows. The fixed depths above lie in front of all rows.
+		z_per_y = 1f/(context.getMap().getHeight()*2);
 		shadow_offset = 20 * z_per_y;
 		construction_offset = z_per_y;
 		molten_metal_offset = z_per_y;
 		tower_front_offset = z_per_y / 2;
+		buildingOcclusion = new BuildingOcclusion(context.getMap().getWidth(), context.getMap().getHeight());
 	}
 
 	public void setVisibleGrid(byte[][] visibleGrid) {
@@ -475,7 +478,7 @@ public class MapObjectDrawer {
 		}
 
 		GLDrawContext gl = context.getGl();
-		float z = getZ(0, y);
+		float z = getMovableZ(weapon, x, y);
 		imageMap.getImageForSettler(civilisation, type, action, EMaterialType.NO_MATERIAL, direction, progress).drawAt(gl, viewX, viewY, z, color, shade);
 		if (weaponType.usesAmmo()) { // the gong has no wheels and its firing animation replaces its body
 			imageMap.getImageForSettler(civilisation, type, action, EMaterialType.TRUNK, direction, progress).drawAt(gl, viewX, viewY, z, color, shade);
@@ -1101,9 +1104,43 @@ public class MapObjectDrawer {
 		}
 
 		image = this.imageMap.getImageForSettler(movable, moveProgress, isUndercover?movablePlayer.getCivilisation():null);
-		image.drawAt(context.getGl(), viewX, viewY, getZ(0, y), color, shade);
+		image.drawAt(context.getGl(), viewX, viewY, getMovableZ(movable, x, y), color, shade);
 
 		drawSettlerMark(viewX, viewY, movable);
+	}
+
+	/**
+	 * Registers a building for this frame, so the settlers around it are drawn in front of or behind it, see {@link BuildingOcclusion}. All buildings
+	 * that can overlap a visible settler have to be registered before the settlers are drawn.
+	 */
+	public void registerBuilding(int x, int y, IBuilding building) {
+		BuildingVariant variant = building.getBuildingVariant();
+		ImageLink[] images = variant.getImages();
+		// the stock is drawn in parts with own depths, the market place lies on the ground
+		if (images.length == 0 || building.getStateProgress() < .01f || variant.isVariantOf(EBuildingType.STOCK) || variant.isVariantOf(EBuildingType.MARKET_PLACE)) {
+			return;
+		}
+		buildingOcclusion.addBuilding(x, y, variant, () -> imageProvider.getImage(images[0]));
+	}
+
+	/**
+	 * A walking movable gets the depth between its last and its next position. With the depth of the next position it would stand in front of the
+	 * objects of that row during the whole step. Next to buildings, the depth is corrected by {@link BuildingOcclusion}.
+	 */
+	private float getMovableZ(IGraphicsMovable movable, int x, int y) {
+		float row = y;
+		int tileX = x;
+		int tileY = y;
+		if (movable.getAction() == EMovableAction.WALKING) {
+			EDirection direction = movable.getDirection();
+			float remainingStep = 1 - movable.getMoveProgress();
+			row -= remainingStep * direction.gridDeltaY;
+			if (remainingStep > .5f) { // the feet are still closer to the last position
+				tileX -= direction.gridDeltaX;
+				tileY -= direction.gridDeltaY;
+			}
+		}
+		return getZ(0, buildingOcclusion.correctRow(tileX, tileY, row));
 	}
 
 	private float betweenTilesX(int startX, int startY, EDirection direction, float progress) {
@@ -1406,6 +1443,7 @@ public class MapObjectDrawer {
 
 		imageMap = SettlerImageMap.getInstance();
 		imageProvider = ImageProvider.getInstance();
+		buildingOcclusion.clear();
 
 		playerBorderObjectImage = imageProvider.getSettlerSequence(FILE_BORDER_POST, 65).getImageSafe(0, () -> "border-indicator");
 

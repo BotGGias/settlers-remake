@@ -42,6 +42,7 @@ import jsettlers.common.action.PointAction;
 import jsettlers.common.action.ScreenChangeAction;
 import jsettlers.common.action.SelectAreaAction;
 import jsettlers.common.action.SetAcceptedStockMaterialAction;
+import jsettlers.common.action.SetAmmoProductionAction;
 import jsettlers.common.action.SetBuildingPriorityAction;
 import jsettlers.common.action.SetDockAction;
 import jsettlers.common.action.SetMaterialDistributionSettingsAction;
@@ -93,6 +94,7 @@ import jsettlers.input.tasks.SetMaterialProductionGuiTask;
 import jsettlers.input.tasks.ChangeMovableSettingsTask;
 import jsettlers.input.tasks.SetMovableLimitTypeTask;
 import jsettlers.input.tasks.SetTradingWaypointGuiTask;
+import jsettlers.input.tasks.SetAmmoProductionGuiTask;
 import jsettlers.input.tasks.SimpleBuildingGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
@@ -433,6 +435,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			case ORDER_SIEGE_WEAPON:
 				orderSiegeWeapon();
 				break;
+
+			case SET_AMMO_PRODUCTION:
+				setAmmoProduction(((SetAmmoProductionAction) action).isEnabled());
+				break;
 				
 			case CHANGE_MOVABLE_SETTINGS:
 				ChangeMovableSettingsAction ratioAction = (ChangeMovableSettingsAction) action;
@@ -646,6 +652,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		ISelectable selected = currentSelection.getSingle();
 		if (selected instanceof SiegeWorkshopBuilding) {
 			taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.ORDER_SIEGE_WEAPON, playerId, (SiegeWorkshopBuilding) selected));
+		}
+	}
+
+	private void setAmmoProduction(boolean enabled) {
+		ISelectable selected = currentSelection.getSingle();
+		if (selected instanceof SiegeWorkshopBuilding) {
+			taskScheduler.scheduleTask(new SetAmmoProductionGuiTask(playerId, (SiegeWorkshopBuilding) selected, enabled));
 		}
 	}
 

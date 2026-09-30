@@ -60,6 +60,7 @@ public enum EGuiAction {
 	PAUSE_GAME,
 	CONVERT_AT_POSITION,
 	ORDER_SIEGE_WEAPON,
+	SET_AMMO_PRODUCTION,
 	;
 
 	public static final EGuiAction[] VALUES = values();
