@@ -100,13 +100,13 @@
 
 	<door dx="5" dy="3" />
 
-	<constructionStack dx="3" dy="6" material="PLANK" buildrequired="3" />
-	<constructionStack dx="4" dy="5" material="STONE" buildrequired="7" />
+	<constructionStack dx="4" dy="3" material="PLANK" buildrequired="3" />
+	<constructionStack dx="6" dy="3" material="STONE" buildrequired="7" />
 
 	<requestStack dx="-1" dy="4" material="COAL" />
-	<requestStack dx="4" dy="4" material="GOLDORE" />
+	<requestStack dx="3" dy="4" material="GOLDORE" />
 
-	<offerStack dx="5" dy="2" material="GOLD" />
+	<offerStack dx="5" dy="3" material="GOLD" />
 
 	<bricklayer dx="4" dy="2" direction="NORTH_WEST" />
 	<bricklayer dx="0" dy="5" direction="NORTH_EAST" />

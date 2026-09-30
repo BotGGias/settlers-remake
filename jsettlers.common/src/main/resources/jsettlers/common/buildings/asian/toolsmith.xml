@@ -81,10 +81,10 @@
 
 	<door dx="4" dy="2" />
 
-	<constructionStack dx="3" dy="4" material="PLANK" buildrequired="5" />
-	<constructionStack dx="3" dy="2" material="STONE" buildrequired="3" />
-	<requestStack dx="-4" dy="1" material="COAL" />
-	<requestStack dx="4" dy="4" material="IRON" />
+	<constructionStack dx="3" dy="2" material="PLANK" buildrequired="5" />
+	<constructionStack dx="5" dy="2" material="STONE" buildrequired="3" />
+	<requestStack dx="-3" dy="1" material="COAL" />
+	<requestStack dx="3" dy="4" material="IRON" />
 
 	<bricklayer dx="0" dy="3" direction="NORTH_EAST" />
 	<bricklayer dx="3" dy="1" direction="NORTH_WEST" />
@@ -108,7 +108,7 @@
 
     <anvilPosition dx="0" dy="4" direction="NORTH_EAST"/>
 
-    <smithDropPosition dx="4" dy="0"/>
+    <smithDropPosition dx="4" dy="2"/>
 
     <image file="34" for="GUI" type="GUI" sequence="33" image="0" />
     <image file="33" type="SETTLER" for="FINAL" image="0" sequence="8" />

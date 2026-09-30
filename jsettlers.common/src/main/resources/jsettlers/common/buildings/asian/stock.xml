@@ -90,6 +90,8 @@
 	<blocked dx="3" dy="5" block="false" />
 	<blocked dx="4" dy="5" block="false" />
 	<blocked dx="5" dy="5" block="false" />
+	<blocked dx="2" dy="0" block="false" />
+	<blocked dx="2" dy="2" block="false" />
 
 
 	<door dx="0" dy="0" />
@@ -101,8 +103,8 @@
 	<requestStack dx="0" dy="-2" material="NO_MATERIAL" />
 	<requestStack dx="-2" dy="0" material="NO_MATERIAL" />
 	<requestStack dx="0" dy="2" material="NO_MATERIAL" />
-	<requestStack dx="2" dy="1" material="NO_MATERIAL" />
-	<requestStack dx="2" dy="-1" material="NO_MATERIAL" />
+	<requestStack dx="2" dy="0" material="NO_MATERIAL" />
+	<requestStack dx="2" dy="2" material="NO_MATERIAL" />
 
 	<bricklayer dx="5" dy="3" direction="NORTH_WEST" />
 	<bricklayer dx="-2" dy="3" direction="NORTH_EAST" />

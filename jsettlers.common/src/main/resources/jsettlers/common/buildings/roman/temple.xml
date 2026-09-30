@@ -104,9 +104,9 @@
 	<!-- door position is used as position for the wine bowl map object -->
 	<door dx="3" dy="2" />
 	
-	<constructionStack dx="1" dy="6" material="PLANK" buildrequired="5" />
-	<constructionStack dx="3" dy="7" material="STONE" buildrequired="8" />
-	<requestStack dx="7" dy="5" material="WINE" />
+	<constructionStack dx="5" dy="6" material="PLANK" buildrequired="5" />
+	<constructionStack dx="8" dy="6" material="STONE" buildrequired="8" />
+	<requestStack dx="7" dy="4" material="WINE" />
 	
 	<bricklayer dx="-1" dy="4" direction="NORTH_EAST" />
 	<bricklayer dx="5" dy="2" direction="NORTH_WEST" />

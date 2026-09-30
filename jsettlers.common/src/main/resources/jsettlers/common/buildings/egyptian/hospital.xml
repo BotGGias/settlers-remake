@@ -102,7 +102,7 @@
 	<door dx="-1" dy="5" />
 
 
-	<constructionStack dx="0" dy="6" material="PLANK" buildrequired="2" />
+	<constructionStack dx="-2" dy="5" material="PLANK" buildrequired="2" />
 	<constructionStack dx="3" dy="5" material="STONE" buildrequired="4" />
 
 	<bricklayer dx="0" dy="6" direction="NORTH_EAST" />
@@ -119,7 +119,7 @@
 
 	<healspot dx="-2" dy="4" />
 
-	<image file="24" for="GUI" type="GUI" sequence="72" image="0" />
+	<image file="24" for="GUI" type="GUI" sequence="87" image="0" />
 	<image file="23" for="FINAL" type="SETTLER" sequence="29" image="0" />
 	<image file="23" for="BUILD" type="SETTLER" sequence="29" image="1" />
 

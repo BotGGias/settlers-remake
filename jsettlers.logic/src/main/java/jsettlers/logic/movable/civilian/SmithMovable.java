@@ -59,7 +59,7 @@ public class SmithMovable extends BuildingWorkerMovable {
 							setMaterialNode(EMaterialType.NO_MATERIAL),
 							repeatLoop(5, playAction(EMovableAction.ACTION1, (short)700)),
 
-							goToPos(SmithMovable::getDropPosition),
+							goToWorkPosition(SmithMovable::getDropPosition),
 							setDirectionNode(EDirection.NORTH_EAST),
 							dropProduced(mov -> mov.outputMaterial)
 						)

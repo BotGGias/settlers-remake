@@ -31,7 +31,7 @@ public enum ESiegeWeaponType {
 			8, 26, 45f, 1, 6000, 6, 0.045f, 1500),
 
 	BALLISTA(ECivilisation.EGYPTIAN, EBuildingType.BALLISTA_WORKSHOP, EMovableType.BALLISTA, EMaterialType.BALLISTA_AMMO,
-			new EMaterialType[] { EMaterialType.PLANK, EMaterialType.IRON },
+			new EMaterialType[] { EMaterialType.TRUNK },
 			new EMaterialType[] { EMaterialType.PLANK, EMaterialType.IRON }, new short[] { 4, 2 },
 			6, 24, 35f, 0, 4000, 6, 0.03f, 1000),
 
@@ -45,7 +45,7 @@ public enum ESiegeWeaponType {
 	 */
 	GONG(ECivilisation.AMAZON, EBuildingType.GONG_WORKSHOP, EMovableType.GONG, null,
 			new EMaterialType[0],
-			new EMaterialType[] { EMaterialType.PLANK, EMaterialType.GOLD }, new short[] { 2, 2 },
+			new EMaterialType[] { EMaterialType.PLANK, EMaterialType.IRON, EMaterialType.GOLD }, new short[] { 2, 2, 2 },
 			0, 5, 20f, 5, 5000, 0, 0f, 1000);
 
 	public static final ESiegeWeaponType[] VALUES = values();

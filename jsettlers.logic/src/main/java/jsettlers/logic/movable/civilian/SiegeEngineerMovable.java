@@ -93,7 +93,7 @@ public class SiegeEngineerMovable extends BuildingWorkerMovable {
 								bringAmmoInputInside(1),
 								sleep(AMMO_PRODUCTION_DURATION),
 								show(),
-								goToPos(mov -> mov.getWorkshop().getAmmoStackPosition()),
+								goToWorkPosition(mov -> mov.getWorkshop().getAmmoStackPosition()),
 								setDirectionNode(EDirection.NORTH_EAST),
 								crouchDown(action(SiegeEngineerMovable::storeAmmo))
 							)

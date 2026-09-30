@@ -109,10 +109,10 @@
 
 	<door dx="-4" dy="3" />
 
-	<constructionStack dx="1" dy="7" material="PLANK" buildrequired="6" />
-	<constructionStack dx="0" dy="6" material="STONE" buildrequired="2" />
-	<requestStack dx="-2" dy="4" material="PIG" />
-	<offerStack dx="-1" dy="5" material="MEAT" />
+	<constructionStack dx="-5" dy="3" material="PLANK" buildrequired="6" />
+	<constructionStack dx="-3" dy="3" material="STONE" buildrequired="2" />
+	<requestStack dx="1" dy="7" material="PIG" />
+	<offerStack dx="-4" dy="3" material="MEAT" />
 
 	<bricklayer dx="-2" dy="4" direction="NORTH_EAST" />
 	<bricklayer dx="4" dy="2" direction="NORTH_WEST" />

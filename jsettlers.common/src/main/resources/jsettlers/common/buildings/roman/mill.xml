@@ -47,10 +47,10 @@
 
 	<door dx="-1" dy="3" />
 
-	<constructionStack dx="0" dy="3" material="PLANK" buildrequired="3" />
-	<constructionStack dx="2" dy="3" material="STONE" buildrequired="3" />
+	<constructionStack dx="-2" dy="3" material="PLANK" buildrequired="3" />
+	<constructionStack dx="0" dy="3" material="STONE" buildrequired="3" />
 	<requestStack dx="2" dy="2" material="CROP" />
-	<offerStack dx="-2" dy="1" material="FLOUR" />
+	<offerStack dx="-1" dy="3" material="FLOUR" />
 
 	<bricklayer dx="0" dy="3" direction="NORTH_EAST" />
 	<bricklayer dx="2" dy="2" direction="NORTH_WEST" />
