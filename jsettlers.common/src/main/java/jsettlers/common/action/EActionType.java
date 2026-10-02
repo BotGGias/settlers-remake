@@ -402,5 +402,12 @@ public enum EActionType {
 	/**
 	 * Orders a siege weapon in the currently selected siege workshop.
 	 */
-	ORDER_SIEGE_WEAPON;
+	ORDER_SIEGE_WEAPON,
+
+	/**
+	 * Switches the ammunition production of the currently selected siege workshop on or off.
+	 * <p>
+	 * This action must be of the type {@link SetAmmoProductionAction}.
+	 */
+	SET_AMMO_PRODUCTION;
 }

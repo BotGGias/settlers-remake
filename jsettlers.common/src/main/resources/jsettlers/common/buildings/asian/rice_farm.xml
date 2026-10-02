@@ -85,15 +85,17 @@
 	<blocked dx="4" dy="6" block="false" />
 	<blocked dx="5" dy="6" block="false" />
 	<blocked dx="6" dy="6" block="false" />
+	<blocked dx="-2" dy="4" block="false" />
+	<blocked dx="1" dy="4" block="false" />
 
 
 	<door dx="0" dy="4" />
 
-	<constructionStack dx="-1" dy="4" material="STONE" buildrequired="3" />
-	<constructionStack dx="1" dy="5" material="PLANK" buildrequired="8" />
-	<constructionStack dx="3" dy="5" material="PLANK" buildrequired="1" />
+	<constructionStack dx="-1" dy="4" material="PLANK" buildrequired="5" />
+	<constructionStack dx="-2" dy="4" material="PLANK" buildrequired="4" />
+	<constructionStack dx="1" dy="4" material="STONE" buildrequired="3" />
 
-	<offerStack dx="2" dy="5" material="RICE" />
+	<offerStack dx="0" dy="4" material="RICE" />
 
 	<bricklayer dx="3" dy="5" direction="NORTH_EAST" />
 	<bricklayer dx="6" dy="6" direction="NORTH_WEST" />

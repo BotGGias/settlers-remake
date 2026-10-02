@@ -129,6 +129,23 @@ public class SiegeWeaponsIT {
 	}
 
 	@Test
+	public void testAmmunitionProductionCanBeSwitchedOff() {
+		ShortPoint2D workshopPosition = findConstructionPosition(EBuildingType.CATAPULT_WORKSHOP, PLAYER);
+		SiegeWorkshopBuilding workshop = (SiegeWorkshopBuilding) grid.constructBuildingAt(workshopPosition, EBuildingType.CATAPULT_WORKSHOP, player, true);
+		Movable.createMovable(EMovableType.SIEGE_ENGINEER, player, findFreePosition(workshop.getDoor(), 1), grid.movablePathfinderGrid);
+		assertTrue(workshop.isAmmoProductionEnabled());
+
+		workshop.setAmmoProduction(false);
+		assertFalse(workshop.isAmmoProductionEnabled());
+		supply(workshop, EMaterialType.STONE, 4);
+		runFor(2 * 60 * 1000);
+		assertEquals("ammunition produced while switched off", 0, workshop.getAmmoStackSize());
+
+		workshop.setAmmoProduction(true);
+		assertTrue("no ammunition produced after switching on", runUntil(() -> workshop.getAmmoStackSize() > 0, 3 * 60 * 1000));
+	}
+
+	@Test
 	public void testSiegeWeaponsWeakenButNeverConquerTowers() {
 		OccupyingBuilding tower = Building.getAllBuildings().stream()
 				.filter(building -> building instanceof OccupyingBuilding && building.getPlayer() == enemy)

@@ -37,10 +37,12 @@ import jsettlers.common.statistics.GameStatistics.PlayerStatistics;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameManager;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.MainActivity_;
 
 /**
- * Shown after a game has been quit: the result of the local player and the statistics of all players. Continues to the main menu.
+ * Shown after a game has been quit: the result of the local player and the statistics of all players. Continues to the main menu (or back to the
+ * Settlers United launcher, if it started the game).
  */
 @EActivity(R.layout.activity_endgame_statistics)
 public class EndgameStatisticsActivity extends AppCompatActivity {
@@ -131,7 +133,20 @@ public class EndgameStatisticsActivity extends AppCompatActivity {
 
 	private void showMainMenu() {
 		gameManager.clearEndgameStatistics();
-		MainActivity_.intent(this).flags(Intent.FLAG_ACTIVITY_CLEAR_TOP).start();
+		if (!returnToLauncher()) {
+			MainActivity_.intent(this).flags(Intent.FLAG_ACTIVITY_CLEAR_TOP).start();
+		}
 		finish();
+	}
+
+	/** Settlers United: a game started by the launcher returns to the launcher instead of the main menu. */
+	private boolean returnToLauncher() {
+		String pkg = ((GameStarter) getApplication()).takeSuReturnPackage();
+		Intent launch = pkg == null ? null : getPackageManager().getLaunchIntentForPackage(pkg);
+		if (launch == null) {
+			return false;
+		}
+		startActivity(launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+		return true;
 	}
 }

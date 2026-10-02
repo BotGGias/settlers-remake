@@ -30,6 +30,14 @@
 		<font-size size="NORMAL"/>
 	</element>
 
+	<element class="Label" x="11" y="314" maxx="127" maxy="332" id="ammoText">
+		<localized label=""/>
+		<font-size size="NORMAL"/>
+	</element>
+
+	<!-- switches the ammunition production on or off, empty for the gong workshop -->
+	<element x="11" y="334" maxx="127" maxy="352" id="ammoProductionArea" />
+
 	<element class="Label" x="9" y="378" maxx="127" maxy="397" id="materialText">
 		<localized label=""/>
 		<font-size size="NORMAL"/>

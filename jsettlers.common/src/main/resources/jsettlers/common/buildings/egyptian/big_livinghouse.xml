@@ -131,16 +131,19 @@
 	<blocked dx="7" dy="8" block="false" />
 	<blocked dx="5" dy="9" block="false" />
 	<blocked dx="6" dy="9" block="false" />
+	<blocked dx="9" dy="6" block="false" />
+	<blocked dx="10" dy="6" block="false" />
+	<blocked dx="11" dy="6" block="false" />
 
 
 	<door dx="7" dy="6" />
 
-	<constructionStack dx="-2" dy="3" material="PLANK" buildrequired="4" />
-	<constructionStack dx="0" dy="5" material="PLANK" buildrequired="8" />
-	<constructionStack dx="3" dy="7" material="STONE" buildrequired="8" />
-	<constructionStack dx="4" dy="8" material="STONE" buildrequired="8" />
-	<constructionStack dx="6" dy="8" material="STONE" buildrequired="8" />
-	<constructionStack dx="7" dy="8" material="STONE" buildrequired="3" />
+	<constructionStack dx="7" dy="7" material="PLANK" buildrequired="6" />
+	<constructionStack dx="3" dy="7" material="PLANK" buildrequired="6" />
+	<constructionStack dx="8" dy="6" material="STONE" buildrequired="7" />
+	<constructionStack dx="9" dy="6" material="STONE" buildrequired="7" />
+	<constructionStack dx="10" dy="6" material="STONE" buildrequired="7" />
+	<constructionStack dx="11" dy="6" material="STONE" buildrequired="6" />
 
 	<bricklayer dx="6" dy="8" direction="NORTH_WEST" />
 	<bricklayer dx="-2" dy="3" direction="NORTH_EAST" />

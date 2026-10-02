@@ -84,8 +84,16 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 		this(channel, channelClosedListener, new NetworkTimer());
 	}
 
+	/**
+	 * @param serverAddress
+	 *            {@code host} or {@code host:port} (see {@link ServerAddress}); without port the default server port is used.
+	 */
 	public NetworkClient(String serverAddress, IChannelClosedListener channelClosedListener) throws IOException {
-		this(new AsyncChannel(serverAddress, NetworkConstants.Server.SERVER_PORT), channelClosedListener);
+		this(newChannel(ServerAddress.parse(serverAddress)), channelClosedListener);
+	}
+
+	private static AsyncChannel newChannel(ServerAddress address) throws IOException {
+		return new AsyncChannel(address.host, address.port);
 	}
 
 	NetworkClient(AsyncChannel channel, final IChannelClosedListener channelClosedListener, INetworkClientClock gameClock) {

@@ -191,6 +191,24 @@
 	<string name="settings_address">Address</string>
 	<string name="menu_multi_player_stop_server">Stop server</string>
 	<string name="settings_play_all_music">play all music</string>
+	<!-- Settlers United launcher mode -->
+	<string name="su_launch_game_running">A game is running – the launcher start was ignored.</string>
+	<string name="su_launch_invalid">Launcher start not possible (%1$s). Please update JSettlers or the launcher.</string>
+	<string name="su_launch_no_data">The Settlers III data is missing – set it up in JSettlers first.</string>
+	<string name="su_launch_server_failed">Could not start the server: %1$s</string>
+	<string name="su_join_timeout">The host\'s match did not show up – pick it from the list as soon as it appears.</string>
+	<string name="su_join_map_missing">The host\'s map is missing on this device – the game cannot be joined.</string>
+	<string name="su_wait_title">Starting game</string>
+	<string name="su_wait_preparing">Preparing the map…</string>
+	<string name="su_wait_players">%1$s\nPlayers connected: %2$d of %3$d, ready: %4$d</string>
+	<string name="su_wait_cancel">Cancel</string>
+	<string name="su_start_failed">The game could not be started (%1$s).</string>
+	<string name="su_start_timeout">The game did not start within %1$d seconds.</string>
+	<string name="su_map_missing">The map %1$s is missing on this device.</string>
+	<string name="connection_interrupted">Connection interrupted – reconnecting …</string>
+	<string name="connection_waiting_for">Waiting for %1$s – reconnecting …</string>
+	<string name="connection_restored">Connection restored</string>
+	<string name="connection_lost">Connection to the game lost</string>
 	<string name="settings_audio">Audio</string>
 	<string name="settings_music_enabled">Play music</string>
 	<string name="settings_music_volume">Music volume</string>

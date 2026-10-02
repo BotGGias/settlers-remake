@@ -64,6 +64,8 @@ public class BuildingState {
 	private final boolean isWorkingDockyard;
 	private final boolean isSiegeWorkshop;
 	private final int orderedSiegeWeapons;
+	private final boolean ammoProductionEnabled;
+	private final int ammoStackSize;
 
 	private static final Map<IBuilding.IOccupied, AvailableSoldiersCache> AVAILABLE_SOLDIERS_CACHE = new WeakHashMap<>();
 
@@ -245,10 +247,20 @@ public class BuildingState {
 		isWorkingDockyard = (building instanceof IBuilding.IShipConstruction && ((IBuilding.IShipConstruction) building).getOrderedShipType() != null);
 		isSiegeWorkshop = building instanceof IBuilding.ISiegeWorkshop;
 		orderedSiegeWeapons = computeOrderedSiegeWeapons(building);
+		ammoProductionEnabled = computeAmmoProductionEnabled(building);
+		ammoStackSize = computeAmmoStackSize(building);
 	}
 
 	private static int computeOrderedSiegeWeapons(IBuilding building) {
 		return building instanceof IBuilding.ISiegeWorkshop ? ((IBuilding.ISiegeWorkshop) building).getOrderedSiegeWeapons() : 0;
+	}
+
+	private static boolean computeAmmoProductionEnabled(IBuilding building) {
+		return building instanceof IBuilding.ISiegeWorkshop && ((IBuilding.ISiegeWorkshop) building).isAmmoProductionEnabled();
+	}
+
+	private static int computeAmmoStackSize(IBuilding building) {
+		return building instanceof IBuilding.ISiegeWorkshop ? ((IBuilding.ISiegeWorkshop) building).getAmmoStackSize() : 0;
 	}
 
 	private void mergeConstructionStacks(IBuilding building) {
@@ -378,7 +390,9 @@ public class BuildingState {
 				&& hasSameAvailableSoldiers(building)
 				&& hasSameStock(building)
 				&& hasSameTrading(building)
-				&& orderedSiegeWeapons == computeOrderedSiegeWeapons(building);
+				&& orderedSiegeWeapons == computeOrderedSiegeWeapons(building)
+				&& ammoProductionEnabled == computeAmmoProductionEnabled(building)
+				&& ammoStackSize == computeAmmoStackSize(building);
 	}
 
 	private boolean hasSameTrading(IBuilding building) {
@@ -485,5 +499,19 @@ public class BuildingState {
 	 */
 	public int getOrderedSiegeWeapons() {
 		return orderedSiegeWeapons;
+	}
+
+	/**
+	 * @return <code>true</code> if this siege workshop produces ammunition while no weapon is ordered.
+	 */
+	public boolean isAmmoProductionEnabled() {
+		return ammoProductionEnabled;
+	}
+
+	/**
+	 * @return The number of ammunition items on the stack of this siege workshop.
+	 */
+	public int getAmmoStackSize() {
+		return ammoStackSize;
 	}
 }

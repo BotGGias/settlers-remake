@@ -43,6 +43,7 @@ import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.action.Action;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.action.IAction;
@@ -158,6 +159,11 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
+	/**
+	 * How far below and beside the drawn area a building can stand and still overlap a drawn settler.
+	 */
+	private static final int BUILDING_OVERLAP_ROWS = 16;
+	private static final int BUILDING_OVERLAP_COLUMNS = 10;
 	private static final float MESSAGE_OFFSET_X = 300;
 	private static final int MESSAGE_OFFSET_Y = 30;
 	private static final long GOTO_MARK_TIME = 1500;
@@ -645,6 +651,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 */
 	private void drawMain(FloatRectangle screen) {
 		MapRectangle area = this.context.getConverter().getMapForScreen(screen);
+		registerBuildings(area);
 
 		double bottomDrawY = screen.getMinY() - OVERDRAW_BOTTOM_PX;
 
@@ -685,6 +692,34 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		if(debugColorMode != EDebugColorModes.NONE) {
 			drawDebugColors();
+		}
+	}
+
+	/**
+	 * Registers the buildings that can overlap the drawn settlers, so the settlers are drawn in front of or behind them.
+	 */
+	private void registerBuildings(MapRectangle area) {
+		for (int line = 0; line < area.getHeight() + 50 + BUILDING_OVERLAP_ROWS; line++) {
+			int y = area.getLineY(line);
+			if (y < 0) {
+				continue;
+			}
+			if (y >= height) {
+				break;
+			}
+
+			int startX = Math.max(area.getLineStartX(line) - BUILDING_OVERLAP_COLUMNS, 0);
+			int endX = Math.min(area.getLineEndX(line) + BUILDING_OVERLAP_COLUMNS, width - 1);
+			for (int x = startX; x <= endX; x++) {
+				byte fow = visibleGrid != null && ((IDirectGridProvider)map).isFoWEnabled() ? visibleGrid[x][y] : map.getVisibleStatus(x, y);
+				boolean fogClear = fow > CommonConstants.FOG_OF_WAR_EXPLORED;
+				IMapObject object = objectsGrid != null && fogClear ? objectsGrid[x + y * width] : map.getVisibleMapObjectsAt(x, y);
+				for (; object != null; object = object.getNextObject()) {
+					if (object.getObjectType() == EMapObjectType.BUILDING) {
+						objectDrawer.registerBuilding(x, y, (IBuilding) object);
+					}
+				}
+			}
 		}
 	}
 

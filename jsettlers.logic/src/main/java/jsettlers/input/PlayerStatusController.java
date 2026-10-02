@@ -15,6 +15,7 @@
 package jsettlers.input;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ import java.util.function.LongSupplier;
 
 import jsettlers.common.Color;
 import jsettlers.common.ai.EPlayerType;
+import jsettlers.common.menu.ConnectionNotice;
 import jsettlers.common.menu.EPlayerConnectionState;
 import jsettlers.common.menu.InGamePlayerStatus;
 import jsettlers.common.menu.PlayerStatusColors;
@@ -248,6 +250,36 @@ public class PlayerStatusController {
 				showMessage("player_defeated", playerId, PlayerStatusColors.INACTIVE);
 			}
 		}
+	}
+
+	/**
+	 * @return The network condition in one sentence (for a prominent notice): lost when the connection to the server is closed,
+	 *         interrupted when no status arrives any more (the own connection is gone for the moment – with the Settlers United
+	 *         launcher it is restored within minutes) or the game has been waiting for players for a while, otherwise none.
+	 */
+	public synchronized ConnectionNotice getConnectionNotice() {
+		if (!multiplayer) {
+			return ConnectionNotice.NONE;
+		}
+		if (!networkConnector.isConnected()) {
+			return new ConnectionNotice(ConnectionNotice.Type.LOST, Collections.emptyList());
+		}
+		long now = currentTime.getAsLong();
+		if (lastStatusReceivedMs != 0 && now - lastStatusReceivedMs > STATUS_TIMEOUT_MS) {
+			return new ConnectionNotice(ConnectionNotice.Type.INTERRUPTED, Collections.emptyList());
+		}
+		boolean stalled = !clock.isPausing() && clock.getMillisSinceLastProgress() > GENERAL_STALL_MESSAGE_MS;
+		if (!stalled) {
+			return ConnectionNotice.NONE;
+		}
+		List<String> names = new ArrayList<>();
+		for (Byte playerId : waitingPlayers.keySet()) {
+			if (playerId != localPlayerId && !leftPlayers.contains(playerId)) {
+				String name = getPlayerName(playerId);
+				names.add(name != null ? name : "#" + (playerId + 1));
+			}
+		}
+		return new ConnectionNotice(ConnectionNotice.Type.INTERRUPTED, names);
 	}
 
 	/**

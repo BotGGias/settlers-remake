@@ -148,12 +148,12 @@
 
 	<door dx="1" dy="6" />
 
-	<constructionStack dx="0" dy="5" material="PLANK" buildrequired="3" />
-	<constructionStack dx="2" dy="6" material="STONE" buildrequired="8" />
-	<constructionStack dx="3" dy="7" material="STONE" buildrequired="1" />
+	<constructionStack dx="0" dy="6" material="PLANK" buildrequired="3" />
+	<constructionStack dx="2" dy="6" material="STONE" buildrequired="5" />
+	<constructionStack dx="4" dy="7" material="STONE" buildrequired="4" />
 	<requestStack dx="7" dy="3" material="CROP" />
 	<requestStack dx="-5" dy="1" material="WATER" />
-	<offerStack dx="0" dy="5" material="PIG" />
+	<offerStack dx="1" dy="6" material="PIG" />
 
 	<bricklayer dx="2" dy="6" direction="NORTH_EAST" />
 	<bricklayer dx="7" dy="4" direction="NORTH_WEST" />

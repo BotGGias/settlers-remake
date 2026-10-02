@@ -137,14 +137,15 @@
 	<blocked dx="2" dy="10" block="false" />
 	<blocked dx="3" dy="10" block="false" />
 	<blocked dx="4" dy="10" block="false" />
+	<blocked dx="5" dy="6" block="false" />
 
 
 	<door dx="-1" dy="6" />
 
-	<constructionStack dx="3" dy="10" material="PLANK" buildrequired="2" />
-	<constructionStack dx="4" dy="7" material="STONE" buildrequired="8" />
-	<constructionStack dx="4" dy="6" material="STONE" buildrequired="2" />
-	<requestStack dx="0" dy="7" material="KEG" />
+	<constructionStack dx="-1" dy="6" material="PLANK" buildrequired="2" />
+	<constructionStack dx="4" dy="6" material="STONE" buildrequired="5" />
+	<constructionStack dx="5" dy="6" material="STONE" buildrequired="5" />
+	<requestStack dx="0" dy="8" material="KEG" />
 
 	<bricklayer dx="2" dy="10" direction="NORTH_EAST" />
 	<bricklayer dx="4" dy="8" direction="NORTH_WEST" />

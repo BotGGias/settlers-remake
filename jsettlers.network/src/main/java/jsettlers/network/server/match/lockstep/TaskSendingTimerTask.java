@@ -14,8 +14,11 @@
  *******************************************************************************/
 package jsettlers.network.server.match.lockstep;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimerTask;
 
 import jsettlers.network.NetworkConstants;
@@ -37,7 +40,15 @@ public class TaskSendingTimerTask extends TimerTask {
 	private final Match match;
 
 	private int lockstepCounter = 0;
-	private int currentLockstepMax = NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS;
+	private volatile int currentLockstepMax = NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS;
+
+	/**
+	 * The last lockstep every player of the running match acknowledged (by its time synchronization). The server only releases
+	 * locksteps up to the slowest player plus the lead: a player whose connection is interrupted holds the game for everybody
+	 * instead of silently falling behind while the others play on (Settlers United launcher: the connection is restored and the
+	 * game continues together). Players that left are removed.
+	 */
+	private final Map<Object, Integer> acknowledged = new HashMap<>();
 
 	private int minimumLeadTimeMs = NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS * NetworkConstants.Client.LOCKSTEP_PERIOD;
 	private int leadSteps = minimumLeadTimeMs / NetworkConstants.Client.LOCKSTEP_PERIOD;
@@ -59,9 +70,42 @@ public class TaskSendingTimerTask extends TimerTask {
 		match.broadcastMessage(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, syncTasksPacket);
 	}
 
-	public void receivedLockstepAcknowledge(int acknowledgedLockstep) {
-		currentLockstepMax = Math.max(currentLockstepMax, acknowledgedLockstep + leadSteps);
-		// logger.info("lead steps: " + leadSteps);
+	/**
+	 * Registers a player of the match; until its first acknowledgement it holds the game at the start.
+	 */
+	public synchronized void addPlayer(Object player) {
+		acknowledged.putIfAbsent(player, 0);
+	}
+
+	/**
+	 * The player left the match: the game no longer waits for it.
+	 */
+	public synchronized void removePlayer(Object player) {
+		acknowledged.remove(player);
+		updateLockstepMax();
+	}
+
+	public synchronized void receivedLockstepAcknowledge(Object player, int acknowledgedLockstep) {
+		Integer previous = acknowledged.get(player);
+		if (previous != null) {
+			acknowledged.put(player, Math.max(previous, acknowledgedLockstep));
+		}
+		updateLockstepMax();
+	}
+
+	private void updateLockstepMax() {
+		if (acknowledged.isEmpty()) {
+			return;
+		}
+		int slowest = Collections.min(acknowledged.values());
+		currentLockstepMax = Math.max(currentLockstepMax, slowest + leadSteps);
+	}
+
+	/**
+	 * @return The highest lockstep the server sends at the moment.
+	 */
+	public int getCurrentLockstepMax() {
+		return currentLockstepMax;
 	}
 
 	final void pingUpdated(int rtt, int jitter) {

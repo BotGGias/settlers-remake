@@ -36,8 +36,9 @@ import jsettlers.logic.player.Player;
 /**
  * A workshop that builds the siege weapon of its civilisation when the player orders one and produces ammunition for it otherwise.
  * <p>
- * The materials of the ammunition are requested all the time. The materials that are only needed for a weapon are requested only while a
- * weapon is ordered, and only as many as the current weapon still needs.
+ * The materials of the ammunition are requested all the time while the ammunition production is switched on. The materials that are only needed
+ * for a weapon are requested only while a weapon is ordered, and only as many as the current weapon still needs. With the ammunition production
+ * switched off, this applies to all materials of the weapon.
  */
 public class SiegeWorkshopBuilding extends WorkerBuilding implements IBuilding.ISiegeWorkshop {
 	private static final long serialVersionUID = 2894125640178405216L;
@@ -64,6 +65,10 @@ public class SiegeWorkshopBuilding extends WorkerBuilding implements IBuilding.I
 	 * The unbounded stacks requesting the materials of the ammunition. They are kept while the building is occupied.
 	 */
 	private List<RequestStack> ammoStacks = null;
+	/**
+	 * Stored inverted, so workshops of older savegames keep producing ammunition.
+	 */
+	private boolean ammoProductionStopped = false;
 
 	public SiegeWorkshopBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(type, player, position, buildingsGrid);
@@ -73,7 +78,7 @@ public class SiegeWorkshopBuilding extends WorkerBuilding implements IBuilding.I
 
 	@Override
 	protected List<? extends IRequestStack> createWorkStacks() {
-		if (ammoStacks == null) {
+		if (ammoStacks == null && isAmmoProductionEnabled()) {
 			ammoStacks = new ArrayList<>();
 			for (RelativeStack stack : getBuildingVariant().getRequestStacks()) {
 				if (weaponType.isAmmoInput(stack.getMaterialType())) {
@@ -82,12 +87,13 @@ public class SiegeWorkshopBuilding extends WorkerBuilding implements IBuilding.I
 			}
 		}
 
-		List<RequestStack> newStacks = new ArrayList<>(ammoStacks);
+		List<RequestStack> newStacks = ammoStacks != null ? new ArrayList<>(ammoStacks) : new ArrayList<>();
 		if (orderedWeapons > 0) {
 			for (RelativeStack stack : getBuildingVariant().getRequestStacks()) {
 				EMaterialType material = stack.getMaterialType();
 				short stillNeeded = getStillNeededForWeapon(material);
-				if (!weaponType.isAmmoInput(material) && stillNeeded > 0) {
+				boolean requestedForAmmo = ammoStacks != null && weaponType.isAmmoInput(material);
+				if (!requestedForAmmo && stillNeeded > 0) {
 					newStacks.add(new RequestStack(grid.getRequestStackGrid(), stack.calculatePoint(pos), material, type, getPriority(), stillNeeded));
 				}
 			}
@@ -126,6 +132,31 @@ public class SiegeWorkshopBuilding extends WorkerBuilding implements IBuilding.I
 		if (orderedWeapons == 1) {
 			updateWeaponStacks();
 		}
+	}
+
+	/**
+	 * Switches the ammunition production on or off. While it is off, the workshop requests no materials for ammunition.
+	 */
+	public void setAmmoProduction(boolean enabled) {
+		if (!weaponType.usesAmmo() || isAmmoProductionEnabled() == enabled) {
+			return;
+		}
+
+		ammoProductionStopped = !enabled;
+		if (!isOccupied() || isDestroyed()) {
+			return; // the stacks are created when the worker arrives
+		}
+
+		for (IRequestStack stack : getStacks()) {
+			stack.releaseRequests();
+		}
+		ammoStacks = null;
+		initWorkStacks();
+	}
+
+	@Override
+	public boolean isAmmoProductionEnabled() {
+		return weaponType.usesAmmo() && !ammoProductionStopped;
 	}
 
 	public ESiegeWorkshopJob getNextJob() {
@@ -213,7 +244,7 @@ public class SiegeWorkshopBuilding extends WorkerBuilding implements IBuilding.I
 	}
 
 	public boolean canProduceAmmo() {
-		if (!weaponType.usesAmmo()) {
+		if (!isAmmoProductionEnabled()) {
 			return false;
 		}
 
@@ -238,6 +269,7 @@ public class SiegeWorkshopBuilding extends WorkerBuilding implements IBuilding.I
 		return grid.getMovableGrid().dropMaterial(getAmmoStackPosition(), weaponType.getAmmo(), false, false);
 	}
 
+	@Override
 	public int getAmmoStackSize() {
 		if (!weaponType.usesAmmo()) {
 			return 0;

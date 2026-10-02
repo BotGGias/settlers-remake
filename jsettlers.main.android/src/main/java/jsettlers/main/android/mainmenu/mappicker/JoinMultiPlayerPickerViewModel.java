@@ -3,6 +3,8 @@ package jsettlers.main.android.mainmenu.mappicker;
 import java.util.List;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.os.Looper;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
@@ -19,7 +21,9 @@ import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.R;
 import jsettlers.main.android.core.events.SingleLiveEvent;
+import jsettlers.main.android.su.SuSession;
 
 /**
  * Created by Tom Pratt on 06/10/2017.
@@ -38,16 +42,63 @@ public class JoinMultiPlayerPickerViewModel extends ViewModel implements IJoinin
 	private IJoiningGame joiningGame;
 	private IMapDefinition mapDefinition;
 
+	/** Launcher session (join): user messages as string resources, e.g. timeout. */
+	private final SingleLiveEvent<Integer> suMessageEvent = new SingleLiveEvent<>();
+	private final Handler mainHandler = new Handler(Looper.getMainLooper());
+	private final Runnable suJoinTimeout = this::onSuJoinTimeout;
+
 	public JoinMultiPlayerPickerViewModel(GameStarter gameStarter, ChangingList<IJoinableGame> changingJoinableGames) {
 		this.gameStarter = gameStarter;
 		this.changingJoinableGames = changingJoinableGames;
 
 		showNoGamesMessage = Transformations.map(joinableGames, joinableGames -> joinableGames.length == 0);
+		SuSession session = gameStarter.getSuSession();
+		if (session != null && session.getPendingJoin() != null) {
+			mainHandler.postAtTime(suJoinTimeout, session.getJoinDeadline());
+		}
+	}
+
+	/**
+	 * Launcher session (join): as soon as the match with the lobby id shows up, join it like a tap on the list entry; only once.
+	 * Called from the network thread.
+	 */
+	private void checkSuAutoJoin(List<? extends IJoinableGame> games) {
+		SuSession session = gameStarter.getSuSession();
+		String name = session == null ? null : session.getPendingJoin();
+		if (name == null) {
+			return;
+		}
+		for (IJoinableGame game : games) {
+			if (!name.equals(game.getName())) {
+				continue;
+			}
+			if (game.getMap() == null) { // map not on this device: joining would fail
+				if (session.cancelPendingJoin()) {
+					suMessageEvent.postValue(R.string.su_join_map_missing);
+				}
+			} else if (session.takePendingJoin(name)) {
+				mainHandler.removeCallbacks(suJoinTimeout);
+				mainHandler.post(() -> joinableGameSelected(game));
+			}
+			return;
+		}
+	}
+
+	private void onSuJoinTimeout() {
+		SuSession session = gameStarter.getSuSession();
+		if (session != null && session.cancelPendingJoin()) {
+			suMessageEvent.setValue(R.string.su_join_timeout);
+		}
+	}
+
+	public LiveData<Integer> getSuMessageEvent() {
+		return suMessageEvent;
 	}
 
 	@Override
 	protected void onCleared() {
 		super.onCleared();
+		mainHandler.removeCallbacks(suJoinTimeout);
 		if (joiningGame != null) {
 			joiningGame.setListener(null);
 		}
@@ -124,6 +175,7 @@ public class JoinMultiPlayerPickerViewModel extends ViewModel implements IJoinin
 			super.onActive();
 			changingJoinableGames.setListener(this);
 			setValue(sortedMaps(changingJoinableGames.getItems()));
+			checkSuAutoJoin(changingJoinableGames.getItems());
 		}
 
 		@Override
@@ -135,6 +187,7 @@ public class JoinMultiPlayerPickerViewModel extends ViewModel implements IJoinin
 		@Override
 		public void listChanged(ChangingList<? extends IJoinableGame> list) {
 			postValue(sortedMaps(list.getItems()));
+			checkSuAutoJoin(list.getItems());
 		}
 
 		private IJoinableGame[] sortedMaps(List<? extends IJoinableGame> items) {

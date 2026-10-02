@@ -94,11 +94,11 @@
 
 	<door dx="-2" dy="2" />
 
-	<constructionStack dx="5" dy="7" material="PLANK" buildrequired="6" />
-	<constructionStack dx="6" dy="6" material="STONE" buildrequired="3" />
-	<requestStack dx="0" dy="3" material="SPEAR" />
-	<requestStack dx="2" dy="5" material="BOW" />
-	<requestStack dx="6" dy="5" material="SWORD" />
+	<constructionStack dx="-3" dy="2" material="PLANK" buildrequired="6" />
+	<constructionStack dx="0" dy="3" material="STONE" buildrequired="3" />
+	<requestStack dx="6" dy="7" material="SPEAR" />
+	<requestStack dx="6" dy="1" material="BOW" />
+	<requestStack dx="1" dy="4" material="SWORD" />
 
 	<bricklayer dx="-3" dy="1" direction="NORTH_EAST" />
 	<bricklayer dx="6" dy="6" direction="NORTH_WEST" />

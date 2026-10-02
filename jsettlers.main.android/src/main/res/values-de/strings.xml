@@ -148,6 +148,24 @@
 	<string name="ask_dock">Stegposition auswählen</string>
 	<string name="ask_spell">Zauberstelle auswählen</string>
 	<string name="settings_play_all_music">Alle Musikdateien abspielen</string>
+	<!-- Settlers United Launcher-Modus -->
+	<string name="su_launch_game_running">Eine Partie läuft – der Start aus dem Launcher wurde ignoriert.</string>
+	<string name="su_launch_invalid">Start aus dem Launcher nicht möglich (%1$s). Bitte JSettlers oder den Launcher aktualisieren.</string>
+	<string name="su_launch_no_data">Die Siedler-III-Daten fehlen – bitte zuerst in JSettlers einrichten.</string>
+	<string name="su_launch_server_failed">Der Server ließ sich nicht starten: %1$s</string>
+	<string name="su_join_timeout">Das Match des Hosts ist nicht aufgetaucht – wähle es aus der Liste, sobald es erscheint.</string>
+	<string name="su_join_map_missing">Die Karte des Hosts fehlt auf diesem Gerät – dem Spiel kann nicht beigetreten werden.</string>
+	<string name="su_wait_title">Spiel wird gestartet</string>
+	<string name="su_wait_preparing">Karte wird vorbereitet…</string>
+	<string name="su_wait_players">%1$s\nSpieler verbunden: %2$d von %3$d, bereit: %4$d</string>
+	<string name="su_wait_cancel">Abbrechen</string>
+	<string name="su_start_failed">Das Spiel ließ sich nicht starten (%1$s).</string>
+	<string name="su_start_timeout">Das Spiel ist nicht innerhalb von %1$d Sekunden gestartet.</string>
+	<string name="su_map_missing">Die Karte %1$s fehlt auf diesem Gerät.</string>
+	<string name="connection_interrupted">Verbindung unterbrochen – wird wiederhergestellt …</string>
+	<string name="connection_waiting_for">Warte auf %1$s – Verbindung wird wiederhergestellt …</string>
+	<string name="connection_restored">Verbindung wiederhergestellt</string>
+	<string name="connection_lost">Verbindung zum Spiel verloren</string>
 	<string name="settings_audio">Audio</string>
 	<string name="settings_music_enabled">Musik abspielen</string>
 	<string name="settings_music_volume">Musiklautstärke</string>

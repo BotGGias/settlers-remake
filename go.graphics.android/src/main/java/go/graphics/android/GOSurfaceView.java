@@ -57,6 +57,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 		actionAdapter = new ActionAdapter(getContext(), this, modifiers);
 
 		setEGLContextFactory(new Factory());
+		setEGLConfigChooser(new DepthConfigChooser());
 		setRenderer(new Renderer(context));
 		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 		setPreserveEGLContextOnPause(true);
@@ -236,6 +237,53 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 			drawcontext = createContext(gl);
+		}
+	}
+
+	/**
+	 * Chooses a configuration with a 24 bit depth buffer if there is one. The default configuration has 16 bits, which can't separate the depths of
+	 * neighbouring map rows.
+	 */
+	private static class DepthConfigChooser implements EGLConfigChooser {
+
+		@Override
+		public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
+			EGLConfig config = chooseConfig(egl, display, 24);
+			if (config == null) {
+				config = chooseConfig(egl, display, 16);
+			}
+			if (config == null) {
+				throw new IllegalArgumentException("No EGL config with a depth buffer found");
+			}
+			return config;
+		}
+
+		private static EGLConfig chooseConfig(EGL10 egl, EGLDisplay display, int depthSize) {
+			int[] spec = {EGL10.EGL_RED_SIZE, 8, EGL10.EGL_GREEN_SIZE, 8, EGL10.EGL_BLUE_SIZE, 8, EGL10.EGL_DEPTH_SIZE, depthSize, EGL10.EGL_NONE};
+			int[] count = new int[1];
+			if (!egl.eglChooseConfig(display, spec, null, 0, count) || count[0] <= 0) {
+				return null;
+			}
+
+			EGLConfig[] configs = new EGLConfig[count[0]];
+			if (!egl.eglChooseConfig(display, spec, configs, configs.length, count)) {
+				return null;
+			}
+			for (EGLConfig config : configs) {
+				// like the default chooser of GLSurfaceView: exactly 8 bits per color and no alpha
+				if (getAttribute(egl, display, config, EGL10.EGL_RED_SIZE) == 8 && getAttribute(egl, display, config, EGL10.EGL_GREEN_SIZE) == 8
+						&& getAttribute(egl, display, config, EGL10.EGL_BLUE_SIZE) == 8 && getAttribute(egl, display, config, EGL10.EGL_ALPHA_SIZE) == 0
+						&& getAttribute(egl, display, config, EGL10.EGL_DEPTH_SIZE) >= depthSize) {
+					Log.i("gl", "EGL config with a " + getAttribute(egl, display, config, EGL10.EGL_DEPTH_SIZE) + " bit depth buffer");
+					return config;
+				}
+			}
+			return null;
+		}
+
+		private static int getAttribute(EGL10 egl, EGLDisplay display, EGLConfig config, int attribute) {
+			int[] value = new int[1];
+			return egl.eglGetConfigAttrib(display, config, attribute, value) ? value[0] : 0;
 		}
 	}
 

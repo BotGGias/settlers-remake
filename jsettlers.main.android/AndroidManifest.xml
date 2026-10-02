@@ -18,6 +18,21 @@
 		android:largeHeap="true"
 		android:theme="@style/SettlersTheme">
 
+		<!-- Settlers United launcher: contract version this build understands (su.launcher.contract, launcher E20.9; v2 E21). -->
+		<meta-data android:name="su.launcher.contract" android:value="2"/>
+
+		<!-- Settlers United launcher entry point (action SU_LAUNCH with su.* extras); forwards to the main menu. -->
+		<activity
+			android:name=".su.SuLaunchActivity"
+			android:exported="true"
+			android:excludeFromRecents="true"
+			android:theme="@android:style/Theme.NoDisplay">
+			<intent-filter>
+				<action android:name="jsettlers.main.android.action.SU_LAUNCH"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+			</intent-filter>
+		</activity>
+
 		<activity android:name=".mainmenu.MainActivity_">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>

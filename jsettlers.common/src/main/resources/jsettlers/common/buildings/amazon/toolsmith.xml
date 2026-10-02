@@ -61,13 +61,13 @@
 	<blocked dx="-5" dy="-6" block="false" />
 	<blocked dx="-2" dy="-6" block="false" />
 	<blocked dx="-1" dy="-6" block="false" />
-	<blocked dx="-5" dy="-5" block="false" />
+	<blocked dx="-5" dy="-5" />
 	<blocked dx="0" dy="-5" block="false" />
-	<blocked dx="-5" dy="-4" block="false" />
+	<blocked dx="-5" dy="-4" />
 	<blocked dx="1" dy="-4" block="false" />
-	<blocked dx="-5" dy="-3" block="false" />
+	<blocked dx="-5" dy="-3" />
 	<blocked dx="2" dy="-3" block="false" />
-	<blocked dx="-5" dy="-2" block="false" />
+	<blocked dx="-5" dy="-2" />
 	<blocked dx="3" dy="-2" block="false" />
 	<blocked dx="-5" dy="-1" block="false" />
 	<blocked dx="3" dy="-1" block="false" />
@@ -102,14 +102,19 @@
 	<blocked dx="7" dy="5" block="false" />
 	<blocked dx="1" dy="6" block="false" />
 	<blocked dx="2" dy="6" block="false" />
+	<blocked dx="-6" dy="-6" block="false" />
+	<blocked dx="-6" dy="-5" block="false" />
+	<blocked dx="-6" dy="-4" block="false" />
+	<blocked dx="-6" dy="-3" block="false" />
+	<blocked dx="-6" dy="-2" block="false" />
 
 
 	<door dx="6" dy="4" />
 
-	<constructionStack dx="3" dy="4" material="PLANK" buildrequired="4" />
-	<constructionStack dx="5" dy="4" material="STONE" buildrequired="4" />
+	<constructionStack dx="5" dy="4" material="PLANK" buildrequired="4" />
+	<constructionStack dx="7" dy="4" material="STONE" buildrequired="4" />
 	<requestStack dx="-4" dy="1" material="COAL" />
-	<requestStack dx="2" dy="3" material="IRON" />
+	<requestStack dx="5" dy="1" material="IRON" />
 
 	<bricklayer dx="-3" dy="1" direction="NORTH_EAST" />
 	<bricklayer dx="-1" dy="1" direction="NORTH_WEST" />
@@ -132,7 +137,7 @@
 
     <anvilPosition dx="0" dy="5" direction="NORTH_EAST"/>
 
-    <smithDropPosition dx="5" dy="4"/>
+    <smithDropPosition dx="6" dy="4"/>
 
     <image file="44" for="GUI" type="GUI" sequence="33" image="0" />
     <image file="43" type="SETTLER" for="FINAL" image="0" sequence="15" />

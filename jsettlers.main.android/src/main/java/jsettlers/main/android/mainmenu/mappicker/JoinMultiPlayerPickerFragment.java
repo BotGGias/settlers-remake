@@ -34,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -85,6 +86,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		viewModel.getShowNoGamesMessage().observe(this, showMessage -> searchingForGamesView.setVisibility(showMessage ? View.VISIBLE : View.GONE));
 
+		viewModel.getSuMessageEvent().observe(this, message -> Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show());
 		viewModel.getMapSelectedEvent().observe(this, mapId -> {
 			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) getActivity();
 			mainMenuNavigator.showJoinMultiPlayerSetup(mapId);

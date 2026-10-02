@@ -227,6 +227,10 @@ public class Match {
 				synchronized (leftPlayers) {
 					leftPlayers.add(player);
 				}
+				TaskSendingTimerTask sender = taskSendingTimerTask;
+				if (sender != null) {
+					sender.removePlayer(player); // the game no longer waits for him
+				}
 				broadcastPlayerStatus(); // let the remaining players know immediately
 			}
 
@@ -253,6 +257,11 @@ public class Match {
 
 		this.taskCollectingListener = new TaskCollectingListener();
 		this.taskSendingTimerTask = new TaskSendingTimerTask(logger, taskCollectingListener, this);
+		synchronized (players) {
+			for (Player player : players) {
+				taskSendingTimerTask.addPlayer(player); // lockstep follows the slowest player (see TaskSendingTimerTask)
+			}
+		}
 		timer.schedule(taskSendingTimerTask, NetworkConstants.Client.LOCKSTEP_PERIOD, NetworkConstants.Client.LOCKSTEP_PERIOD / 2 - 2);
 
 		synchronized (players) {
@@ -291,7 +300,7 @@ public class Match {
 	public void distributeTimeSync(Player player, TimeSyncPacket packet) {
 		player.timeSyncReceived(packet.getTime(), System.currentTimeMillis());
 		sendMessage(player, NetworkConstants.ENetworkKey.TIME_SYNC, packet);
-		taskSendingTimerTask.receivedLockstepAcknowledge(packet.getTime() / NetworkConstants.Client.LOCKSTEP_PERIOD);
+		taskSendingTimerTask.receivedLockstepAcknowledge(player, packet.getTime() / NetworkConstants.Client.LOCKSTEP_PERIOD);
 	}
 
 	/**

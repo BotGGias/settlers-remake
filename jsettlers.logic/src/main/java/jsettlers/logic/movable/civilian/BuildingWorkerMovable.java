@@ -2,6 +2,7 @@ package jsettlers.logic.movable.civilian;
 
 import jsettlers.algorithms.simplebehaviortree.BehaviorTreeHelper;
 import jsettlers.algorithms.simplebehaviortree.IEMaterialTypeSupplier;
+import jsettlers.algorithms.simplebehaviortree.IShortPoint2DSupplier;
 import jsettlers.algorithms.simplebehaviortree.IShortSupplier;
 import jsettlers.algorithms.simplebehaviortree.Node;
 import jsettlers.algorithms.simplebehaviortree.nodes.Guard;
@@ -113,7 +114,7 @@ public class BuildingWorkerMovable extends CivilianMovable implements IBuildingW
 	}
 
 	protected static <T extends BuildingWorkerMovable> Node<T> goToOutputStack(IEMaterialTypeSupplier<T> outputMaterial) {
-		return goToPos(mov -> mov.getOutputStackPosition(outputMaterial.apply(mov)));
+		return goToWorkPosition(mov -> mov.getOutputStackPosition(outputMaterial.apply(mov)));
 	}
 
 	protected static <T extends BuildingWorkerMovable> Node<T> goToInputStack(EMaterialType outputMaterial) {
@@ -121,7 +122,19 @@ public class BuildingWorkerMovable extends CivilianMovable implements IBuildingW
 	}
 
 	protected static <T extends BuildingWorkerMovable> Node<T> goToInputStack(IEMaterialTypeSupplier<T> outputMaterial) {
-		return goToPos(mov -> mov.getInputStackPosition(outputMaterial.apply(mov)));
+		return goToWorkPosition(mov -> mov.getInputStackPosition(outputMaterial.apply(mov)));
+	}
+
+	/**
+	 * Goes to a stack or work position of the building. {@link #goToPos} fails if the worker already stands there, because the path
+	 * finder finds no path to the own position. With the stack positions of the original game this happens regularly: the output
+	 * stack lies on the door, where the worker stands after leaving the building, and some input stacks lie on the oven position.
+	 */
+	protected static <T extends BuildingWorkerMovable> Node<T> goToWorkPosition(IShortPoint2DSupplier<T> position) {
+		return selector(
+				condition(mov -> mov.getPosition().equals(position.apply(mov))),
+				goToPos(position)
+		);
 	}
 
 	protected static <T extends BuildingWorkerMovable> Node<T> outputStackNotFull(EMaterialType outputMaterial) {
@@ -244,7 +257,7 @@ public class BuildingWorkerMovable extends CivilianMovable implements IBuildingW
 				setDirectionNode(takeDirection),
 				take(mov -> material, true),
 
-				goToPos(mov -> mov.building.getBuildingVariant().getOvenPosition().calculatePoint(mov.building.getPosition())),
+				goToWorkPosition(mov -> mov.building.getBuildingVariant().getOvenPosition().calculatePoint(mov.building.getPosition())),
 				setDirectionNode(mov -> mov.building.getBuildingVariant().getOvenPosition().getDirection()),
 				crouchDown(setMaterialNode(EMaterialType.NO_MATERIAL))
 		);

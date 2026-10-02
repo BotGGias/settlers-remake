@@ -73,11 +73,26 @@ public class MultiplayerGame {
 	private volatile IChatMessageListener chatMessageListener;
 	private boolean iAmTheHost = false;
 	private int maxPlayers;
+	private final EMapStartResources startResources;
+	private final EPeaceTime peaceTimeOverride;
 	private int startResourcesValue = EMapStartResources.HIGH_GOODS.value;
 	private EPeaceTime peaceTime = EPeaceTime.WITHOUT;
 
 	public MultiplayerGame(AsyncNetworkClientConnector networkClientFactory) {
+		this(networkClientFactory, null, null);
+	}
+
+	/**
+	 * @param startResources
+	 *            overrides the start resources of the match (Settlers United launcher passes the same value to everyone); {@code null}
+	 *            = the value the host set in the match
+	 * @param peaceTime
+	 *            overrides the peace time of the match in the same way; {@code null} = the value the host set in the match
+	 */
+	public MultiplayerGame(AsyncNetworkClientConnector networkClientFactory, EMapStartResources startResources, EPeaceTime peaceTime) {
 		this.networkClientFactory = networkClientFactory;
+		this.startResources = startResources;
+		this.peaceTimeOverride = peaceTime;
 	}
 
 	public IJoiningGame join(final String matchId) {
@@ -141,8 +156,10 @@ public class MultiplayerGame {
 			long randomSeed = packet.getRandomSeed();
 			PlayerSetting[] playerSettings = determinePlayerSettings();
 			byte ownPlayerId = calculateOwnPlayerId();
-			InitialGameState initialGameState = new InitialGameState(ownPlayerId, playerSettings, randomSeed,
-					EMapStartResources.fromMapValue(startResourcesValue), peaceTime);
+			// Settlers United launcher: its values (same on every device); otherwise the values the host set in the match.
+			EMapStartResources resources = startResources != null ? startResources : EMapStartResources.fromMapValue(startResourcesValue);
+			EPeaceTime peace = peaceTimeOverride != null ? peaceTimeOverride : peaceTime;
+			InitialGameState initialGameState = new InitialGameState(ownPlayerId, playerSettings, randomSeed, resources, peace);
 
 			JSettlersGame game = new JSettlersGame(mapLoader, networkClient.getNetworkConnector(), initialGameState);
 			enableInGameChat(game);

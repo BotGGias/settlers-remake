@@ -17,11 +17,13 @@ package jsettlers.main;
 import java.util.LinkedList;
 import java.util.List;
 
+import jsettlers.common.menu.EPeaceTime;
 import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.IOpenMultiplayerGameInfo;
 import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.datatypes.JoinableGame;
 import jsettlers.network.client.IClientConnection;
 import jsettlers.network.client.RemoteMapDirectory;
@@ -45,11 +47,29 @@ public class MultiplayerConnector implements IMultiplayerConnector, IClientConne
 
 	private final String userId;
 	private final String userName;
+	private EMapStartResources startResources; // null = the value the host set in the match
+	private EPeaceTime peaceTime; // null = the value the host set in the match
 
 	public MultiplayerConnector(final String serverAddress, final String userId, final String userName, Logger log) {
 		this.userId = userId;
 		this.userName = userName;
 		networkClientFactory = new AsyncNetworkClientConnector(serverAddress, userId, userName, generateMatchesReceiver(), log);
+	}
+
+	/**
+	 * Start resources of the games opened or joined from now on, instead of the value the host sets in the match (Settlers United
+	 * launcher: every player gets the same value). Default {@code null}: the match value.
+	 */
+	public void setStartResources(EMapStartResources startResources) {
+		this.startResources = startResources;
+	}
+
+	/**
+	 * Peace time of the games opened or joined from now on, instead of the value the host sets in the match (Settlers United
+	 * launcher: every player gets the same value). Default {@code null}: the match value.
+	 */
+	public void setPeaceTime(EPeaceTime peaceTime) {
+		this.peaceTime = peaceTime;
 	}
 
 	private IPacketReceiver<ArrayOfMatchInfosPacket> generateMatchesReceiver() {
@@ -69,13 +89,13 @@ public class MultiplayerConnector implements IMultiplayerConnector, IClientConne
 
 	@Override
 	public IJoiningGame joinMultiplayerGame(IJoinableGame game) throws IllegalStateException {
-		MultiplayerGame multiplayerGame = new MultiplayerGame(networkClientFactory);
+		MultiplayerGame multiplayerGame = new MultiplayerGame(networkClientFactory, startResources, peaceTime);
 		return multiplayerGame.join(game.getId());
 	}
 
 	@Override
 	public IJoiningGame openNewMultiplayerGame(IOpenMultiplayerGameInfo gameInfo) {
-		MultiplayerGame multiplayerGame = new MultiplayerGame(networkClientFactory);
+		MultiplayerGame multiplayerGame = new MultiplayerGame(networkClientFactory, startResources, peaceTime);
 		return multiplayerGame.openNewGame(gameInfo);
 	}
 

@@ -24,6 +24,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESiegeWeaponType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
@@ -33,6 +34,7 @@ import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IGraphicsMovable;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.common.action.Action;
+import jsettlers.common.action.SetAmmoProductionAction;
 import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.common.action.ChangeTradingRequestAction;
 import jsettlers.common.action.SetBuildingPriorityAction;
@@ -649,10 +651,36 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 		layout.orderWeaponArea.addChild(new SimpleActionButton(EActionType.ORDER_SIEGE_WEAPON, weaponIcon), 0, 0, 1, 1);
 		layout.orderedText.setText(Labels.getString("siege_weapons_ordered", state.getOrderedSiegeWeapons()));
+		if (((IBuilding.ISiegeWorkshop) building).getSiegeWeaponType().usesAmmo()) {
+			layout.ammoText.setText(Labels.getString("siege_weapon_ammo", state.getAmmoStackSize(), ESiegeWeaponType.AMMO_STACK_CAPACITY));
+			layout.ammoProductionArea.addChild(new AmmoProductionToggle(state.isAmmoProductionEnabled()), 0, 0, 1, 1);
+		}
 
 		layout.materialText.setText(Labels.getString("materials_required"));
 		addRequestAndOfferStacks(layout.materialArea, state);
 		return layout._root;
+	}
+
+	/**
+	 * A check box text that switches the ammunition production of a siege workshop on or off.
+	 */
+	private static class AmmoProductionToggle extends Label {
+		private final Action action;
+
+		AmmoProductionToggle(boolean enabled) {
+			super((enabled ? "[x] " : "[  ] ") + Labels.getString("siege_ammo_production"), EFontSize.NORMAL, EHorizontalAlignment.LEFT, EVerticalAlignment.CENTER);
+			action = new SetAmmoProductionAction(!enabled);
+		}
+
+		@Override
+		public Optional<Action> getAction(float relativex, float relativey) {
+			return Optional.of(action);
+		}
+
+		@Override
+		public String getDescription(float relativex, float relativey) {
+			return Labels.getName(EActionType.SET_AMMO_PRODUCTION);
+		}
 	}
 
 	/**

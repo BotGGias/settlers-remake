@@ -90,6 +90,10 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 		return gameMenu;
 	}
 
+	public IStartedGame getGame() {
+		return game;
+	}
+
 	@Override
 	public boolean isMinimapVisible() {
 		return androidControls.isMinimapVisible();
@@ -99,10 +103,6 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	public void setMinimapVisible(boolean visible) {
 		androidControls.setMinimapVisible(visible);
 		preferences.setShowMinimap(visible);
-	}
-
-	public IStartedGame getGame() {
-		return game;
 	}
 
 	@Override

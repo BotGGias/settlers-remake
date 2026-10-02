@@ -21,6 +21,8 @@ import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
+import jsettlers.main.android.su.SuLaunch;
+import jsettlers.main.android.su.SuSession;
 import jsettlers.logic.map.loading.list.MapList;
 
 /**
@@ -50,4 +52,32 @@ public interface GameStarter {
 	void toggleServer();
 
 	boolean isServerRunning();
+
+	/** Player id for multiplayer: from the launcher session if any, otherwise from the settings. */
+	String getPlayerId();
+
+	/** Name of a new multiplayer match: the lobby id in a launcher session, otherwise the player name. */
+	String getNewMatchName();
+
+	/**
+	 * Package of the app that started the current game via the launcher contract (to return to it after the game), once;
+	 * null for games started in JSettlers itself.
+	 */
+	String takeSuReturnPackage();
+
+	/** Rescans the map folders (e.g. after a map file was added). Blocking. */
+	void refreshMapList();
+
+	/** Current launcher session (Settlers United), or null. */
+	SuSession getSuSession();
+
+	/**
+	 * Starts a launcher session (replacing an old one). Host: starts a loopback server unless a server is already running.
+	 * 
+	 * @return error text for the user, or null
+	 */
+	String startSuSession(SuLaunch launch);
+
+	/** Ends the launcher session and shuts down its server; nothing happens without a session. */
+	void endSuSession();
 }

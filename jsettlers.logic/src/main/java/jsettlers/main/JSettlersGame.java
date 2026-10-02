@@ -35,6 +35,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.logging.MultiplexingOutputStream;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.menu.ConnectionNotice;
 import jsettlers.common.menu.EPeaceTime;
 import jsettlers.common.menu.EGameError;
 import jsettlers.common.menu.EProgressState;
@@ -455,6 +456,12 @@ public class JSettlersGame {
 		public String getPlayerName(byte playerId) {
 			PlayerStatusController controller = playerStatusController;
 			return controller != null ? controller.getPlayerName(playerId) : null;
+		}
+
+		@Override
+		public ConnectionNotice getConnectionNotice() {
+			PlayerStatusController controller = playerStatusController;
+			return controller != null ? controller.getConnectionNotice() : ConnectionNotice.NONE;
 		}
 
 		@Override

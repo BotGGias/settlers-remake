@@ -51,9 +51,20 @@ public final class GameServerThread extends Thread {
 	}
 
 	public GameServerThread(boolean lan, Logger logger) throws IOException {
+		this(lan, null, NetworkConstants.Server.SERVER_PORT, logger);
+	}
+
+	/**
+	 * @param bindAddress
+	 *            address to listen on, {@code null} for all interfaces (e.g. the loopback address when a launcher tunnels the
+	 *            connections of the other players)
+	 * @param port
+	 *            port to listen on
+	 */
+	public GameServerThread(boolean lan, InetAddress bindAddress, int port, Logger logger) throws IOException {
 		super("GameServer");
 		this.logger = logger;
-		this.serverSocket = new ServerSocket(NetworkConstants.Server.SERVER_PORT);
+		this.serverSocket = new ServerSocket(port, 50, bindAddress);
 		this.manager = new ServerManager(new InMemoryDB());
 
 		this.setDaemon(true);

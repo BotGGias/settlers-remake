@@ -74,6 +74,13 @@ public interface IStartedGame {
 	}
 
 	/**
+	 * @return The network condition of the game for a prominent notice (interrupted and waiting for players, or lost).
+	 */
+	default ConnectionNotice getConnectionNotice() {
+		return ConnectionNotice.NONE;
+	}
+
+	/**
 	 * @return true if the players of this game can send chat messages to each other.
 	 */
 	default boolean isChatAvailable() {

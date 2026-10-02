@@ -128,11 +128,11 @@
 
 	<door dx="-1" dy="5" />
 
-	<constructionStack dx="-2" dy="4" material="PLANK" buildrequired="3" />
+	<constructionStack dx="-2" dy="5" material="PLANK" buildrequired="3" />
 	<constructionStack dx="0" dy="5" material="STONE" buildrequired="6" />
 	<requestStack dx="5" dy="8" material="FLOUR" />
 	<requestStack dx="-3" dy="2" material="WATER" />
-	<offerStack dx="-2" dy="4" material="BREAD" />
+	<offerStack dx="-1" dy="5" material="BREAD" />
 
 	<bricklayer dx="2" dy="6" direction="NORTH_EAST" />
 	<bricklayer dx="5" dy="6" direction="NORTH_WEST" />
