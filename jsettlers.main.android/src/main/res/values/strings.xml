@@ -151,8 +151,6 @@
 	<string name="players_title">Players</string>
 	<string name="players_close">Close</string>
 	<string name="players_team">Team %d</string>
-	<string name="game_menu_statistics">Statistics</string>
-	<string name="statistics_title">Statistics</string>
 	<string name="statistics_endgame_title">Game result</string>
 	<string name="statistics_continue">Continue</string>
 	<string name="statistics_no_data">No statistics recorded yet</string>

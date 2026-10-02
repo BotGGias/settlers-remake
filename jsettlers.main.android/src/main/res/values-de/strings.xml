@@ -138,8 +138,6 @@
 	<string name="players_title">Spieler</string>
 	<string name="players_close">Schließen</string>
 	<string name="players_team">Team %d</string>
-	<string name="game_menu_statistics">Statistik</string>
-	<string name="statistics_title">Statistik</string>
 	<string name="statistics_endgame_title">Spielergebnis</string>
 	<string name="statistics_continue">Weiter</string>
 	<string name="statistics_no_data">Noch keine Statistik aufgezeichnet</string>
