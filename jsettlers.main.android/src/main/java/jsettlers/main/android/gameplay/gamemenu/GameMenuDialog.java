@@ -39,8 +39,12 @@ public class GameMenuDialog extends DialogFragment {
 	 */
 	public static final int REQUEST_CODE_CHAT = 1;
 
+	/**
+	 * The tag of the {@link EditTextDialog} for chat messages.
+	 */
+	public static final String TAG_CHAT_DIALOG = "chat_dialog";
+
 	private static final String TAG_PLAYERS_DIALOG = "players_dialog";
-	private static final String TAG_CHAT_DIALOG = "chat_dialog";
 
 	private GameMenuViewModel viewModel;
 

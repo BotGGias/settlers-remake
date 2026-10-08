@@ -8,6 +8,13 @@
 		android:icon="@drawable/ic_action_minimap"
 		app:showAsAction="always"/>
 	<item
+		android:id="@+id/menu_item_chat"
+		android:orderInCategory="7"
+		android:title="@string/network_chat"
+		android:icon="@drawable/ic_action_chat"
+		android:visible="false"
+		app:showAsAction="always"/>
+	<item
 		android:id="@+id/menu_item_show_game_menu"
 		android:orderInCategory="10"
 		android:title="@string/game_menu_title"

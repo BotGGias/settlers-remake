@@ -137,6 +137,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		if (isResumed()) {
 			connectionBanner.start();
 		}
+		getActivity().invalidateOptionsMenu(); // the chat button depends on the game
 	}
 
 	@AfterViews
@@ -346,6 +347,10 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 				minimapItem.getIcon().mutate().setAlpha(visible ? MINIMAP_ICON_ALPHA_VISIBLE : MINIMAP_ICON_ALPHA_HIDDEN);
 			}
 		}
+		MenuItem chatItem = menu.findItem(R.id.menu_item_chat);
+		if (chatItem != null) {
+			chatItem.setVisible(gameMenu != null && gameMenu.isChatAvailable());
+		}
 	}
 
 	@OptionsItem(R.id.menu_item_toggle_minimap)
@@ -360,6 +365,16 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 
 		if (getChildFragmentManager().findFragmentByTag(TAG_GAME_MENU_DIALOG) == null) {
 			GameMenuDialog.create().show(getChildFragmentManager(), TAG_GAME_MENU_DIALOG);
+		}
+	}
+
+	@OptionsItem(R.id.menu_item_chat)
+	void showChat() {
+		dismissMenu();
+
+		if (gameMenu.isChatAvailable() && getChildFragmentManager().findFragmentByTag(GameMenuDialog.TAG_CHAT_DIALOG) == null) {
+			EditTextDialog.create(GameMenuDialog.REQUEST_CODE_CHAT, R.string.network_chat, R.string.chat_hint, "")
+					.show(getChildFragmentManager(), GameMenuDialog.TAG_CHAT_DIALOG);
 		}
 	}
 
